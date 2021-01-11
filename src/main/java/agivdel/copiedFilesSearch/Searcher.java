@@ -25,7 +25,9 @@ public class Searcher {
     private void directorySelect() throws IOException {
         Scanner scanner = new Scanner(System.in);
         String pathToSearch = scanner.nextLine();
-        iterationFilesFrom(pathToSearch);
+        if (Files.exists(Path.of(pathToSearch))) {
+            iterationFilesFrom(pathToSearch);
+        }
     }
 
     private void iterationFilesFrom(String pathForSearch) throws IOException {
