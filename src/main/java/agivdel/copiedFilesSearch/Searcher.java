@@ -19,20 +19,24 @@ import java.util.stream.Stream;
 public class Searcher {
 
     public void run() throws IOException {
-        directorySelect();
+        String selectedDirectory = directorySelect();
+        iterationFilesFrom(selectedDirectory);
     }
 
-    private void directorySelect() throws IOException {
+    private String directorySelect() throws IOException {
         Scanner scanner = new Scanner(System.in);
-        String pathToSearch = scanner.nextLine();
-        if (Files.exists(Path.of(pathToSearch))) {
-            iterationFilesFrom(pathToSearch);
+        while (true) {
+            System.out.println("Введите адрес директории поиска скопированых файлов:");
+            String selectedDirectory = scanner.nextLine();
+            if (Files.exists(Path.of(selectedDirectory))) {
+                return selectedDirectory;
+            }
         }
     }
 
-    private void iterationFilesFrom(String pathForSearch) throws IOException {
+    private void iterationFilesFrom(String selectedDirectory) throws IOException {
         List<File> fileList = new ArrayList<>();
-        try (Stream<Path> pathStream = Files.walk(Paths.get(pathForSearch))) {
+        try (Stream<Path> pathStream = Files.walk(Paths.get(selectedDirectory))) {
             fileList = pathStream.filter(Files::isRegularFile).map(Path::toFile).collect(Collectors.toList());
         } catch (IOException e) {
             e.printStackTrace();
