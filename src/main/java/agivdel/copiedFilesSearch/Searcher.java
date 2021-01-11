@@ -25,8 +25,11 @@ public class Searcher {
     private String directorySelect() {
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            System.out.println("Введите адрес директории поиска скопированых файлов:");
+            System.out.println("Для поиска скопированных файлов введите адрес директории поиска:");
             String selectedDirectory = scanner.nextLine();
+            if (selectedDirectory.equals("z")) {
+                System.exit(0);
+            }
             if (Files.exists(Path.of(selectedDirectory))) {
                 return selectedDirectory;
             }
@@ -46,6 +49,7 @@ public class Searcher {
         }
         System.out.println("Число файлов в данной директории: " + fileList.size());
 
+        //Вариант №1, с мапой времени и списка имен файлов
         Map<FileTime, List<String>> fileMap = new HashMap<>();
         List<String> fileNameList;
         for (File file : fileList) {
@@ -61,7 +65,18 @@ public class Searcher {
                 .stream()
                 .filter(l -> l.getValue().size() > 1)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
         doubleFiles.entrySet().forEach(System.out::println);
+
+        //Вариант №2, с дополнительным классом Doubles(2 поля: время и список имен дублей)
+        System.out.println("____________");
+        Map<FileTime, Doubles> doublesMap = new HashMap<>();
+        for (File file : fileList) {
+            FileTime fileTime = Files.getLastModifiedTime(file.toPath());
+            Doubles doubles = new Doubles(fileTime, List.of(file.getName()));
+            doublesMap.merge(fileTime, doubles, Doubles::add);
+        }
+        System.out.println("doubles: ");
+        System.out.println("size of doublesMap: " + doublesMap.size());
+        doublesMap.values().stream().filter(d -> d.getDoubles().size() > 1).forEach(System.out::println);
     }
 }
