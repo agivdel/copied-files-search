@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Doubles {
-    private FileTime fileTime;
-    private List<String> doubles;
+    private final FileTime fileTime;
+    private final List<String> doubles;
 
     public Doubles(FileTime fileTime, List<String> doubles) {
         this.fileTime = fileTime;
@@ -29,7 +29,7 @@ public class Doubles {
                 '}';
     }
 
-    public static Doubles add(Doubles d1, Doubles d2) {
+    public static Doubles mergeNames(Doubles d1, Doubles d2) {
         List<String> newDoublesList = new ArrayList<>(d1.getDoubles());
         newDoublesList.addAll(d2.getDoubles());
         return new Doubles(d1.getFileTime(), newDoublesList);
