@@ -48,8 +48,14 @@ public class Searcher {
             //TODO дописать обработку исключения
         }
         System.out.println("Число файлов в данной директории: " + fileList.size());
-
         //Вариант №1, с мапой времени и списка имен файлов
+        findDuplicates(fileList);
+        //Вариант №2, с дополнительным классом Doubles(2 поля: время и список имен дублей)
+        findDuplicates2(fileList);
+    }
+
+    //Вариант №1, с мапой времени и списка имен файлов
+    private void findDuplicates(List<File> fileList) throws IOException {
         Map<FileTime, List<String>> fileMap = new HashMap<>();
         List<String> fileNameList;
         for (File file : fileList) {
@@ -66,8 +72,10 @@ public class Searcher {
                 .filter(l -> l.getValue().size() > 1)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         doubleFiles.entrySet().forEach(System.out::println);
+    }
 
-        //Вариант №2, с дополнительным классом Doubles(2 поля: время и список имен дублей)
+    //Вариант №2, с дополнительным классом Doubles(2 поля: время и список имен дублей)
+    private void findDuplicates2(List<File> fileList) throws IOException {
         System.out.println("____________");
         Map<FileTime, Doubles> doublesMap = new HashMap<>();
         for (File file : fileList) {
@@ -79,4 +87,5 @@ public class Searcher {
         System.out.println("size of doublesMap: " + doublesMap.size());
         doublesMap.values().stream().filter(d -> d.getDoubles().size() > 1).forEach(System.out::println);
     }
+
 }
