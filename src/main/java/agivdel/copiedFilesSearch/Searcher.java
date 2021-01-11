@@ -1,7 +1,6 @@
 package agivdel.copiedFilesSearch;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,7 +22,7 @@ public class Searcher {
         iterationFilesFrom(selectedDirectory);
     }
 
-    private String directorySelect() throws IOException {
+    private String directorySelect() {
         Scanner scanner = new Scanner(System.in);
         while (true) {
             System.out.println("Введите адрес директории поиска скопированых файлов:");
@@ -37,28 +36,32 @@ public class Searcher {
     private void iterationFilesFrom(String selectedDirectory) throws IOException {
         List<File> fileList = new ArrayList<>();
         try (Stream<Path> pathStream = Files.walk(Paths.get(selectedDirectory))) {
-            fileList = pathStream.filter(Files::isRegularFile).map(Path::toFile).collect(Collectors.toList());
+            fileList = pathStream
+                    .filter(Files::isRegularFile)
+                    .map(Path::toFile)
+                    .collect(Collectors.toList());
         } catch (IOException e) {
             e.printStackTrace();
             //TODO дописать обработку исключения
         }
         System.out.println("Число файлов в данной директории: " + fileList.size());
+
         Map<FileTime, List<String>> fileMap = new HashMap<>();
-        List<String> nameList;
+        List<String> fileNameList;
         for (File file : fileList) {
             FileTime fileTime = Files.getLastModifiedTime(file.toPath());
-            nameList = fileMap.get(fileTime);
-            if (nameList == null) {
-                nameList = new ArrayList<>();
-            }
-            nameList.add(file.getName());
-            fileMap.put(fileTime, nameList);
+            fileMap.putIfAbsent(fileTime, new ArrayList<>());
+            fileNameList = fileMap.get(fileTime);
+            fileNameList.add(file.getName());
+            fileMap.put(fileTime, fileNameList);
         }
+
         Map<FileTime, List<String>> doubleFiles = fileMap
                 .entrySet()
                 .stream()
                 .filter(l -> l.getValue().size() > 1)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
         doubleFiles.entrySet().forEach(System.out::println);
     }
 }
