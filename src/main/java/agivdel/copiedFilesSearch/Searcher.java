@@ -8,6 +8,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.CRC32;
+import java.util.zip.Checksum;
 
 public class Searcher {
 
@@ -20,11 +21,22 @@ public class Searcher {
 //            List<List<File>> timeDoubles = getTimeDoubles(fileList);
 //            List<List<List<File>>> sizeDoubles = getSizeDoubles(timeDoubles);
 //            printThis(sizeDoubles);
-            Map<String, List<File>> map = getCRC(fileList);
+            System.out.println("с учетом контрольных сумм: \n");
+            Map<Long, List<File>> map = getFileListChecksum(fileList);
             map.values().forEach(l -> {
-                System.out.println("еще одна группа копий:");
                 l.stream().map(File::getName).forEach(System.out::println);
+                System.out.println("___________");
             });
+            System.out.println();
+            System.out.println("с учетом времени последнего изменения: \n");
+            map.forEach((k, v) -> {
+                Map<Long, List<File>> timeMap = v.stream().collect(Collectors.groupingBy(File::lastModified));
+                v = timeMap.values().stream().filter(l -> l.size() > 1).flatMap(Collection::stream).collect(Collectors.toList());
+                v.stream().map(File::getName).forEach(System.out::println);
+                System.out.println("___________");
+            });
+            System.out.println("печать всей карты:");
+            System.out.println(map);
         }
     }
 
@@ -55,34 +67,39 @@ public class Searcher {
     }
 
     //не подходит для файлов нулевого размера
-    private Map<String, List<File>> getCRC(List<File> fileList) throws IOException {
-        Map<String, List<File>> crcMap = new HashMap<>();
+    private Map<Long, List<File>> getFileListChecksum(List<File> fileList) throws IOException {
+        Map<Long, List<File>> crcMap = new HashMap<>();
         for (File file : fileList) {
-            CRC32 crc32 = new CRC32();
-            String s = "";
-            byte[] buf = new byte[8000];//для чтения блоками по 8 КБ
-            int length = 0;
-            FileInputStream fis = null;
-            try {
-                fis = new FileInputStream(file);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            while (true) {
-                length = fis.read(buf);
-                if (length < 0) {
-                    break;
-                }
-                crc32.update(buf, 0, length);
-            }
-            fis.close();
-            s = Long.toString(crc32.getValue());
-            crcMap.putIfAbsent(s, new ArrayList<>());
-            List<File> list = crcMap.get(s);
+            Long key;
+            key = getFileCRC32(file);
+            crcMap.putIfAbsent(key, new ArrayList<>());
+            List<File> list = crcMap.get(key);
             list.add(file);
-            crcMap.put(s, list);
+            crcMap.put(key, list);
         }
         return crcMap.entrySet().stream().filter(e -> e.getValue().size() > 1).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    private Long getFileCRC32(File file) throws IOException {
+        CRC32 check = new CRC32();
+        byte[] buf = new byte[8000];//для чтения блоками по 8 КБ
+        int length = 0;
+        FileInputStream fis = null;
+        try {
+            fis = new FileInputStream(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        while (true) {
+            assert fis != null;
+            length = fis.read(buf);
+            if (length < 0) {
+                break;
+            }
+            check.update(buf, 0, length);
+        }
+        fis.close();
+        return check.getValue();
     }
 
     private List<File> iterationFilesFrom(String selectedDirectory) {
