@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.zip.CRC32;
 
 public class Searcher {
 
@@ -16,9 +17,14 @@ public class Searcher {
             String selectedDirectory = input();
             List<File> fileList = iterationFilesFrom(selectedDirectory);
             System.out.println("Число файлов в данной директории: " + fileList.size());
-            List<List<File>> timeDoubles = getTimeDoubles(fileList);
-            List<List<List<File>>> sizeDoubles = getSizeDoubles(timeDoubles);
-            printThis(sizeDoubles);
+//            List<List<File>> timeDoubles = getTimeDoubles(fileList);
+//            List<List<List<File>>> sizeDoubles = getSizeDoubles(timeDoubles);
+//            printThis(sizeDoubles);
+            Map<String, List<File>> map = getCRC(fileList);
+            map.values().forEach(l -> {
+                System.out.println("еще одна группа копий:");
+                l.stream().map(File::getName).forEach(System.out::println);
+            });
         }
     }
 
@@ -48,6 +54,37 @@ public class Searcher {
         }
     }
 
+    //не подходит для файлов нулевого размера
+    private Map<String, List<File>> getCRC(List<File> fileList) throws IOException {
+        Map<String, List<File>> crcMap = new HashMap<>();
+        for (File file : fileList) {
+            CRC32 crc32 = new CRC32();
+            String s = "";
+            byte[] buf = new byte[8000];//для чтения блоками по 8 КБ
+            int length = 0;
+            FileInputStream fis = null;
+            try {
+                fis = new FileInputStream(file);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            while (true) {
+                length = fis.read(buf);
+                if (length < 0) {
+                    break;
+                }
+                crc32.update(buf, 0, length);
+            }
+            fis.close();
+            s = Long.toString(crc32.getValue());
+            crcMap.putIfAbsent(s, new ArrayList<>());
+            List<File> list = crcMap.get(s);
+            list.add(file);
+            crcMap.put(s, list);
+        }
+        return crcMap.entrySet().stream().filter(e -> e.getValue().size() > 1).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
     private List<File> iterationFilesFrom(String selectedDirectory) {
         List<File> fileList = new ArrayList<>();
         try (Stream<Path> pathStream = Files.walk(Paths.get(selectedDirectory))) {
@@ -59,9 +96,16 @@ public class Searcher {
         return fileList;
     }
 
-    private List<List<File>> getTimeDoubles(List<File> fileList) throws IOException {
+    //Вар.№1
+    private List<List<File>> getTimeDoubles(List<File> fileList) {
         Map<Long, List<File>> map = fileList.stream().collect(Collectors.groupingBy(File::lastModified));
         return map.values().stream().filter(l -> l.size() > 1).collect(Collectors.toList());
+    }
+
+    //Вар.№2
+    private Stream<Stream<File>> getTimeDoublesStream(List<File> fileList) {
+        Map<Long, List<File>> map = fileList.stream().collect(Collectors.groupingBy(File::lastModified));
+        return map.values().stream().filter(l -> l.size() > 1).map(Collection::stream);
     }
 
     //TODO и это
