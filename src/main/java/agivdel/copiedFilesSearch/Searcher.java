@@ -9,6 +9,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.CRC32;
 
+/**
+ * 1.получили лист файлов
+ * 2.лист файлов преобразовали в стрим дублей, где каждый дубль - лист файлов с совпадающими временем последнего редактирования
+ * 3.каждый дубль разделили на несколько по контрольной сумме, где каждый итоговый дубль - лист файлов с одинаковой контрольной суммой
+ * 4.каждый новый дубль, полученный на стадии №3, добавили в общий стрим дублей
+ */
+
 public class Searcher {
 
     public void run() throws IOException {
@@ -17,58 +24,13 @@ public class Searcher {
             String selectedDirectory = input();
             List<File> fileList = iterationFilesFrom(selectedDirectory);
             System.out.println("Число файлов в данной директории: " + fileList.size());
-            System.out.println("I`m working, don`t fuck me...");
+            System.out.println("I'm working, don't bother me, please...");
 
-            System.out.println("Всего " + getStreamByTimeAndChecksum(fileList).filter(s -> s.count() >= 1).count() + " групп копий");
-
-            System.out.println("doubles: " + timeDoublesFromList(fileList).count());
-            System.out.println("doubles with size() >= 1: " + timeDoublesFromList(fileList).filter(d -> d.size() >= 1).count());
-
-            //каждый doubles проверить на CRC
+            List<Doubles> doubles = getDoublesList(fileList);
+            printAllDoubles(doubles);
 
         }
     }
-
-
-
-    private Stream<Doubles> timeDoublesFromList(List<File> fileList) {
-        return getTimeDoubles(fileList).map(Doubles::new);
-    }
-
-    private Stream<Stream<List<File>>> getStreamByTimeAndChecksum(List<File> fileList) {
-        Stream<List<File>> timeDoublesStream = getTimeDoubles(fileList);
-        return timeDoublesStream.map(timeDoubles -> {
-            Stream<List<File>> checksumDoubleStream = null;
-            try {
-                checksumDoubleStream = getChecksumStreamFrom(timeDoubles);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return checksumDoubleStream;
-        });
-//        }).filter(Objects::nonNull).filter(s -> s.count() >= 1);//оставляем только стримы с одним и более листами -
-//        вызывает ошибку из-за повторого использования стрима (stream has already been operated upon or closed)
-    }
-
-    private Stream<Stream<List<File>>> getStreamByChecksumAndTime(List<File> fileList) throws IOException {
-        Stream<List<File>> checksumDoublesStream = getChecksumStreamFrom(fileList);
-        return checksumDoublesStream.map(this::getTimeDoubles);
-    }
-
-    private void printStreamOfStream(Stream<Stream<List<File>>> stream) {
-        stream.forEach(s -> s.forEach(l -> l.stream().map(File::getName).forEach(System.out::println)));
-        //при подаче сюда фильтрованного стрима вознкиает ошибка повторного использвоания стрима
-        //stream has already been operated upon or closed
-    }
-
-    private void printTimeOfProcess(List<File> fileList, long calcStart, long calcEnd, long printStart, long printEnd) {
-        System.out.println("Число файлов в данной директории: " + fileList.size());
-        System.out.println("время расчета: " + (calcEnd - calcStart) + " нс.");
-        System.out.println("время печати: " + (printEnd - printStart) + " нс.");
-        System.out.println("общее время: " + (printEnd - calcStart) + " нс.");
-    }
-
-
     private String input() {
         Scanner scanner = new Scanner(System.in);
         while (true) {
@@ -93,8 +55,26 @@ public class Searcher {
         return fileList;
     }
 
+    //группировка файлов по времени последнего редактирования и контрольной сумме CRC32
+    private List<Doubles> getDoublesList(List<File> fileList) {
+        return getTimeDoubles(fileList).flatMap(d -> {
+            try {
+                return splitByChecksum(d.getDoubles());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return Stream.empty();
+        }).collect(Collectors.toList());
+    }
+
+    //каждый лист соответствует определенному времени последнего редактирования
+    private Stream<Doubles> getTimeDoubles(List<File> fileList) {
+        Map<Long, List<File>> map = fileList.stream().collect(Collectors.groupingBy(File::lastModified));
+        return map.values().stream().filter(l -> l.size() > 1).map(Doubles::new);
+    }
+
     //каждый лист - своя контрольная сумма (по CRC32); не подходит для файлов нулевого размера
-    private Stream<List<File>> getChecksumStreamFrom(List<File> fileList) throws IOException {
+    private Stream<Doubles> splitByChecksum(List<File> fileList) throws IOException {
         Map<Long, List<File>> checksumMap = new HashMap<>();
         for (File file : fileList) {
             Long key;
@@ -104,7 +84,7 @@ public class Searcher {
             list.add(file);
             checksumMap.put(key, list);
         }
-        return checksumMap.values().stream().filter(l -> l.size() > 1);
+        return checksumMap.values().stream().filter(l -> l.size() > 1).map(Doubles::new);
     }
 
     private Long getCRC32(File file) throws IOException {
@@ -123,9 +103,11 @@ public class Searcher {
         return check.getValue();
     }
 
-    //каждый лист соответствует определенному времени последнего редактирования
-    private Stream<List<File>> getTimeDoubles(List<File> fileList) {
-        Map<Long, List<File>> map = fileList.stream().collect(Collectors.groupingBy(File::lastModified));
-        return map.values().stream().filter(l -> l.size() > 1);
+    private void printAllDoubles(List<Doubles> doublesList) throws IOException {
+        for (Doubles doubles : doublesList) {
+            System.out.println("\nфайл с копиями (последнее время изменения " + Files.getLastModifiedTime(doubles.getDoubles().get(0).toPath()) + "):");
+            doubles.getDoubles().stream().map(File::getName).forEach(System.out::println);
+        }
+        System.out.println("\nВсего файлов-оригиналов, имеющих копии: " + doublesList.size());
     }
 }
