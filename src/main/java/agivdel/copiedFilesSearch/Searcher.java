@@ -19,10 +19,18 @@ public class Searcher {
             System.out.println("Число файлов в данной директории: " + fileList.size());
             System.out.println("I`m working, don`t fuck me...");
 
-            printStreamOfStream(getStreamByTimeAndChecksum(fileList));
-//            printStreamOfStream(getStreamByTimeAndChecksum(fileList).filter(s -> s.count() >= 1));//stream has already been operated upon or closed
             System.out.println("Всего " + getStreamByTimeAndChecksum(fileList).filter(s -> s.count() >= 1).count() + " групп копий");
+
+            System.out.println("doubles: " + timeDoublesFromList(fileList).count());
+            System.out.println("doubles with size() >= 1: " + timeDoublesFromList(fileList).filter(d -> d.size() >= 1).count());
+
+            //каждый doubles проверить на CRC
+
         }
+    }
+
+    private Stream<Doubles> timeDoublesFromList(List<File> fileList) {
+        return getTimeDoubles(fileList).map(Doubles::new);
     }
 
     private Stream<Stream<List<File>>> getStreamByTimeAndChecksum(List<File> fileList) {
