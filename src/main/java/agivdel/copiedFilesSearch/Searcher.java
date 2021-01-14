@@ -11,7 +11,7 @@ import java.util.zip.CRC32;
 
 public class Searcher {
 
-    public void run() {
+    public void run() throws IOException {
         while (true) {
             System.out.println("Для поиска скопированных файлов введите адрес директории поиска, для выхода нажмите z:");
             String selectedDirectory = input();
@@ -19,45 +19,45 @@ public class Searcher {
             System.out.println("Число файлов в данной директории: " + fileList.size());
             System.out.println("I`m working, don`t fuck me...");
 
-            //Вар.№1, поиск (среди 30 т.файлов) менее 1 с
-            long calculateStart1 = System.nanoTime();
-            Stream<List<File>> timeDoublesStream = getTimeDoubles(fileList);
-            Stream<Stream<List<File>>> streamOfStream = timeDoublesStream.map(timeDoubles -> {
-                Stream<List<File>> checksumDoubleStream = null;
-                try {
-                    checksumDoubleStream = getChecksumStreamFrom(timeDoubles);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                return checksumDoubleStream;
-            });
-            long calculateEnd1 = System.nanoTime();
-            //печать
-            long printStart1 = System.nanoTime();
-            streamOfStream.forEach(s -> s.forEach(l -> l.stream().map(File::getName).forEach(System.out::println)));
-            long printEnd1 = System.nanoTime();
-
-            System.out.println("Число файлов в данной директории: " + fileList.size());
-            System.out.println("время расчета: " + (calculateEnd1 - calculateStart1));
-            System.out.println("время печати: " + (printEnd1 - printStart1));
-            System.out.println("общее время: " + (printEnd1 - calculateStart1));
-
-            //Вар.№2, поиск (среди 30 т.файлов) около 13 мин
-/*            long calculateStart2 = System.nanoTime();
-            Stream<List<File>> checksumDoublesStream = getChecksumStreamFrom(fileList);
-            Stream<Stream<List<File>>> streamOfStream2 = checksumDoublesStream.map(this::getTimeDoubles);
-            long calculateEnd2 = System.nanoTime();
-            //печать
-            long printStart2 = System.nanoTime();
-            streamOfStream2.forEach(s -> s.forEach(l -> l.stream().map(File::getName).forEach(System.out::println)));
-            long printEnd2 = System.nanoTime();
-
-            System.out.println("Число файлов в данной директории: " + fileList.size());
-            System.out.println("время расчета: " + (calculateEnd2 - calculateStart2));
-            System.out.println("время печати: " + (printEnd2 - printStart2));
-            System.out.println("общее время: " + (printEnd2 - calculateStart2));*/
+            printStreamOfStream(getStreamByTimeAndChecksum(fileList));
+//            printStreamOfStream(getStreamByTimeAndChecksum(fileList).filter(s -> s.count() >= 1));//stream has already been operated upon or closed
+            System.out.println("Всего " + getStreamByTimeAndChecksum(fileList).filter(s -> s.count() >= 1).count() + " групп копий");
         }
     }
+
+    private Stream<Stream<List<File>>> getStreamByTimeAndChecksum(List<File> fileList) {
+        Stream<List<File>> timeDoublesStream = getTimeDoubles(fileList);
+        return timeDoublesStream.map(timeDoubles -> {
+            Stream<List<File>> checksumDoubleStream = null;
+            try {
+                checksumDoubleStream = getChecksumStreamFrom(timeDoubles);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return checksumDoubleStream;
+        });
+//        }).filter(Objects::nonNull).filter(s -> s.count() >= 1);//оставляем только стримы с одним и более листами -
+//        вызывает ошибку из-за повторого использования стрима (stream has already been operated upon or closed)
+    }
+
+    private Stream<Stream<List<File>>> getStreamByChecksumAndTime(List<File> fileList) throws IOException {
+        Stream<List<File>> checksumDoublesStream = getChecksumStreamFrom(fileList);
+        return checksumDoublesStream.map(this::getTimeDoubles);
+    }
+
+    private void printStreamOfStream(Stream<Stream<List<File>>> stream) {
+        stream.forEach(s -> s.forEach(l -> l.stream().map(File::getName).forEach(System.out::println)));
+        //при подаче сюда фильтрованного стрима вознкиает ошибка повторного использвоания стрима
+        //stream has already been operated upon or closed
+    }
+
+    private void printTimeOfProcess(List<File> fileList, long calcStart, long calcEnd, long printStart, long printEnd) {
+        System.out.println("Число файлов в данной директории: " + fileList.size());
+        System.out.println("время расчета: " + (calcEnd - calcStart) + " нс.");
+        System.out.println("время печати: " + (printEnd - printStart) + " нс.");
+        System.out.println("общее время: " + (printEnd - calcStart) + " нс.");
+    }
+
 
     private String input() {
         Scanner scanner = new Scanner(System.in);
@@ -72,21 +72,32 @@ public class Searcher {
         }
     }
 
-    //не подходит для файлов нулевого размера
-    private Stream<List<File>> getChecksumStreamFrom(List<File> fileList) throws IOException {
-        Map<Long, List<File>> crcMap = new HashMap<>();
-        for (File file : fileList) {
-            Long key;
-            key = getFileCRC32(file);
-            crcMap.putIfAbsent(key, new ArrayList<>());
-            List<File> list = crcMap.get(key);
-            list.add(file);
-            crcMap.put(key, list);
+    private List<File> iterationFilesFrom(String selectedDirectory) {
+        List<File> fileList = new ArrayList<>();
+        try (Stream<Path> pathStream = Files.walk(Paths.get(selectedDirectory))) {
+            fileList = pathStream.filter(Files::isRegularFile).map(Path::toFile).collect(Collectors.toList());
+        } catch (IOException e) {
+            e.printStackTrace();
+            //TODO дописать обработку исключения
         }
-        return crcMap.values().stream().filter(l -> l.size() > 1);
+        return fileList;
     }
 
-    private Long getFileCRC32(File file) throws IOException {
+    //каждый лист - своя контрольная сумма (по CRC32); не подходит для файлов нулевого размера
+    private Stream<List<File>> getChecksumStreamFrom(List<File> fileList) throws IOException {
+        Map<Long, List<File>> checksumMap = new HashMap<>();
+        for (File file : fileList) {
+            Long key;
+            key = getCRC32(file);
+            checksumMap.putIfAbsent(key, new ArrayList<>());
+            List<File> list = checksumMap.get(key);
+            list.add(file);
+            checksumMap.put(key, list);
+        }
+        return checksumMap.values().stream().filter(l -> l.size() > 1);
+    }
+
+    private Long getCRC32(File file) throws IOException {
         CRC32 check = new CRC32();
         byte[] buf = new byte[8000];//для чтения блоками по 8 КБ
         int length = 0;
@@ -108,17 +119,7 @@ public class Searcher {
         return check.getValue();
     }
 
-    private List<File> iterationFilesFrom(String selectedDirectory) {
-        List<File> fileList = new ArrayList<>();
-        try (Stream<Path> pathStream = Files.walk(Paths.get(selectedDirectory))) {
-            fileList = pathStream.filter(Files::isRegularFile).map(Path::toFile).collect(Collectors.toList());
-        } catch (IOException e) {
-            e.printStackTrace();
-            //TODO дописать обработку исключения
-        }
-        return fileList;
-    }
-    
+    //каждый лист соответствует определенному времени последнего редактирования
     private Stream<List<File>> getTimeDoubles(List<File> fileList) {
         Map<Long, List<File>> map = fileList.stream().collect(Collectors.groupingBy(File::lastModified));
         return map.values().stream().filter(l -> l.size() > 1);
