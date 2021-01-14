@@ -29,6 +29,8 @@ public class Searcher {
         }
     }
 
+
+
     private Stream<Doubles> timeDoublesFromList(List<File> fileList) {
         return getTimeDoubles(fileList).map(Doubles::new);
     }
@@ -109,21 +111,15 @@ public class Searcher {
         CRC32 check = new CRC32();
         byte[] buf = new byte[8000];//для чтения блоками по 8 КБ
         int length = 0;
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(file);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        while (true) {
-            assert fis != null;
-            length = fis.read(buf);
-            if (length < 0) {
-                break;
+        try (FileInputStream fis = new FileInputStream(file)) {
+            while (true) {
+                length = fis.read(buf);
+                if (length < 0) {
+                    break;
+                }
+                check.update(buf, 0, length);
             }
-            check.update(buf, 0, length);
         }
-        fis.close();
         return check.getValue();
     }
 
