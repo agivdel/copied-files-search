@@ -8,49 +8,55 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.CRC32;
-import java.util.zip.Checksum;
 
 public class Searcher {
 
-    public void run() throws IOException {
+    public void run() {
         while (true) {
             System.out.println("Для поиска скопированных файлов введите адрес директории поиска, для выхода нажмите z:");
             String selectedDirectory = input();
             List<File> fileList = iterationFilesFrom(selectedDirectory);
             System.out.println("Число файлов в данной директории: " + fileList.size());
-//            List<List<File>> timeDoubles = getTimeDoubles(fileList);
-//            List<List<List<File>>> sizeDoubles = getSizeDoubles(timeDoubles);
-//            printThis(sizeDoubles);
-            System.out.println("с учетом контрольных сумм: \n");
-            Map<Long, List<File>> map = getFileListChecksum(fileList);
-            map.values().forEach(l -> {
-                l.stream().map(File::getName).forEach(System.out::println);
-                System.out.println("___________");
-            });
-            System.out.println();
-            System.out.println("с учетом времени последнего изменения: \n");
-            map.forEach((k, v) -> {
-                Map<Long, List<File>> timeMap = v.stream().collect(Collectors.groupingBy(File::lastModified));
-                v = timeMap.values().stream().filter(l -> l.size() > 1).flatMap(Collection::stream).collect(Collectors.toList());
-                v.stream().map(File::getName).forEach(System.out::println);
-                System.out.println("___________");
-            });
-            System.out.println("печать всей карты:");
-            System.out.println(map);
-        }
-    }
+            System.out.println("I`m working, don`t fuck me...");
 
-    private void printThis(List<List<List<File>>> sizeDoubles) throws IOException {
-        for (List<List<File>> oneTime : sizeDoubles) {
-            if (oneTime.isEmpty()) continue;
-            System.out.println("Время " + Files.getLastModifiedTime(oneTime.get(0).get(0).toPath()));
-            for (List<File> sizes : oneTime) {
-                if (sizes.isEmpty()) continue;
-                System.out.println("- Размер " + Files.size(sizes.get(0).toPath()) + " bytes");
-                sizes.stream().map(File::getName).forEach(System.out::println);
-            }
+            //Вар.№1, поиск (среди 30 т.файлов) менее 1 с
+            long calculateStart1 = System.nanoTime();
+            Stream<List<File>> timeDoublesStream = getTimeDoubles(fileList);
+            Stream<Stream<List<File>>> streamOfStream = timeDoublesStream.map(timeDoubles -> {
+                Stream<List<File>> checksumDoubleStream = null;
+                try {
+                    checksumDoubleStream = getChecksumStreamFrom(timeDoubles);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return checksumDoubleStream;
+            });
+            long calculateEnd1 = System.nanoTime();
+            //печать
+            long printStart1 = System.nanoTime();
+            streamOfStream.forEach(s -> s.forEach(l -> l.stream().map(File::getName).forEach(System.out::println)));
+            long printEnd1 = System.nanoTime();
+
+            System.out.println("Число файлов в данной директории: " + fileList.size());
+            System.out.println("время расчета: " + (calculateEnd1 - calculateStart1));
+            System.out.println("время печати: " + (printEnd1 - printStart1));
+            System.out.println("общее время: " + (printEnd1 - calculateStart1));
+
+            //Вар.№2, поиск (среди 30 т.файлов) около 13 мин
+/*            long calculateStart2 = System.nanoTime();
+            Stream<List<File>> checksumDoublesStream = getChecksumStreamFrom(fileList);
+            Stream<Stream<List<File>>> streamOfStream2 = checksumDoublesStream.map(this::getTimeDoubles);
+            long calculateEnd2 = System.nanoTime();
+            //печать
+            long printStart2 = System.nanoTime();
+            streamOfStream2.forEach(s -> s.forEach(l -> l.stream().map(File::getName).forEach(System.out::println)));
+            long printEnd2 = System.nanoTime();
+
+            System.out.println("Число файлов в данной директории: " + fileList.size());
+            System.out.println("время расчета: " + (calculateEnd2 - calculateStart2));
+            System.out.println("время печати: " + (printEnd2 - printStart2));
+            System.out.println("общее время: " + (printEnd2 - calculateStart2));*/
         }
-        System.out.println("\nВсего файлов, имеющих копии: " + sizeDoubles.size());
     }
 
     private String input() {
@@ -67,7 +73,7 @@ public class Searcher {
     }
 
     //не подходит для файлов нулевого размера
-    private Map<Long, List<File>> getFileListChecksum(List<File> fileList) throws IOException {
+    private Stream<List<File>> getChecksumStreamFrom(List<File> fileList) throws IOException {
         Map<Long, List<File>> crcMap = new HashMap<>();
         for (File file : fileList) {
             Long key;
@@ -77,7 +83,7 @@ public class Searcher {
             list.add(file);
             crcMap.put(key, list);
         }
-        return crcMap.entrySet().stream().filter(e -> e.getValue().size() > 1).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        return crcMap.values().stream().filter(l -> l.size() > 1);
     }
 
     private Long getFileCRC32(File file) throws IOException {
@@ -112,35 +118,9 @@ public class Searcher {
         }
         return fileList;
     }
-
-    //Вар.№1
-    private List<List<File>> getTimeDoubles(List<File> fileList) {
+    
+    private Stream<List<File>> getTimeDoubles(List<File> fileList) {
         Map<Long, List<File>> map = fileList.stream().collect(Collectors.groupingBy(File::lastModified));
-        return map.values().stream().filter(l -> l.size() > 1).collect(Collectors.toList());
-    }
-
-    //Вар.№2
-    private Stream<Stream<File>> getTimeDoublesStream(List<File> fileList) {
-        Map<Long, List<File>> map = fileList.stream().collect(Collectors.groupingBy(File::lastModified));
-        return map.values().stream().filter(l -> l.size() > 1).map(Collection::stream);
-    }
-
-    //TODO и это
-    private List<List<List<File>>> getSizeDoubles(List<List<File>> timeDoubles) throws IOException {
-        List<List<List<File>>> sizeDoubles = new ArrayList<>();
-        for (List<File> oneTimeDoubles : timeDoubles) {
-            Map<Long, List<File>> sizeMap = new HashMap<>();
-            List<File> oneSizePaths;
-            for (File file : oneTimeDoubles) {
-                long size = Files.size(file.toPath());
-                sizeMap.putIfAbsent(size, new ArrayList<>());
-                oneSizePaths = sizeMap.get(size);
-                oneSizePaths.add(file);
-                sizeMap.put(size, oneSizePaths);
-            }
-            List<List<File>> sizes = sizeMap.values().stream().filter(l -> l.size() > 1).collect(Collectors.toList());
-            sizeDoubles.add(sizes);
-        }
-        return sizeDoubles;
+        return map.values().stream().filter(l -> l.size() > 1);
     }
 }
