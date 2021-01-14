@@ -1,7 +1,6 @@
 package agivdel.copiedFilesSearch;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Doubles {
@@ -15,22 +14,8 @@ public class Doubles {
         return doubles;
     }
 
-    public long size() {
-        return this.doubles.size();
-    }
-
-    public boolean isEmpty() {
-        return this.doubles.isEmpty();
-    }
-
     @Override
     public String toString() {
         return "\nDouble{" + doubles + "}";
-    }
-
-    public static Doubles merge(Doubles d1, Doubles d2) {
-        List<File> newDoublesList = new ArrayList<>(d1.getDoubles());
-        newDoublesList.addAll(d2.getDoubles());
-        return new Doubles(newDoublesList);
     }
 }
