@@ -22,6 +22,14 @@ public class Doubles {
         return doubles;
     }
 
+    public long size() {
+        return this.doubles.size();
+    }
+
+    public boolean isEmpty() {
+        return this.doubles.isEmpty();
+    }
+
     @Override
     public String toString() {
         return "Double{" +
