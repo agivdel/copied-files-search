@@ -49,15 +49,16 @@ public class Searcher {
         }
     }
 
-    List<File> iterationFilesFrom(String selectedDirectory) {
-        List<File> fileList = new ArrayList<>();
+    private List<File> iterationFilesFrom(String selectedDirectory) {
         try (Stream<Path> pathStream = Files.walk(Paths.get(selectedDirectory))) {
-            fileList = pathStream.filter(Files::isRegularFile).map(Path::toFile).collect(toList());
+            return pathStream
+                    .filter(Files::isRegularFile)
+                    .map(Path::toFile)
+                    .collect(toList());
         } catch (IOException e) {
-            e.printStackTrace();
             //TODO дописать обработку исключения
+            throw new RuntimeException(e);
         }
-        return fileList;
     }
 
     //группировка файлов по времени последнего редактирования и контрольной сумме CRC32
