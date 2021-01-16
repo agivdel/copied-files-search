@@ -23,13 +23,19 @@ public class Searcher {
     public void run() throws IOException {
         while (true) {
             String selectedDirectory = input("To search for copied files, enter the address of the search directory, to exit press z:");
+
             List<File> fileList = iterationFilesFrom(selectedDirectory);
+            Stream<File> fileStream = iterationFilesFrom2(selectedDirectory);
+
             System.out.println("Число файлов в данной директории: " + fileList.size());
             String minSize = input("Do you need to search among files with zero size? Yes - 0, No - 1");
 
             System.out.println("I'm working, don't bother me, please...");
-            List<Doubles> doubles = getDoublesList(fileList);
-            printAllDoubles(doubles);
+            List<Doubles> doublesList = getDoublesList(fileList);
+            Stream<Doubles> doublesStream = getDoublesList2(fileStream);
+
+            printAllDoubles(doublesList);
+            printAllDoubles(doublesStream.collect(toList()));
 
         }
     }
@@ -62,6 +68,17 @@ public class Searcher {
         }
     }
 
+    private Stream<File> iterationFilesFrom2(String selectedDirectory) {
+        try (Stream<Path> pathStream = Files.walk(Paths.get(selectedDirectory))) {
+            return pathStream
+                    .filter(Files::isRegularFile)
+                    .map(Path::toFile);
+        } catch (IOException e) {
+            //TODO дописать обработку исключения
+            throw new RuntimeException(e);
+        }
+    }
+
     //группировка файлов по времени последнего редактирования и контрольной сумме CRC32
     private List<Doubles> getDoublesList(List<File> fileList) {
         return getTimeDoubles(fileList).flatMap(d -> {
@@ -74,10 +91,24 @@ public class Searcher {
         }).collect(Collectors.toList());
     }
 
+    //группировка файлов по времени последнего редактирования и контрольной сумме CRC32
+    private Stream<Doubles> getDoublesList2(Stream<File> fileStream) {
+        return getTimeDoubles2(fileStream)
+                .flatMap(d -> splitByChecksum2(d.getDoubles().stream()));
+    }
+
     //каждый лист соответствует определенному времени последнего редактирования
     private Stream<Doubles> getTimeDoubles(List<File> fileList) {
-        return fileList
+        return fileList.stream()
+                .collect(groupingBy(File::lastModified))
+                .values()
                 .stream()
+                .filter(l -> l.size() > 1)
+                .map(Doubles::new);
+    }
+
+    private Stream<Doubles> getTimeDoubles2(Stream<File> fileStream) {
+        return fileStream
                 .collect(groupingBy(File::lastModified))
                 .values()
                 .stream()
@@ -88,6 +119,15 @@ public class Searcher {
     //каждый лист - своя контрольная сумма (по CRC32); равна для файлов (не копий) одного (в том числе нулевого) размера
     private Stream<Doubles> splitByChecksum(List<File> fileList) throws IOException {
         return fileList.stream()
+                .collect(groupingBy(this::getCRC32))
+                .values()
+                .stream()
+                .filter(l -> l.size() > 1)
+                .map(Doubles::new);
+    }
+
+    private Stream<Doubles> splitByChecksum2(Stream<File> fileStream) {
+        return fileStream
                 .collect(groupingBy(this::getCRC32))
                 .values()
                 .stream()
@@ -121,4 +161,16 @@ public class Searcher {
         }
         System.out.println("\nВсего файлов-оригиналов, имеющих копии: " + doublesList.size());
     }
+
+//    private void printAllDoubles2(Stream<Doubles> doublesStream) throws IOException {
+//
+//        for (Doubles doubles : doublesStream) {
+//            System.out.println("\nфайл с копиями (последнее время изменения "
+//                    + Files.getLastModifiedTime(doubles.getDoubles().get(0).toPath()) + "):");
+//            doubles.getDoubles().stream()
+//                    .map(File::getName)
+//                    .forEach(System.out::println);
+//        }
+//        System.out.println("\nВсего файлов-оригиналов, имеющих копии: " + doublesStream.size());
+//    }
 }
