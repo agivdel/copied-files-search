@@ -5,10 +5,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import static java.util.stream.Collectors.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.CRC32;
+
+import static java.util.stream.Collectors.*;
 
 /**
  * 1.получили лист файлов
@@ -92,30 +93,23 @@ public class Searcher {
                 .stream()
                 .filter(l -> l.size() > 1)
                 .map(Doubles::new);
-//        Map<Long, List<File>> checksumMap = new HashMap<>();
-//        for (File file : fileList) {
-//            Long key;
-//            key = getCRC32(file);
-//            checksumMap.putIfAbsent(key, new ArrayList<>());
-//            List<File> list = checksumMap.get(key);
-//            list.add(file);
-//            checksumMap.put(key, list);
-//        }
-//        return checksumMap.values().stream().filter(l -> l.size() > 1).map(Doubles::new);
     }
 
-    private Long getCRC32(File file) throws IOException {
+    private Long getCRC32(File file) {
         CRC32 check = new CRC32();
         byte[] buf = new byte[8000];//для чтения блоками по 8 КБ
-        int length = 0;
         try (FileInputStream fis = new FileInputStream(file)) {
             while (true) {
-                length = fis.read(buf);
+                int length = fis.read(buf);
                 if (length < 0) {
                     break;
                 }
                 check.update(buf, 0, length);
             }
+        } catch (FileNotFoundException e) {
+
+        } catch (IOException e) {
+
         }
         return check.getValue();
     }
