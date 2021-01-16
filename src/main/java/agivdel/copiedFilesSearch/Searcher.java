@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import static java.util.stream.Collectors.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.CRC32;
@@ -51,7 +52,7 @@ public class Searcher {
     List<File> iterationFilesFrom(String selectedDirectory) {
         List<File> fileList = new ArrayList<>();
         try (Stream<Path> pathStream = Files.walk(Paths.get(selectedDirectory))) {
-            fileList = pathStream.filter(Files::isRegularFile).map(Path::toFile).collect(Collectors.toList());
+            fileList = pathStream.filter(Files::isRegularFile).map(Path::toFile).collect(toList());
         } catch (IOException e) {
             e.printStackTrace();
             //TODO дописать обработку исключения
@@ -73,22 +74,33 @@ public class Searcher {
 
     //каждый лист соответствует определенному времени последнего редактирования
     private Stream<Doubles> getTimeDoubles(List<File> fileList) {
-        Map<Long, List<File>> map = fileList.stream().collect(Collectors.groupingBy(File::lastModified));
-        return map.values().stream().filter(l -> l.size() > 1).map(Doubles::new);
+        return fileList
+                .stream()
+                .collect(groupingBy(File::lastModified))
+                .values()
+                .stream()
+                .filter(l -> l.size() > 1)
+                .map(Doubles::new);
     }
 
     //каждый лист - своя контрольная сумма (по CRC32); не подходит для файлов нулевого размера
     private Stream<Doubles> splitByChecksum(List<File> fileList) throws IOException {
-        Map<Long, List<File>> checksumMap = new HashMap<>();
-        for (File file : fileList) {
-            Long key;
-            key = getCRC32(file);
-            checksumMap.putIfAbsent(key, new ArrayList<>());
-            List<File> list = checksumMap.get(key);
-            list.add(file);
-            checksumMap.put(key, list);
-        }
-        return checksumMap.values().stream().filter(l -> l.size() > 1).map(Doubles::new);
+        return fileList.stream()
+                .collect(groupingBy(this::getCRC32))
+                .values()
+                .stream()
+                .filter(l -> l.size() > 1)
+                .map(Doubles::new);
+//        Map<Long, List<File>> checksumMap = new HashMap<>();
+//        for (File file : fileList) {
+//            Long key;
+//            key = getCRC32(file);
+//            checksumMap.putIfAbsent(key, new ArrayList<>());
+//            List<File> list = checksumMap.get(key);
+//            list.add(file);
+//            checksumMap.put(key, list);
+//        }
+//        return checksumMap.values().stream().filter(l -> l.size() > 1).map(Doubles::new);
     }
 
     private Long getCRC32(File file) throws IOException {
