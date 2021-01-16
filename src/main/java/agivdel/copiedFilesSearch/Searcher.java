@@ -85,7 +85,7 @@ public class Searcher {
                 .map(Doubles::new);
     }
 
-    //каждый лист - своя контрольная сумма (по CRC32); не подходит для файлов нулевого размера
+    //каждый лист - своя контрольная сумма (по CRC32); равна для файлов (не копий) одного (в том числе нулевого) размера
     private Stream<Doubles> splitByChecksum(List<File> fileList) throws IOException {
         return fileList.stream()
                 .collect(groupingBy(this::getCRC32))
@@ -107,9 +107,9 @@ public class Searcher {
                 check.update(buf, 0, length);
             }
         } catch (FileNotFoundException e) {
-
+            System.err.println("File not found");
         } catch (IOException e) {
-
+            System.err.println("IO error");
         }
         return check.getValue();
     }
