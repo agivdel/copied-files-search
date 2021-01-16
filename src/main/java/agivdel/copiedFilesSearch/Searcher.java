@@ -20,31 +20,35 @@ public class Searcher {
 
     public void run() throws IOException {
         while (true) {
-            System.out.println("Для поиска скопированных файлов введите адрес директории поиска, для выхода нажмите z:");
-            String selectedDirectory = input();
+            String selectedDirectory = input("To search for copied files, enter the address of the search directory, to exit press z:");
             List<File> fileList = iterationFilesFrom(selectedDirectory);
             System.out.println("Число файлов в данной директории: " + fileList.size());
-            System.out.println("I'm working, don't bother me, please...");
+            String minSize = input("Do you need to search among files with zero size? Yes - 0, No - 1");
 
+            System.out.println("I'm working, don't bother me, please...");
             List<Doubles> doubles = getDoublesList(fileList);
             printAllDoubles(doubles);
 
         }
     }
-    private String input() {
+    private String input(String message) {
         Scanner scanner = new Scanner(System.in);
+        System.out.println(message);
         while (true) {
-            String selectedDirectory = scanner.nextLine();
-            if (selectedDirectory.equals("z")) {
+            String select = scanner.nextLine();
+            if (select.equalsIgnoreCase("z")) {
                 System.exit(0);
             }
-            if (Files.exists(Path.of(selectedDirectory))) {
-                return selectedDirectory;
+            if (select.equals("0") || select.equals("1")) {
+                return select;
+            }
+            if (Files.exists(Path.of(select))) {
+                return select;
             }
         }
     }
 
-    private List<File> iterationFilesFrom(String selectedDirectory) {
+    List<File> iterationFilesFrom(String selectedDirectory) {
         List<File> fileList = new ArrayList<>();
         try (Stream<Path> pathStream = Files.walk(Paths.get(selectedDirectory))) {
             fileList = pathStream.filter(Files::isRegularFile).map(Path::toFile).collect(Collectors.toList());
