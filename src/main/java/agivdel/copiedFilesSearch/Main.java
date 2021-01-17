@@ -11,6 +11,6 @@ import java.io.IOException;
 public class Main {
 
     public static void main(String[] args) throws IOException {
-        new Searcher().run();
+        new TUI().run();
     }
 }
