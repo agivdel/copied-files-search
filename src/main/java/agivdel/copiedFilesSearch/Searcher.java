@@ -82,7 +82,6 @@ public class Searcher {
     private List<Doubles> getDoublesList(List<File> fileList) {
         return getTimeDoubles(fileList)
                 .flatMap(this::splitByChecksum)
-                .map(this::sortByCreateTime)
                 .collect(toList());
     }
 
@@ -129,42 +128,41 @@ public class Searcher {
         for (Doubles doubles : doublesList) {
             System.out.println("==================");
             File first = doubles.getDoubles().get(0);
-            System.out.println("Последнее время изменения: " + Files.getLastModifiedTime(first.toPath()));
-            System.out.println("Оригинал:\n" + first.getName());
-            System.out.println("Копии: ");
+            System.out.println("Last modified time: " + Files.getLastModifiedTime(first.toPath()));
+            System.out.println("Original:\n" + first.getName());
+            System.out.println("Copy: ");
             doubles.getDoubles().stream()
                     .map(File::getName)
                     .skip(1)
                     .forEach(System.out::println);
         }
         System.out.println("__________________");
-        System.out.println("Всего файлов-оригиналов, имеющих копии: " + doublesList.size());
+        System.out.println("The total number of original files with copies: " + doublesList.size());
     }
 
-    private Doubles sortByCreateTime(Doubles doubles) {
-        List<File> newList = new ArrayList<>(doubles.getDoubles());
-        newList.sort(comparing(this::getCreateTime));
-        return new Doubles(newList);
-    }
-
-    private FileTime getCreateTime(File file) {
-        try {
-            return Files.readAttributes(file.toPath(), BasicFileAttributes.class).creationTime();
-        } catch (IOException e) {
-            System.err.println("IO error");
-            throw new RuntimeException(e);
-        }
-    }
-
+    /**
+     * Объект класса Double хранит список файлов, сортированных по времени создания
+     */
     static class Doubles {
         private final List<File> doubles;
 
         public Doubles(List<File> doubles) {
-            this.doubles = doubles;
+            this.doubles = doubles.stream()
+                    .sorted(comparing(this::getCreateTime))
+                    .collect(toList());
         }
 
         public List<File> getDoubles() {
             return doubles;
+        }
+
+        private FileTime getCreateTime(File file) {
+            try {
+                return Files.readAttributes(file.toPath(), BasicFileAttributes.class).creationTime();
+            } catch (IOException e) {
+                System.err.println("IO error");
+                throw new RuntimeException(e);
+            }
         }
     }
 }
