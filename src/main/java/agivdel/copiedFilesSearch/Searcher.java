@@ -139,30 +139,4 @@ public class Searcher {
         System.out.println("__________________");
         System.out.println("The total number of original files with copies: " + doublesList.size());
     }
-
-    /**
-     * Объект класса Double хранит список файлов, сортированных по времени создания
-     */
-    static class Doubles {
-        private final List<File> doubles;
-
-        public Doubles(List<File> doubles) {
-            this.doubles = doubles.stream()
-                    .sorted(comparing(this::getCreateTime))
-                    .collect(toList());
-        }
-
-        public List<File> getDoubles() {
-            return doubles;
-        }
-
-        private FileTime getCreateTime(File file) {
-            try {
-                return Files.readAttributes(file.toPath(), BasicFileAttributes.class).creationTime();
-            } catch (IOException e) {
-                System.err.println("IO error");
-                throw new RuntimeException(e);
-            }
-        }
-    }
 }
