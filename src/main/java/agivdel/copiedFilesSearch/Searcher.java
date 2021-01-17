@@ -50,6 +50,19 @@ public class Searcher {
         }
     }
 
+    private Stream<List<File>> removeZeroSize(List<File> fileList) throws IOException {
+        Map<Long, List<File>> map = fileList.stream().collect(Collectors.groupingBy(file -> {
+            long size = 0;
+            try {
+                size = Files.size(file.toPath());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return size;
+        }));
+        return map.values().stream().filter(l -> l.size() > 1);
+    }
+
     private List<File> iterationFilesFrom(String selectedDirectory) {
         try (Stream<Path> pathStream = Files.walk(Paths.get(selectedDirectory))) {
             return pathStream
