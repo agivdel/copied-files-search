@@ -7,11 +7,11 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.CRC32;
 
 import static java.util.stream.Collectors.*;
+import static java.util.Comparator.*;
 
 /**
  * 1.получили лист файлов
@@ -26,8 +26,11 @@ public class Searcher {
         while (true) {
             String selectedDirectory = input("To search for copied files, enter the address of the search directory, to exit press z:");
             List<File> fileList = iterationFilesFrom(selectedDirectory);
-            System.out.println("Число файлов в данной директории: " + fileList.size());
-            String minSize = input("Do you need to search among files with zero size? Yes - 0, No - 1");
+            System.out.println("The number of files in this directory: " + fileList.size());
+            String minSize = input("Do you need to search among files with zero size? 'Yes' - 0, 'No' - 1.");
+            if (!minSize.equals("0")) {
+                fileList = removeZeroSize(fileList);
+            }
             System.out.println("I'm working, don't bother me, please...");
             List<Doubles> doublesList = getDoublesList(fileList);
             printAllDoubles(doublesList);
@@ -50,17 +53,17 @@ public class Searcher {
         }
     }
 
-    private Stream<List<File>> removeZeroSize(List<File> fileList) throws IOException {
-        Map<Long, List<File>> map = fileList.stream().collect(Collectors.groupingBy(file -> {
-            long size = 0;
-            try {
-                size = Files.size(file.toPath());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return size;
-        }));
-        return map.values().stream().filter(l -> l.size() > 1);
+    private List<File> removeZeroSize(List<File> fileList) {
+        return fileList.stream()
+                .filter(f -> {
+                    try {
+                        return Files.size(f.toPath()) != 0;
+                    } catch (IOException e) {
+                        System.err.println("IO error");
+                    }
+                    return false;
+                })
+                .collect(toList());
     }
 
     private List<File> iterationFilesFrom(String selectedDirectory) {
@@ -78,7 +81,8 @@ public class Searcher {
     //группировка файлов по времени последнего редактирования и контрольной сумме CRC32
     private List<Doubles> getDoublesList(List<File> fileList) {
         return getTimeDoubles(fileList)
-                .flatMap(d -> splitByChecksum(d.getDoubles()))
+                .flatMap(this::splitByChecksum)
+                .map(this::sortByCreateTime)
                 .collect(toList());
     }
 
@@ -93,8 +97,8 @@ public class Searcher {
     }
 
     //каждый лист - своя контрольная сумма (по CRC32); равна для файлов (не копий) одного (в том числе нулевого) размера
-    private Stream<Doubles> splitByChecksum(List<File> fileList) {
-        return fileList.stream()
+    private Stream<Doubles> splitByChecksum(Doubles doubles) {
+        return doubles.getDoubles().stream()
                 .collect(groupingBy(this::getCRC32))
                 .values()
                 .stream()
@@ -123,13 +127,24 @@ public class Searcher {
 
     private void printAllDoubles(List<Doubles> doublesList) throws IOException {
         for (Doubles doubles : doublesList) {
-            System.out.println("\nфайл с копиями (последнее время изменения " + Files.getLastModifiedTime(doubles.getDoubles().get(0).toPath()) + "):");
+            System.out.println("==================");
+            File first = doubles.getDoubles().get(0);
+            System.out.println("Последнее время изменения: " + Files.getLastModifiedTime(first.toPath()));
+            System.out.println("Оригинал:\n" + first.getName());
+            System.out.println("Копии: ");
             doubles.getDoubles().stream()
-                    .sorted(Comparator.comparing(this::getCreateTime))
                     .map(File::getName)
+                    .skip(1)
                     .forEach(System.out::println);
         }
-        System.out.println("\nВсего файлов-оригиналов, имеющих копии: " + doublesList.size());
+        System.out.println("__________________");
+        System.out.println("Всего файлов-оригиналов, имеющих копии: " + doublesList.size());
+    }
+
+    private Doubles sortByCreateTime(Doubles doubles) {
+        List<File> newList = new ArrayList<>(doubles.getDoubles());
+        newList.sort(comparing(this::getCreateTime));
+        return new Doubles(newList);
     }
 
     private FileTime getCreateTime(File file) {
