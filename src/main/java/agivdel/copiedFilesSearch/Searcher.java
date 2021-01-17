@@ -4,6 +4,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -109,9 +111,21 @@ public class Searcher {
     private void printAllDoubles(List<Doubles> doublesList) throws IOException {
         for (Doubles doubles : doublesList) {
             System.out.println("\nфайл с копиями (последнее время изменения " + Files.getLastModifiedTime(doubles.getDoubles().get(0).toPath()) + "):");
-            doubles.getDoubles().stream().map(File::getName).forEach(System.out::println);
+            doubles.getDoubles().stream()
+                    .sorted(Comparator.comparing(this::getCreateTime))
+                    .map(File::getName)
+                    .forEach(System.out::println);
         }
         System.out.println("\nВсего файлов-оригиналов, имеющих копии: " + doublesList.size());
+    }
+
+    private FileTime getCreateTime(File file) {
+        try {
+            return Files.readAttributes(file.toPath(), BasicFileAttributes.class).creationTime();
+        } catch (IOException e) {
+            System.err.println("IO error");
+            throw new RuntimeException(e);
+        }
     }
 
     static class Doubles {
