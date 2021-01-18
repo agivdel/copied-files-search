@@ -14,10 +14,12 @@ public class TUI {
 
     public void run() throws IOException {
         while (true) {
-            String selectedDirectory = input("dir", "To search for copied files, enter the address of the search directory, to exit press z:");
+            String selectedDirectory = input("dir",
+                    "To search for copied files, enter the address of the search directory, to exit press z:");
             List<File> fileList = walker.iterationFilesFrom(selectedDirectory);
             System.out.println("The number of files in this directory: " + fileList.size());
-            String minSize = input("zero", "Do you need to search among files with zero size? 'Yes' - 0, 'No' - 1.");
+            String minSize = input("zero",
+                    "Do you need to search among files with zero size? 'Yes' - 0, 'No' - 1.");
             if (minSize.equals("1")) {
                 fileList = walker.removeZeroSize(fileList);
             }
@@ -32,10 +34,19 @@ public class TUI {
         System.out.println(message);
         while (true) {
             String select = scanner.nextLine();
-            if (select.equalsIgnoreCase("z")) System.exit(0);
-            if (control.equals("dir") && validateDir(select)) return select;
-            if (control.equals("zero") && validateNum(select)) return select;
+            if (jointValidation(control, select)) return select;
         }
+    }
+
+    //Don`t use! Only for test!
+    public boolean validationTest(String control, String select) {
+        return jointValidation(control, select);
+    }
+
+    private boolean jointValidation(String control, String select) {
+        if (select.equalsIgnoreCase("z")) System.exit(0);
+        if (control.equals("dir") && validateDir(select)) return true;
+        return control.equals("zero") && validateNum(select);
     }
 
     private boolean validateDir(String select) {

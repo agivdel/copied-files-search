@@ -12,7 +12,6 @@ import java.nio.file.attribute.FileTime;
 import java.util.List;
 
 public class SearcherTest {
-//    File testResources = new File("src/test/resources");
     String testResources = "src/test/resources";
     Searcher searcher = new Searcher();
     Walker walker = new Walker();
