@@ -16,15 +16,18 @@ public class TUI {
         while (true) {
             String selectedDirectory = input("dir",
                     "To search for copied files, enter the address of the search directory, to exit press z:");
+            System.out.println("counting files...");
             List<File> fileList = walker.iterationFilesFrom(selectedDirectory);
             System.out.println("The number of files in this directory: " + fileList.size());
             String minSize = input("zero",
                     "Do you need to search among files with zero size? 'Yes' - 0, 'No' - 1.");
             if (minSize.equals("1")) {
+                System.out.println("deleting files with zero size...");
                 fileList = walker.removeZeroSize(fileList);
             }
-            System.out.println("I'm working, don't bother me, please...");
+            System.out.println("looking for duplicates...");
             List<Doubles> doublesList = searcher.getDoublesList(fileList);
+            System.out.println("displaying...");
             printAllDoubles(doublesList);
         }
     }
@@ -67,12 +70,12 @@ public class TUI {
             System.out.println("==================");
             File first = doubles.getDoubles().get(0);
             System.out.println("Last modified time: " + Files.getLastModifiedTime(first.toPath()));
-            System.out.println("Original file:\n" + first.getName());
+            System.out.println("Original file: ");
+            System.out.println(first);
             System.out.println("File copies: ");
-            doubles.getDoubles().stream()
-                    .map(File::getName)
-                    .skip(1)
-                    .forEach(System.out::println);
+            for (int i = 1; i < doubles.getDoubles().size(); i++) {
+                System.out.println(doubles.getDoubles().get(i));
+            }
         }
         System.out.println("__________________");
         System.out.println("The total number of original files with copies: " + doublesList.size());
