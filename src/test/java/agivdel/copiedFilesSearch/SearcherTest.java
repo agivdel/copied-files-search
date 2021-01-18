@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -56,7 +57,7 @@ public class SearcherTest {
     }
 
     /**
-     * в списке файлов-копий каждого объекта Doubles файл-оригинал и все его копии
+     * в списке файлов каждого объекта Doubles файл-оригинал и все его копии
      * имеют одинаковое время последнего редактирования
      */
     @Test
@@ -75,7 +76,7 @@ public class SearcherTest {
     }
 
     /**
-     * в списке файлов-копий каждого объекта Doubles файл-оригинал и все копии
+     * в списке файлов каждого объекта Doubles файл-оригинал и все копии
      * сортируются по времени создания
      */
     @Test
@@ -91,5 +92,32 @@ public class SearcherTest {
 
         Assert.assertEquals(-1, originalTime.compareTo(copy1Time));
         Assert.assertEquals(-1, copy1Time.compareTo(copy2Time));
+    }
+
+    /**
+     * на поиск файлов-копий не оказывают влияние имя и расширение файлов
+     */
+    @Test
+    public void searchAmongDifferentNamesAndExtensions_Test() {
+        doublesList = getDoublesListFrom(testResources + "/data/photo/landscape");
+        fileList = doublesList.get(0).getDoubles();
+        String originalExtension = getExtension(fileList.get(0).getName());
+        String copy1Extension = getExtension(fileList.get(1).getName());
+        String copy2Extension = getExtension(fileList.get(2).getName());
+
+        Assert.assertNotEquals(fileList.get(0).getName(), fileList.get(1).getName());
+        Assert.assertNotEquals(fileList.get(0).getName(), fileList.get(2).getName());
+        Assert.assertNotEquals(fileList.get(1).getName(), fileList.get(2).getName());
+
+        Assert.assertNotEquals(originalExtension, copy1Extension);
+        Assert.assertNotEquals(copy1Extension, copy2Extension);
+    }
+
+    private String getExtension(String filename) {
+        int i = filename.lastIndexOf('.');
+        if (i > 0) {
+            return filename.substring(i + 1);
+        }
+        return "";
     }
 }
