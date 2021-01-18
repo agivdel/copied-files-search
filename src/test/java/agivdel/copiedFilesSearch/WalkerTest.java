@@ -23,6 +23,13 @@ public class WalkerTest {
         Assert.assertEquals(27, fileList.size());
     }
 
+    //обход пустой директории возвращает пустой список
+    @Test
+    public void iterationEmptyDir_Test() {
+        fileList = walker.iterationFilesFrom(testResources.toString() + "/data/movie");
+        Assert.assertTrue(fileList.isEmpty());
+    }
+
     //удаляются только те файлы, размер которых равен 0
     @Test
     public void removeZeroSizeFiles_Test() {
