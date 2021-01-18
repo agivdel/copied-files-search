@@ -5,10 +5,16 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.util.List;
 
 public class SearcherTest {
-    File testResources = new File("src/test/resources");
+//    File testResources = new File("src/test/resources");
+    String testResources = "src/test/resources";
     Searcher searcher = new Searcher();
     Walker walker = new Walker();
     List<File> fileList;
@@ -19,27 +25,71 @@ public class SearcherTest {
         return searcher.getDoublesList(fileList);
     }
 
-    //метод getDoublesList() возвращает список объектов Doubles,
-    // внутри каждого из которых - список копий файла, включая оригинал
+    /**
+     * метод getDoublesList() возвращает список объектов Doubles,
+     * внутри каждого из которых - список копий файла, включая оригинал
+     */
     @Test
     public void doublesList_forMultipleOriginalFiles_Test() {
-        doublesList = getDoublesListFrom(testResources.toString());
+        doublesList = getDoublesListFrom(testResources);
         Assert.assertEquals(6, doublesList.size());
     }
 
-    //при наличии в папке поиска лишь одного оригинального файла с его копиями,
-    // в результирующем списке только один объект Doubles
+    /**
+     * при наличии в папке поиска лишь одного оригинального файла с его копиями,
+     * в результирующем списке только один объект Doubles
+     */
     @Test
     public void doublesList_forOneOriginalFiles_Test() {
-        doublesList = getDoublesListFrom(testResources.toString() + "/data/photo/people");
+        doublesList = getDoublesListFrom(testResources + "/data/photo/people");
         Assert.assertEquals(1, doublesList.size());
     }
 
-    //каждый элемент списка дубликатов содержит список всех файлов-копий, считая и файл-оригинал
+    /**
+     * каждый элемент списка дубликатов содержит список всех файлов-копий, считая и файл-оригинал
+     */
     @Test
     public void fileList_forOneOriginalFiles_Test() {
-        doublesList = getDoublesListFrom(testResources.toString() + "/data/photo/people");
+        doublesList = getDoublesListFrom(testResources + "/data/photo/people");
         fileList = doublesList.get(0).getDoubles();
         Assert.assertEquals(3, fileList.size());
+    }
+
+    /**
+     * в списке файлов-копий каждого объекта Doubles файл-оригинал и все его копии
+     * имеют одинаковое время последнего редактирования
+     */
+    @Test
+    public void sameLastModifiedTime_Test() throws IOException {
+        doublesList = getDoublesListFrom(testResources + "/data/photo/landscape");
+        fileList = doublesList.get(0).getDoubles();
+        File original = fileList.get(0);
+        FileTime originalTime = Files.getLastModifiedTime(original.toPath());
+        File copy1 = fileList.get(1);
+        FileTime copy1Time = Files.getLastModifiedTime(copy1.toPath());
+        File copy2 = fileList.get(2);
+        FileTime copy2Time = Files.getLastModifiedTime(copy2.toPath());
+
+        Assert.assertEquals(originalTime, copy1Time);
+        Assert.assertEquals(originalTime, copy2Time);
+    }
+
+    /**
+     * в списке файлов-копий каждого объекта Doubles файл-оригинал и все копии
+     * сортируются по времени создания
+     */
+    @Test
+    public void sortedByCreateTime_Test() throws IOException {
+        doublesList = getDoublesListFrom(testResources + "/data/photo/landscape");
+        fileList = doublesList.get(0).getDoubles();
+        Path original = fileList.get(0).toPath();
+        FileTime originalTime =Files.readAttributes(original, BasicFileAttributes.class).creationTime();
+        Path copy1 = fileList.get(1).toPath();
+        FileTime copy1Time = Files.readAttributes(copy1, BasicFileAttributes.class).creationTime();;
+        Path copy2 = fileList.get(2).toPath();
+        FileTime copy2Time = Files.readAttributes(copy2, BasicFileAttributes.class).creationTime();;
+
+        Assert.assertEquals(-1, originalTime.compareTo(copy1Time));
+        Assert.assertEquals(-1, copy1Time.compareTo(copy2Time));
     }
 }
