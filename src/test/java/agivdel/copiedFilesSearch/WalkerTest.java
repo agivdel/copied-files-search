@@ -8,13 +8,13 @@ import java.io.File;
 import java.util.List;
 
 public class WalkerTest {
-    String searchDir = "C:\\Users\\agivd\\JavaProjects\\copiedFilesSearch\\src\\main\\resources";
+    File testResources = new File("src/test/resources");
     Walker walker = new Walker();
     List<File> fileList;
 
     @Before
     public void iteration() {
-        fileList = walker.iterationFilesFrom(searchDir);
+        fileList = walker.iterationFilesFrom(testResources.toString());
     }
 
     //обход директории поиска возвращает список всех ее файлов (не директорий), включая файлы во вложенных директориях
