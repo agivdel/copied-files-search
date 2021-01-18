@@ -9,8 +9,25 @@ import java.util.List;
 import java.util.Scanner;
 
 public class TUI {
+    Searcher searcher = new Searcher();
+    Walker walker = new Walker();
 
-    public String input(String control, String message) {
+    public void run() throws IOException {
+        while (true) {
+            String selectedDirectory = input("dir", "To search for copied files, enter the address of the search directory, to exit press z:");
+            List<File> fileList = walker.iterationFilesFrom(selectedDirectory);
+            System.out.println("The number of files in this directory: " + fileList.size());
+            String minSize = input("zero", "Do you need to search among files with zero size? 'Yes' - 0, 'No' - 1.");
+            if (minSize.equals("1")) {
+                fileList = walker.removeZeroSize(fileList);
+            }
+            System.out.println("I'm working, don't bother me, please...");
+            List<Doubles> doublesList = searcher.getDoublesList(fileList);
+            printAllDoubles(doublesList);
+        }
+    }
+
+    private String input(String control, String message) {
         Scanner scanner = new Scanner(System.in);
         System.out.println(message);
         while (true) {
@@ -34,7 +51,7 @@ public class TUI {
         return select.equals("0") || select.equals("1");
     }
 
-    public void printAllDoubles(List<Doubles> doublesList) throws IOException {
+    private void printAllDoubles(List<Doubles> doublesList) throws IOException {
         for (Doubles doubles : doublesList) {
             System.out.println("==================");
             File first = doubles.getDoubles().get(0);
