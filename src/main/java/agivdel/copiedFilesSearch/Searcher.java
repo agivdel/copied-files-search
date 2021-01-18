@@ -8,22 +8,17 @@ import java.util.zip.CRC32;
 import static java.util.stream.Collectors.*;
 
 /**
- * 1.получили лист файлов
- * 2.лист файлов преобразовали в стрим дублей, где каждый дубль - лист файлов с совпадающими временем последнего редактирования
- * 3.каждый дубль разделили на несколько по контрольной сумме, где каждый итоговый дубль - лист файлов с одинаковой контрольной суммой
- * 4.каждый новый дубль, полученный на стадии №3, добавили в общий стрим дублей
+ * Группировка файлов по времени последнего редактирования, затем по контрольной сумме CRC32.
  */
 
 public class Searcher {
 
-    //группировка файлов по времени последнего редактирования и контрольной сумме CRC32
     public List<Doubles> getDoublesList(List<File> fileList) {
         return getTimeDoubles(fileList)
                 .flatMap(this::splitByChecksum)
                 .collect(toList());
     }
 
-    //каждый лист соответствует определенному времени последнего редактирования
     private Stream<Doubles> getTimeDoubles(List<File> fileList) {
         return fileList.stream()
                 .collect(groupingBy(File::lastModified))

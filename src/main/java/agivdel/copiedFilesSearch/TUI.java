@@ -16,11 +16,11 @@ public class TUI {
 
     public void run() throws IOException {
         while (true) {
-            String selectedDirectory = input("To search for copied files, enter the address of the search directory, to exit press z:");
+            String selectedDirectory = input("dir", "To search for copied files, enter the address of the search directory, to exit press z:");
             List<File> fileList = iterationFilesFrom(selectedDirectory);
             System.out.println("The number of files in this directory: " + fileList.size());
-            String minSize = input("Do you need to search among files with zero size? 'Yes' - 0, 'No' - 1.");
-            if (!minSize.equals("0")) {
+            String minSize = input("zero", "Do you need to search among files with zero size? 'Yes' - 0, 'No' - 1.");
+            if (minSize.equals("1")) {
                 fileList = removeZeroSize(fileList);
             }
             System.out.println("I'm working, don't bother me, please...");
@@ -29,24 +29,31 @@ public class TUI {
         }
     }
 
-    private String input(String message) {
+    private String input(String control, String message) {
         Scanner scanner = new Scanner(System.in);
         System.out.println(message);
         while (true) {
             String select = scanner.nextLine();
-            if (select.equalsIgnoreCase("z")) {
-                System.exit(0);
-            }
-            if (select.equals("0") || select.equals("1")) {
-                return select;
-            }
-            if (Files.exists(Path.of(select))) {
-                return select;
-            }
+            if (select.equalsIgnoreCase("z")) System.exit(0);
+            if (control.equals("dir") && validateDir(select)) return select;
+            if (control.equals("zero") && validateNum(select)) return select;
         }
     }
 
-    public List<File> iterationFilesFrom(String selectedDirectory) {
+    private boolean validateDir(String select) {
+        Path path = Paths.get(select).normalize();
+        if (!Files.isDirectory(path)) {
+            System.out.println("Address does not exist or is not a directory. Enter search directory:");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean validateNum(String select) {
+        return select.equals("0") || select.equals("1");
+    }
+
+    private List<File> iterationFilesFrom(String selectedDirectory) {
         try (Stream<Path> pathStream = Files.walk(Paths.get(selectedDirectory))) {
             return pathStream
                     .filter(Files::isRegularFile)
@@ -76,8 +83,8 @@ public class TUI {
             System.out.println("==================");
             File first = doubles.getDoubles().get(0);
             System.out.println("Last modified time: " + Files.getLastModifiedTime(first.toPath()));
-            System.out.println("Original:\n" + first.getName());
-            System.out.println("Copy: ");
+            System.out.println("Original file:\n" + first.getName());
+            System.out.println("File copies: ");
             doubles.getDoubles().stream()
                     .map(File::getName)
                     .skip(1)
