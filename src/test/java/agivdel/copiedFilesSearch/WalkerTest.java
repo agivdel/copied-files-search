@@ -17,11 +17,13 @@ public class WalkerTest {
         fileList = walker.iterationFilesFrom(searchDir);
     }
 
+    //обход директории поиска возвращает список всех ее файлов (не директорий), включая файлы во вложенных директориях
     @Test
     public void iterationAllFiles_Test() {
         Assert.assertEquals(27, fileList.size());
     }
 
+    //удаляются только те файлы, размер которых равен 0
     @Test
     public void removeZeroSizeFiles_Test() {
         fileList = walker.removeZeroSize(fileList);
