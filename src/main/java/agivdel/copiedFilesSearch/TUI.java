@@ -13,15 +13,16 @@ import static java.util.stream.Collectors.toList;
 
 public class TUI {
     Searcher searcher = new Searcher();
+    Walker walker = new Walker();
 
     public void run() throws IOException {
         while (true) {
             String selectedDirectory = input("dir", "To search for copied files, enter the address of the search directory, to exit press z:");
-            List<File> fileList = iterationFilesFrom(selectedDirectory);
+            List<File> fileList = walker.iterationFilesFrom(selectedDirectory);
             System.out.println("The number of files in this directory: " + fileList.size());
             String minSize = input("zero", "Do you need to search among files with zero size? 'Yes' - 0, 'No' - 1.");
             if (minSize.equals("1")) {
-                fileList = removeZeroSize(fileList);
+                fileList = walker.removeZeroSize(fileList);
             }
             System.out.println("I'm working, don't bother me, please...");
             List<Doubles> doublesList = searcher.getDoublesList(fileList);
@@ -51,31 +52,6 @@ public class TUI {
 
     private boolean validateNum(String select) {
         return select.equals("0") || select.equals("1");
-    }
-
-    private List<File> iterationFilesFrom(String selectedDirectory) {
-        try (Stream<Path> pathStream = Files.walk(Paths.get(selectedDirectory))) {
-            return pathStream
-                    .filter(Files::isRegularFile)
-                    .map(Path::toFile)
-                    .collect(toList());
-        } catch (IOException e) {
-            //TODO дописать обработку исключения
-            throw new RuntimeException(e);
-        }
-    }
-
-    private List<File> removeZeroSize(List<File> fileList) {
-        return fileList.stream()
-                .filter(f -> {
-                    try {
-                        return Files.size(f.toPath()) != 0;
-                    } catch (IOException e) {
-                        System.err.println("IO error");
-                    }
-                    return false;
-                })
-                .collect(toList());
     }
 
     private void printAllDoubles(List<Doubles> doublesList) throws IOException {
