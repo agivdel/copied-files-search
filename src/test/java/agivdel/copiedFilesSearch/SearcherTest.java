@@ -9,6 +9,7 @@ import java.util.List;
 public class SearcherTest {
     String searchDir = "C:\\Users\\agivd\\JavaProjects\\copiedFilesSearch\\src\\main\\resources";
 
+    //метод getDoublesList() возвращает список объектов Doubles, внутри каждого из которых - список копий файла, включая оригинал
     @Test
     public void getDoublesList_Test() {
         Searcher searcher = new Searcher();
