@@ -18,12 +18,12 @@ public class WalkerTest {
     }
 
     @Test
-    public void iterationFiles_Test() {
+    public void iterationAllFiles_Test() {
         Assert.assertEquals(27, fileList.size());
     }
 
     @Test
-    public void removeZeroSize_Test() {
+    public void removeZeroSizeFiles_Test() {
         fileList = walker.removeZeroSize(fileList);
         Assert.assertEquals(23, fileList.size());
     }
