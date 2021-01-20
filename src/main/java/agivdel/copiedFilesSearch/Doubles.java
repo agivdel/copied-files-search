@@ -17,8 +17,8 @@ import static java.util.stream.Collectors.toList;
 public class Doubles {
     private final List<File> doubles;
 
-    public Doubles(List<File> doubles) {
-        this.doubles = doubles.stream()
+    public Doubles(List<File> files) {
+        this.doubles = files.stream()
                 .sorted(comparing(this::getCreateTime))
                 .collect(toList());
     }
