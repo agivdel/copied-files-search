@@ -4,7 +4,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class TUITest {
-    String testResources = "src/test/resources";
     TUI tui = new TUI();
 
     /**
@@ -12,7 +11,7 @@ public class TUITest {
      */
     @Test
     public void inputCorrectDirectoryAddress_Test() {
-        Assert.assertTrue(tui.validationTest("dir", testResources));
+        Assert.assertTrue(tui.validationTest("dir", "src/test/resources"));
     }
 
     /**
