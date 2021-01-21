@@ -2,7 +2,6 @@ package agivdel.copiedFilesSearch;
 
 import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.CRC32;
 
