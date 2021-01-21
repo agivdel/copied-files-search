@@ -26,7 +26,7 @@ public class TUI {
                 files = walker.removeZeroSize(files);
             }
             String group = input("one_zero",
-                    "To group files by checksum or last modified time when searching for copies? 'checksum' - 0, 'time' - 1.");
+                    "To group files first by checksum (slower) or last modified time (faster) when copies searching? 'checksum' - 0, 'time' - 1.");
             List<Doubles> doubles;
             System.out.println("looking for duplicates...");
             if (group.equals("1")) {
