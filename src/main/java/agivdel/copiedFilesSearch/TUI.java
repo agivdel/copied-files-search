@@ -75,14 +75,8 @@ public class TUI {
     private void printAllDoubles(List<Doubles> doublesList) throws IOException {
         for (Doubles doubles : doublesList) {
             System.out.println("==================");
-            File first = doubles.getDoubles().get(0);
-            System.out.println("Last modified time: " + Files.getLastModifiedTime(first.toPath()));
-            System.out.println("Original file: ");
-            System.out.println(first);
-            System.out.println("File copies: ");
-            for (int i = 1; i < doubles.getDoubles().size(); i++) {
-                System.out.println(doubles.getDoubles().get(i));
-            }
+            System.out.println("Last modified time: " + Files.getLastModifiedTime(doubles.getDoubles().get(0).toPath()));
+            doubles.getDoubles().forEach(System.out::println);
         }
         System.out.println("__________________");
         System.out.println("The total number of original files with copies: " + doublesList.size());
