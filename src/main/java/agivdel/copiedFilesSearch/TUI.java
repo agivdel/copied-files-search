@@ -30,9 +30,9 @@ public class TUI {
             List<Doubles> doubles;
             System.out.println("looking for duplicates...");
             if (group.equals("1")) {
-                doubles = searcher.getDoublesByTimeThenChecksum(files);
+                doubles = searcher.getDoublesByTimeFirst(files);
             } else {
-                doubles = searcher.getDoublesByChecksumThenTime(files);
+                doubles = searcher.getDoublesByChecksumFirst(files);
             }
             System.out.println("displaying...");
             printAllDoubles(doubles);

@@ -13,24 +13,20 @@ import static java.util.stream.Collectors.*;
 
 public class Searcher {
 
-    public List<Doubles> getDoublesByTimeThenChecksum(List<File> files) {
-        return getTimeDoubles(files)
+    public List<Doubles> getDoublesByTimeFirst(List<File> files) {
+        return splitByTime(new Doubles(files))
                 .flatMap(this::splitByChecksum)
                 .collect(toList());
     }
 
-    public List<Doubles> getDoublesByChecksumThenTime(List<File> files) {
-        return files.stream()
-                .collect(groupingBy(this::getCRC32))
-                .values()
-                .stream()
-                .filter(l -> l.size()> 1)
-                .flatMap(this::getTimeDoubles)
+    public List<Doubles> getDoublesByChecksumFirst(List<File> files) {
+        return splitByChecksum(new Doubles(files))
+                .flatMap(this::splitByTime)
                 .collect(toList());
     }
 
-    private Stream<Doubles> getTimeDoubles(List<File> files) {
-        return files.stream()
+    private Stream<Doubles> splitByTime(Doubles doubles) {
+        return doubles.getDoubles().stream()
                 .collect(groupingBy(File::lastModified))
                 .values()
                 .stream()
@@ -38,7 +34,7 @@ public class Searcher {
                 .map(Doubles::new);
     }
 
-    //каждый лист - своя контрольная сумма (по CRC32); равна для файлов (не копий) одного (в том числе нулевого) размера
+    //каждый doubles - своя контрольная сумма (по CRC32); равна для файлов (не копий) одного (в том числе нулевого) размера
     private Stream<Doubles> splitByChecksum(Doubles doubles) {
         return doubles.getDoubles().stream()
                 .collect(groupingBy(this::getCRC32))
@@ -49,6 +45,7 @@ public class Searcher {
     }
 
     private Long getCRC32(File file) {
+        System.out.println("CRC32 from Searcher");
         CRC32 check = new CRC32();
         byte[] buf = new byte[8000];//для чтения блоками по 8 КБ
         try (FileInputStream fis = new FileInputStream(file)) {

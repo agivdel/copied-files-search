@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.List;
 
 /**
- * Объект класса Double хранит список файлов, сортированных по времени создания
+ * Объект класса Double хранит список файлов
  */
 
 public class Doubles {
@@ -17,5 +17,4 @@ public class Doubles {
     public List<File> getDoubles() {
         return doubles;
     }
-
 }
