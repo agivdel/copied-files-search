@@ -17,7 +17,7 @@ public class SearcherTest {
 
     private List<Doubles> getDoublesFrom(String dir) {
         List<File> files = walker.iterationFilesFrom(dir);
-        return searcher.getDoublesList(files);
+        return searcher.getDoublesByTimeThenChecksum(files);
     }
 
     private List<File> getFilesOfFirstDoubleFrom(String dir) {

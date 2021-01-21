@@ -26,7 +26,7 @@ public class TUI {
                 fileList = walker.removeZeroSize(fileList);
             }
             System.out.println("looking for duplicates...");
-            List<Doubles> doublesList = searcher.getDoublesList(fileList);
+            List<Doubles> doublesList = searcher.getDoublesByTimeThenChecksum(fileList);
             System.out.println("displaying...");
             printAllDoubles(doublesList);
         }
