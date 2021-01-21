@@ -17,18 +17,25 @@ public class TUI {
             String selectedDirectory = input("dir",
                     "To search for copied files, enter the address of the search directory, to exit press z:");
             System.out.println("counting files...");
-            List<File> fileList = walker.iterationFilesFrom(selectedDirectory);
-            System.out.println("The number of files in this directory: " + fileList.size());
-            String minSize = input("zero",
+            List<File> files = walker.iterationFilesFrom(selectedDirectory);
+            System.out.println("The number of files in this directory: " + files.size());
+            String minSize = input("one_zero",
                     "Do you need to search among files with zero size? 'Yes' - 0, 'No' - 1.");
             if (minSize.equals("1")) {
                 System.out.println("deleting files with zero size...");
-                fileList = walker.removeZeroSize(fileList);
+                files = walker.removeZeroSize(files);
             }
+            String group = input("one_zero",
+                    "To group files by checksum or last modified time when searching for copies? 'checksum' - 0, 'time' - 1.");
+            List<Doubles> doubles;
             System.out.println("looking for duplicates...");
-            List<Doubles> doublesList = searcher.getDoublesByTimeThenChecksum(fileList);
+            if (group.equals("1")) {
+                doubles = searcher.getDoublesByTimeThenChecksum(files);
+            } else {
+                doubles = searcher.getDoublesByChecksumThenTime(files);
+            }
             System.out.println("displaying...");
-            printAllDoubles(doublesList);
+            printAllDoubles(doubles);
         }
     }
 
@@ -49,7 +56,7 @@ public class TUI {
     private boolean jointValidation(String control, String select) {
         if (select.equalsIgnoreCase("z")) System.exit(0);
         if (control.equals("dir") && validateDir(select)) return true;
-        return control.equals("zero") && validateNum(select);
+        return control.equals("one_zero") && validateNum(select);
     }
 
     private boolean validateDir(String select) {
