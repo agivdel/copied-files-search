@@ -2,6 +2,7 @@ package agivdel.copiedFilesSearch;
 
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.CRC32;
 
@@ -13,14 +14,24 @@ import static java.util.stream.Collectors.*;
 
 public class Searcher {
 
-    public List<Doubles> getDoublesList(List<File> fileList) {
-        return getTimeDoubles(fileList)
+    public List<Doubles> getDoublesByTimeThenChecksum(List<File> files) {
+        return getTimeDoubles(files)
                 .flatMap(this::splitByChecksum)
                 .collect(toList());
     }
 
-    private Stream<Doubles> getTimeDoubles(List<File> fileList) {
-        return fileList.stream()
+    public List<Doubles> getDoublesByChecksumThenTime(List<File> files) {
+        return files.stream()
+                .collect(groupingBy(this::getCRC32))
+                .values()
+                .stream()
+                .filter(l -> l.size()> 1)
+                .flatMap(this::getTimeDoubles)
+                .collect(toList());
+    }
+
+    private Stream<Doubles> getTimeDoubles(List<File> files) {
+        return files.stream()
                 .collect(groupingBy(File::lastModified))
                 .values()
                 .stream()
