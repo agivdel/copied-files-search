@@ -1,7 +1,9 @@
 package agivdel.copiedFilesSearch;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -23,17 +25,17 @@ public class TUI {
             isRepeat = false;
 
             DirectoryProcessor address = new DirectoryProcessor(whatAddress);
-            input(address);
+            input(in, address);
             List<File> files = walker.iterationFilesFrom(address.getSelect());
 
             OptionProcessor minSize = new OptionProcessor(whatMinSize);
-            input(minSize);
+            input(in, minSize);
             if (minSize.getSelect().equals("1")) {
                 files = walker.removeZeroSize(files);
             }
 
             OptionProcessor order = new OptionProcessor(whatOrder);
-            input(order);
+            input(in, order);
             out.println("looking for duplicates...");
             List<Doubles> doubles;
             if (order.getSelect().equals("1")) {
@@ -44,10 +46,11 @@ public class TUI {
             printAllDoubles(doubles);
 
             OptionProcessor next = new OptionProcessor(whatNext);
-            input(next);
+            input(in, next);
             if (next.getSelect().equals("1")) {
                 isRepeat = true;
             }
+
         } while (isRepeat);
         System.exit(0);
     }
@@ -112,8 +115,13 @@ public class TUI {
         }
     }
 
-    private void input(Processor processor) {
-        Scanner scanner = new Scanner(System.in);
+    //only for test!
+    public void publicInput(InputStream is, Processor processor) {
+        input(is, processor);
+    }
+
+    private void input(InputStream is, Processor processor) {
+        Scanner scanner = new Scanner(is);
         out.println(processor.getMessage());
         do {
             String s = scanner.nextLine();
