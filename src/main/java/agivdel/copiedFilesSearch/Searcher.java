@@ -26,20 +26,22 @@ public class Searcher {
     }
 
     private Stream<Doubles> splitByTime(Doubles doubles) {
-        return doubles.getDoubles().stream()
-                .collect(groupingBy(File::lastModified))
-                .values()
+        return doublesFromMap(doubles.getDoubles()
                 .stream()
-                .filter(l -> l.size() > 1)
-                .map(Doubles::new);
+                .collect(groupingBy(File::lastModified))
+        );
     }
 
     //каждый doubles - своя контрольная сумма (по CRC32); равна для файлов (не копий) одного (в том числе нулевого) размера
     private Stream<Doubles> splitByChecksum(Doubles doubles) {
-        return doubles.getDoubles().stream()
-                .collect(groupingBy(this::getCRC32))
-                .values()
+        return doublesFromMap(doubles.getDoubles()
                 .stream()
+                .collect(groupingBy(this::getCRC32))
+        );
+    }
+
+    private Stream<Doubles> doublesFromMap(Map<Long, List<File>> map) {
+        return map.values().stream()
                 .filter(l -> l.size() > 1)
                 .map(Doubles::new);
     }
