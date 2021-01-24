@@ -21,14 +21,17 @@ public class TUI {
         boolean isRepeat;
         do {
             isRepeat = false;
+
             DirectoryProcessor address = new DirectoryProcessor(whatAddress);
             input(address);
             List<File> files = walker.iterationFilesFrom(address.getSelect());
+
             OptionProcessor minSize = new OptionProcessor(whatMinSize);
             input(minSize);
             if (minSize.getSelect().equals("1")) {
                 files = walker.removeZeroSize(files);
             }
+
             OptionProcessor order = new OptionProcessor(whatOrder);
             input(order);
             out.println("looking for duplicates...");
@@ -39,6 +42,7 @@ public class TUI {
                 doubles = searcher.getDoublesByChecksumFirst(files);
             }
             printAllDoubles(doubles);
+
             OptionProcessor next = new OptionProcessor(whatNext);
             input(next);
             if (next.getSelect().equals("1")) {
