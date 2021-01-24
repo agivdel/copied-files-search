@@ -19,22 +19,13 @@ public class TUI {
         boolean isRepeat;
         do {
             isRepeat = false;
-            //запрос директории поиска
-            DirectoryProcess searchDirectory = new DirectoryProcess("To search for copied files, enter the address of the search directory, to exit press z:");
-            //считывание данных
             String selectedDirectory = input(new DirectoryProcess("To search for copied files, enter the address of the search directory, to exit press z:"));
             files = walker.iterationFilesFrom(selectedDirectory);
-            //запрос на опцию "поиск среди файлов с нулевым размером"
-            OptionProcess zeroSize = new OptionProcess("Do you need to search among files with zero size? 'yes' - 0, 'no' - 1.");
-            //считывание данных
             String minSize = input(new OptionProcess("Do you need to search among files with zero size? 'yes' - 0, 'no' - 1."));
             if (minSize.equals("1")) {
                 out.println("deleting files with zero size...");
                 files = walker.removeZeroSize(files);
             }
-            //запрос порядка группировки
-            OptionProcess grouper = new OptionProcess("To group files first by checksum (slower) or last modified time (faster) when copies searching? 'checksum' - 0, 'time' - 1.");
-            //считывание данных
             String order = input(new OptionProcess("To group files first by checksum (slower) or last modified time (faster) when copies searching? 'checksum' - 0, 'time' - 1."));
             if (order.equals("1")) {
                 doubles = searcher.getDoublesByTimeFirst(files);
@@ -42,9 +33,6 @@ public class TUI {
                 doubles = searcher.getDoublesByChecksumFirst(files);
             }
             printAllDoubles(doubles);
-            //запрос на выход или продолжение работы
-            OptionProcess nextAction = new OptionProcess("To search for copies of files in another directory or exit the program? 'search' - 0, 'exit' - 1.");
-            //считывание данных
             String repeat = input(new OptionProcess("To search for copies of files in another directory or exit the program? 'search' - 0, 'exit' - 1."));
             if (repeat.equals("0")) {
                 isRepeat = true;
