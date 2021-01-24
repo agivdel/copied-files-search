@@ -9,10 +9,12 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
+import static java.lang.System.*;
 
 public class Walker {
 
     public List<File> iterationFilesFrom(String selectedDirectory) {
+        out.println("counting files...");
         try (Stream<Path> pathStream = Files.walk(Paths.get(selectedDirectory))) {
             return pathStream
                     .filter(Files::isRegularFile)
@@ -25,6 +27,7 @@ public class Walker {
     }
 
     public List<File> removeZeroSize(List<File> fileList) {
+        out.println("deleting files with zero size...");
         return fileList.stream()
                 .filter(f -> {
                     try {

@@ -2,41 +2,46 @@ package agivdel.copiedFilesSearch;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Scanner;
 
+import static java.lang.System.*;
+
 public class TUI {
     Searcher searcher = new Searcher();
     Walker walker = new Walker();
-    PrintStream out = System.out;
+    String whatAddress = "To search for copied files, enter the address of the search directory:";
+    String whatMinSize = "Do you need to search among files with zero size? 'yes' - 0, 'no' - 1.";
+    String whatOrder = "To group files first by checksum (slower) or last modified time (faster) when copies searching? 'checksum' - 0, 'time' - 1.";
+    String whatNext = "To search for copies of files in another directory or exit the program? 'exit' - 0, 'search' - 1.";
 
     public void run() throws IOException {
         boolean isRepeat;
         do {
             isRepeat = false;
-            String selectedDirectory = input(new DirectoryProcessor("To search for copied files, enter the address of the search directory:"));
-            out.println("counting files...");
-            List<File> files = walker.iterationFilesFrom(selectedDirectory);
-            String minSize = input(new OptionProcessor("Do you need to search among files with zero size? 'yes' - 0, 'no' - 1."));
-            if (minSize.equals("1")) {
-                out.println("deleting files with zero size...");
+            DirectoryProcessor address = new DirectoryProcessor(whatAddress);
+            input(address);
+            List<File> files = walker.iterationFilesFrom(address.getSelect());
+            OptionProcessor minSize = new OptionProcessor(whatMinSize);
+            input(minSize);
+            if (minSize.getSelect().equals("1")) {
                 files = walker.removeZeroSize(files);
             }
-            String order = input(new OptionProcessor("To group files first by checksum (slower) or last modified time (faster) when copies searching? 'checksum' - 0, 'time' - 1."));
+            OptionProcessor order = new OptionProcessor(whatOrder);
+            input(order);
             out.println("looking for duplicates...");
             List<Doubles> doubles;
-            if (order.equals("1")) {
+            if (order.getSelect().equals("1")) {
                 doubles = searcher.getDoublesByTimeFirst(files);
             } else {
                 doubles = searcher.getDoublesByChecksumFirst(files);
             }
-            out.println("displaying...");
             printAllDoubles(doubles);
-            String repeat = input(new OptionProcessor("To search for copies of files in another directory or exit the program? 'exit' - 0, 'search' - 1."));
-            if (repeat.equals("1")) {
+            OptionProcessor next = new OptionProcessor(whatNext);
+            input(next);
+            if (next.getSelect().equals("1")) {
                 isRepeat = true;
             }
         } while (isRepeat);
@@ -104,17 +109,17 @@ public class TUI {
         }
     }
 
-    private String input(Processor processor) {
+    private void input(Processor processor) {
         Scanner scanner = new Scanner(System.in);
         out.println(processor.getMessage());
         do {
             String s = scanner.nextLine();
             processor.read(s);
         } while (!processor.isValid());
-        return processor.getSelect();
     }
 
     private void printAllDoubles(List<Doubles> doublesList) throws IOException {
+        out.println("displaying...");
         for (Doubles doubles : doublesList) {
             out.println("==================");
             out.println("Last modified time: " + Files.getLastModifiedTime(doubles.getDoubles().get(0).toPath()));
