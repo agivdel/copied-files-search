@@ -19,22 +19,22 @@ public class TUI {
         boolean isRepeat;
         do {
             isRepeat = false;
-            String selectedDirectory = input(new DirectoryProcess("To search for copied files, enter the address of the search directory, to exit press z:"));
+            String selectedDirectory = input(new DirectoryProcessor("To search for copied files, enter the address of the search directory, to exit press z:"));
             files = walker.iterationFilesFrom(selectedDirectory);
-            String minSize = input(new OptionProcess("Do you need to search among files with zero size? 'yes' - 0, 'no' - 1."));
+            String minSize = input(new OptionProcessor("Do you need to search among files with zero size? 'yes' - 0, 'no' - 1."));
             if (minSize.equals("1")) {
                 out.println("deleting files with zero size...");
                 files = walker.removeZeroSize(files);
             }
-            String order = input(new OptionProcess("To group files first by checksum (slower) or last modified time (faster) when copies searching? 'checksum' - 0, 'time' - 1."));
+            String order = input(new OptionProcessor("To group files first by checksum (slower) or last modified time (faster) when copies searching? 'checksum' - 0, 'time' - 1."));
             if (order.equals("1")) {
                 doubles = searcher.getDoublesByTimeFirst(files);
             } else {
                 doubles = searcher.getDoublesByChecksumFirst(files);
             }
             printAllDoubles(doubles);
-            String repeat = input(new OptionProcess("To search for copies of files in another directory or exit the program? 'search' - 0, 'exit' - 1."));
-            if (repeat.equals("0")) {
+            String repeat = input(new OptionProcessor("To search for copies of files in another directory or exit the program? 'exit' - 0, 'search' - 1."));
+            if (repeat.equals("1")) {
                 isRepeat = true;
             }
         } while (isRepeat);
@@ -48,11 +48,11 @@ public class TUI {
         default void read(String s) {}
     }
 
-    static class DirectoryProcess implements Processor {
+    static class DirectoryProcessor implements Processor {
         private final String message;
         private String select;
 
-        public DirectoryProcess(String message) {
+        public DirectoryProcessor(String message) {
             this.message = message;
         }
 
@@ -75,11 +75,11 @@ public class TUI {
         }
     }
 
-    static class OptionProcess implements Processor {
+    static class OptionProcessor implements Processor {
         private final String message;
         private String select;
 
-        public OptionProcess(String message) {
+        public OptionProcessor(String message) {
             this.message = message;
         }
 
