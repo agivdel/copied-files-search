@@ -20,13 +20,11 @@ public class TUITest {
      */
     @Test
     public void inputCorrectDirectoryAddress_Test() {
-        TUI.DirectoryProcessor address = new TUI.DirectoryProcessor(
-                "To search for copied files, enter the address of the search directory:");
-        String text = "src/test/resources";
-        byte[] buffer = text.getBytes(StandardCharsets.UTF_8);
-        InputStream is = new ByteArrayInputStream(buffer);
+        TUI.DirectoryProcessor address = new TUI.DirectoryProcessor("Enter the address of the search directory:");
+        String input = "src/test/resources";
+        InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
         tui.publicInput(is, address);
-        Assert.assertEquals(text, address.getSelect());
+        Assert.assertEquals(input, address.getSelect());
     }
 
     /**
@@ -34,11 +32,9 @@ public class TUITest {
      */
     @Test
     public void inputNotDirectoryAddress_Test() {
-        TUI.DirectoryProcessor address = new TUI.DirectoryProcessor(
-                "To search for copied files, enter the address of the search directory:");
-        String text = "src/test/resources/doc1.txt";
-        byte[] buffer = text.getBytes(StandardCharsets.UTF_8);
-        InputStream is = new ByteArrayInputStream(buffer);
+        TUI.DirectoryProcessor address = new TUI.DirectoryProcessor("Enter the address of the search directory:");
+        String input = "src/test/resources/doc1.txt";
+        InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
         expectedEx.expect(java.util.NoSuchElementException.class);
         expectedEx.expectMessage("No line found");
         tui.publicInput(is, address);
@@ -49,11 +45,9 @@ public class TUITest {
      */
     @Test
     public void inputNonexistentDirectoryAddress_Test() {
-        TUI.DirectoryProcessor address = new TUI.DirectoryProcessor(
-                "To search for copied files, enter the address of the search directory:");
-        String text = "src/test/resources/doc";
-        byte[] buffer = text.getBytes(StandardCharsets.UTF_8);
-        InputStream is = new ByteArrayInputStream(buffer);
+        TUI.DirectoryProcessor address = new TUI.DirectoryProcessor("Enter the address of the search directory:");
+        String input = "src/test/resources/doc";
+        InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
         expectedEx.expect(java.util.NoSuchElementException.class);
         expectedEx.expectMessage("No line found");
         tui.publicInput(is, address);
@@ -63,32 +57,41 @@ public class TUITest {
      * При выборе опций можно вводить только 0 или 1
      */
     @Test
-    public void inputValidNumbers_Test() {
-        TUI.OptionProcessor minSize = new TUI.OptionProcessor(
-                "Do you need to search among files with zero size? 'yes' - 0, 'no' - 1.");
-        String text_0 = "0";
-        byte[] buffer = text_0.getBytes(StandardCharsets.UTF_8);
-        InputStream is = new ByteArrayInputStream(buffer);
+    public void inputValidNumber0_Test() {
+        TUI.OptionProcessor minSize = new TUI.OptionProcessor("Enter 0 or 1.");
+        String input = "0";
+        InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
         tui.publicInput(is, minSize);
-        Assert.assertEquals(text_0, minSize.getSelect());
+        Assert.assertEquals(input, minSize.getSelect());
+    }
 
-        String text_1 = "1";
-        buffer = text_1.getBytes(StandardCharsets.UTF_8);
-        is = new ByteArrayInputStream(buffer);
+    @Test
+    public void inputValidNumber1_Test() {
+        TUI.OptionProcessor minSize = new TUI.OptionProcessor("Enter 0 or 1.");
+        String input = "1";
+        InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
         tui.publicInput(is, minSize);
-        Assert.assertEquals(text_1, minSize.getSelect());
+        Assert.assertEquals(input, minSize.getSelect());
     }
 
     /**
      * При выборе опции "искать среди файлов с нулевым размером" нельзя вводить что-либо кроме 0 или 1
      */
     @Test
-    public void inputInvalidNumbers_Test() {
-        TUI.OptionProcessor order = new TUI.OptionProcessor(
-                "To group files first by checksum (slower) or last modified time (faster) when copies searching? 'checksum' - 0, 'time' - 1.");
-        String text = "2";
-        byte[] buffer = text.getBytes(StandardCharsets.UTF_8);
-        InputStream is = new ByteArrayInputStream(buffer);
+    public void inputInvalidNumber_Test() {
+        TUI.OptionProcessor order = new TUI.OptionProcessor("Enter 0 or 1.");
+        String input = "2";
+        InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
+        expectedEx.expect(java.util.NoSuchElementException.class);
+        expectedEx.expectMessage("No line found");
+        tui.publicInput(is, order);
+    }
+
+    @Test
+    public void inputLetterInsteadOfNumber_Test() {
+        TUI.OptionProcessor order = new TUI.OptionProcessor("Enter 0 or 1.");
+        String input = "fgg";
+        InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
         expectedEx.expect(java.util.NoSuchElementException.class);
         expectedEx.expectMessage("No line found");
         tui.publicInput(is, order);
