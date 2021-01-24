@@ -11,27 +11,29 @@ import java.util.Scanner;
 public class TUI {
     Searcher searcher = new Searcher();
     Walker walker = new Walker();
+    PrintStream out = System.out;
 
     public void run() throws IOException {
-        PrintStream out = System.out;
-        List<File> files;
-        List<Doubles> doubles;
         boolean isRepeat;
         do {
             isRepeat = false;
-            String selectedDirectory = input(new DirectoryProcessor("To search for copied files, enter the address of the search directory, to exit press z:"));
-            files = walker.iterationFilesFrom(selectedDirectory);
+            String selectedDirectory = input(new DirectoryProcessor("To search for copied files, enter the address of the search directory:"));
+            out.println("counting files...");
+            List<File> files = walker.iterationFilesFrom(selectedDirectory);
             String minSize = input(new OptionProcessor("Do you need to search among files with zero size? 'yes' - 0, 'no' - 1."));
             if (minSize.equals("1")) {
                 out.println("deleting files with zero size...");
                 files = walker.removeZeroSize(files);
             }
             String order = input(new OptionProcessor("To group files first by checksum (slower) or last modified time (faster) when copies searching? 'checksum' - 0, 'time' - 1."));
+            out.println("looking for duplicates...");
+            List<Doubles> doubles;
             if (order.equals("1")) {
                 doubles = searcher.getDoublesByTimeFirst(files);
             } else {
                 doubles = searcher.getDoublesByChecksumFirst(files);
             }
+            out.println("displaying...");
             printAllDoubles(doubles);
             String repeat = input(new OptionProcessor("To search for copies of files in another directory or exit the program? 'exit' - 0, 'search' - 1."));
             if (repeat.equals("1")) {
@@ -104,20 +106,21 @@ public class TUI {
 
     private String input(Processor processor) {
         Scanner scanner = new Scanner(System.in);
-        System.out.println(processor.getMessage());
+        out.println(processor.getMessage());
         do {
-            processor.read(scanner.nextLine());
+            String s = scanner.nextLine();
+            processor.read(s);
         } while (!processor.isValid());
         return processor.getSelect();
     }
 
     private void printAllDoubles(List<Doubles> doublesList) throws IOException {
         for (Doubles doubles : doublesList) {
-            System.out.println("==================");
-            System.out.println("Last modified time: " + Files.getLastModifiedTime(doubles.getDoubles().get(0).toPath()));
+            out.println("==================");
+            out.println("Last modified time: " + Files.getLastModifiedTime(doubles.getDoubles().get(0).toPath()));
             doubles.getDoubles().forEach(System.out::println);
         }
-        System.out.println("__________________");
-        System.out.println("The total number of original files with copies: " + doublesList.size());
+        out.println("__________________");
+        out.println("The total number of original files with copies: " + doublesList.size());
     }
 }
