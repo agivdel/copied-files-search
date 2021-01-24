@@ -2,6 +2,7 @@ package agivdel.copiedFilesSearch;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -13,28 +14,29 @@ public class TUI {
     Walker walker = new Walker();
 
     public void run() throws IOException {
+        PrintStream out = System.out;
         while (true) {
             String selectedDirectory = input("dir",
                     "To search for copied files, enter the address of the search directory, to exit press z:");
-            System.out.println("counting files...");
+            out.println("counting files...");
             List<File> files = walker.iterationFilesFrom(selectedDirectory);
-            System.out.println("The number of files in this directory: " + files.size());
+            out.println("The number of files in this directory: " + files.size());
             String minSize = input("one_zero",
                     "Do you need to search among files with zero size? 'Yes' - 0, 'No' - 1.");
             if (minSize.equals("1")) {
-                System.out.println("deleting files with zero size...");
+                out.println("deleting files with zero size...");
                 files = walker.removeZeroSize(files);
             }
             String group = input("one_zero",
                     "To group files first by checksum (slower) or last modified time (faster) when copies searching? 'checksum' - 0, 'time' - 1.");
             List<Doubles> doubles;
-            System.out.println("looking for duplicates...");
+            out.println("looking for duplicates...");
             if (group.equals("1")) {
                 doubles = searcher.getDoublesByTimeFirst(files);
             } else {
                 doubles = searcher.getDoublesByChecksumFirst(files);
             }
-            System.out.println("displaying...");
+            out.println("displaying...");
             printAllDoubles(doubles);
         }
     }

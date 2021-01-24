@@ -47,7 +47,7 @@ public class Searcher {
     private Long getCRC32(File file) {
         System.out.println("CRC32 from Searcher");
         CRC32 check = new CRC32();
-        byte[] buf = new byte[8000];//для чтения блоками по 8 КБ
+        byte[] buf = new byte[8192];//для чтения блоками по 8 КБ
         try (FileInputStream fis = new FileInputStream(file)) {
             while (true) {
                 int length = fis.read(buf);
