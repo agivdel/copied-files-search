@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Scanner;
@@ -15,63 +14,113 @@ public class TUI {
 
     public void run() throws IOException {
         PrintStream out = System.out;
-        while (true) {
-            String selectedDirectory = input("dir",
-                    "To search for copied files, enter the address of the search directory, to exit press z:");
-            out.println("counting files...");
-            List<File> files = walker.iterationFilesFrom(selectedDirectory);
-            out.println("The number of files in this directory: " + files.size());
-            String minSize = input("one_zero",
-                    "Do you need to search among files with zero size? 'Yes' - 0, 'No' - 1.");
+        List<File> files;
+        List<Doubles> doubles;
+        boolean isRepeat;
+        do {
+            isRepeat = false;
+            //запрос директории поиска
+            DirectoryProcess searchDirectory = new DirectoryProcess("To search for copied files, enter the address of the search directory, to exit press z:");
+            //считывание данных
+            String selectedDirectory = input(new DirectoryProcess("To search for copied files, enter the address of the search directory, to exit press z:"));
+            files = walker.iterationFilesFrom(selectedDirectory);
+            //запрос на опцию "поиск среди файлов с нулевым размером"
+            OptionProcess zeroSize = new OptionProcess("Do you need to search among files with zero size? 'yes' - 0, 'no' - 1.");
+            //считывание данных
+            String minSize = input(new OptionProcess("Do you need to search among files with zero size? 'yes' - 0, 'no' - 1."));
             if (minSize.equals("1")) {
                 out.println("deleting files with zero size...");
                 files = walker.removeZeroSize(files);
             }
-            String group = input("one_zero",
-                    "To group files first by checksum (slower) or last modified time (faster) when copies searching? 'checksum' - 0, 'time' - 1.");
-            List<Doubles> doubles;
-            out.println("looking for duplicates...");
-            if (group.equals("1")) {
+            //запрос порядка группировки
+            OptionProcess grouper = new OptionProcess("To group files first by checksum (slower) or last modified time (faster) when copies searching? 'checksum' - 0, 'time' - 1.");
+            //считывание данных
+            String order = input(new OptionProcess("To group files first by checksum (slower) or last modified time (faster) when copies searching? 'checksum' - 0, 'time' - 1."));
+            if (order.equals("1")) {
                 doubles = searcher.getDoublesByTimeFirst(files);
             } else {
                 doubles = searcher.getDoublesByChecksumFirst(files);
             }
-            out.println("displaying...");
             printAllDoubles(doubles);
+            //запрос на выход или продолжение работы
+            OptionProcess nextAction = new OptionProcess("To search for copies of files in another directory or exit the program? 'search' - 0, 'exit' - 1.");
+            //считывание данных
+            String repeat = input(new OptionProcess("To search for copies of files in another directory or exit the program? 'search' - 0, 'exit' - 1."));
+            if (repeat.equals("0")) {
+                isRepeat = true;
+            }
+        } while (isRepeat);
+        System.exit(0);
+    }
+
+    interface Processor {
+        boolean isValid();
+        String getMessage();
+        String getSelect();
+        default void read(String s) {}
+    }
+
+    static class DirectoryProcess implements Processor {
+        private final String message;
+        private String select;
+
+        public DirectoryProcess(String message) {
+            this.message = message;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public String getSelect() {
+            return select;
+        }
+
+        @Override
+        public void read(String s) {
+            this.select = s;
+        }
+
+        @Override
+        public boolean isValid() {
+            return Files.isDirectory(Paths.get(select).normalize());
         }
     }
 
-    private String input(String control, String message) {
+    static class OptionProcess implements Processor {
+        private final String message;
+        private String select;
+
+        public OptionProcess(String message) {
+            this.message = message;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public String getSelect() {
+            return select;
+        }
+
+        @Override
+        public void read(String s) {
+            this.select = s;
+        }
+
+        @Override
+        public boolean isValid() {
+            return select.equals("0") || select.equals("1");
+        }
+    }
+
+    private String input(Processor processor) {
         Scanner scanner = new Scanner(System.in);
-        System.out.println(message);
-        while (true) {
-            String select = scanner.nextLine();
-            if (jointValidation(control, select)) return select;
-        }
-    }
-
-    //Don`t use! Only for test!
-    public boolean validationTest(String control, String select) {
-        return jointValidation(control, select);
-    }
-
-    private boolean jointValidation(String control, String select) {
-        if (select.equalsIgnoreCase("z")) System.exit(0);
-        if (control.equals("dir") && validateDir(select)) return true;
-        return control.equals("one_zero") && validateNum(select);
-    }
-
-    private boolean validateDir(String select) {
-        Path path = Paths.get(select).normalize();
-        if (!Files.isDirectory(path)) {
-            System.out.println("Address does not exist or is not a directory. Enter search directory:");
-            return false;
-        }
-        return true;
-    }
-
-    private boolean validateNum(String select) {
-        return select.equals("0") || select.equals("1");
+        System.out.println(processor.getMessage());
+        do {
+            processor.read(scanner.nextLine());
+        } while (!processor.isValid());
+        return processor.getSelect();
     }
 
     private void printAllDoubles(List<Doubles> doublesList) throws IOException {
