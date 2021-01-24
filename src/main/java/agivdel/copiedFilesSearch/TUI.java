@@ -55,7 +55,6 @@ public class TUI {
     interface Processor {
         boolean isValid();
         String getMessage();
-        String getSelect();
         default void read(String s) {}
     }
 
