@@ -32,11 +32,11 @@ public class TUITest {
      */
     @Test
     public void inputNotDirectoryAddress_Test() {
+        expectedEx.expect(java.util.NoSuchElementException.class);
+        expectedEx.expectMessage("No line found");
         TUI.DirectoryProcessor address = new TUI.DirectoryProcessor("Enter the address of the search directory:");
         String input = "src/test/resources/doc1.txt";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
-        expectedEx.expect(java.util.NoSuchElementException.class);
-        expectedEx.expectMessage("No line found");
         tui.publicInput(is, address);
     }
 
@@ -45,11 +45,11 @@ public class TUITest {
      */
     @Test
     public void inputNonexistentDirectoryAddress_Test() {
+        expectedEx.expect(java.util.NoSuchElementException.class);
+        expectedEx.expectMessage("No line found");
         TUI.DirectoryProcessor address = new TUI.DirectoryProcessor("Enter the address of the search directory:");
         String input = "src/test/resources/doc";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
-        expectedEx.expect(java.util.NoSuchElementException.class);
-        expectedEx.expectMessage("No line found");
         tui.publicInput(is, address);
     }
 
@@ -79,21 +79,21 @@ public class TUITest {
      */
     @Test
     public void inputInvalidNumber_Test() {
+        expectedEx.expect(java.util.NoSuchElementException.class);
+        expectedEx.expectMessage("No line found");
         TUI.OptionProcessor order = new TUI.OptionProcessor("Enter 0 or 1.");
         String input = "2";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
-        expectedEx.expect(java.util.NoSuchElementException.class);
-        expectedEx.expectMessage("No line found");
         tui.publicInput(is, order);
     }
 
     @Test
     public void inputLetterInsteadOfNumber_Test() {
+        expectedEx.expect(java.util.NoSuchElementException.class);
+        expectedEx.expectMessage("No line found");
         TUI.OptionProcessor order = new TUI.OptionProcessor("Enter 0 or 1.");
         String input = "fgg";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
-        expectedEx.expect(java.util.NoSuchElementException.class);
-        expectedEx.expectMessage("No line found");
         tui.publicInput(is, order);
     }
 }
