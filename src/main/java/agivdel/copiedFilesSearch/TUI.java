@@ -97,11 +97,6 @@ public class TUI {
         return select;
     }
 
-    //only for test!
-    public void publicOutput(List<Doubles> doubles) throws IOException {
-        printAllDoubles(doubles);
-    }
-
     private void printAllDoubles(List<Doubles> doublesList) throws IOException {
         out.println("displaying...");
         for (Doubles doubles : doublesList) {
