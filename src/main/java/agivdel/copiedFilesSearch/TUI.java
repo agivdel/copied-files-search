@@ -1,9 +1,6 @@
 package agivdel.copiedFilesSearch;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -14,56 +11,50 @@ import static java.lang.System.*;
 public class TUI {
     Searcher searcher = new Searcher();
     Walker walker = new Walker();
-    String whatAddress = "To search for copied files, enter the address of the search directory:";
-    String whatMinSize = "Do you need to search among files with zero size? 'yes' - 0, 'no' - 1.";
-    String whatOrder = "To group files first by checksum (slower) or last modified time (faster) when copies searching? 'checksum' - 0, 'time' - 1.";
-    String whatNext = "To search for copies of files in another directory or exit the program? 'exit' - 0, 'search' - 1.";
+
+    public static final String whatAddress = "To search for copied files, enter the address of the search directory:";
+    public static final String whatMinSize = "Do you need to search among files with zero size? 'yes' - 0, 'no' - 1.";
+    public static final String whatOrder = "To group files first by checksum (slower) or last modified time (faster) when copies searching? 'checksum' - 0, 'time' - 1.";
+    public static final String whatNext = "To search for copies of files in another directory or exit the program? 'exit' - 0, 'search' - 1.";
+
+    public static final Processor address = new DirectoryProcessor(whatAddress);
+    public static final OptionProcessor minSize = new OptionProcessor(whatMinSize);
+    public static final OptionProcessor order = new OptionProcessor(whatOrder);
+    public static final OptionProcessor next = new OptionProcessor(whatNext);
 
     public void run() throws IOException {
         boolean isRepeat;
         do {
             isRepeat = false;
 
-            DirectoryProcessor address = new DirectoryProcessor(whatAddress);
-            input(in, address);
-            List<File> files = walker.iterationFilesFrom(address.getSelect());
+            String selectedDirectory = input(address, in, out);
+            List<File> files = walker.iterationFilesFrom(selectedDirectory);
 
-            OptionProcessor minSize = new OptionProcessor(whatMinSize);
-            input(in, minSize);
-            if (minSize.getSelect().equals("1")) {
+            String zeroSize = input(minSize, in, out);
+            if (zeroSize.equals("1")) {
                 files = walker.removeZeroSize(files);
             }
 
-            OptionProcessor order = new OptionProcessor(whatOrder);
-            input(in, order);
+            String grouper = input(order, in, out);
             out.println("looking for duplicates...");
             List<Doubles> doubles;
-            if (order.getSelect().equals("1")) {
+            if (grouper.equals("1")) {
                 doubles = searcher.getDoublesByTimeFirst(files);
             } else {
                 doubles = searcher.getDoublesByChecksumFirst(files);
             }
             printAllDoubles(doubles);
 
-            OptionProcessor next = new OptionProcessor(whatNext);
-            input(in, next);
-            if (next.getSelect().equals("1")) {
+            String repeat = input(next, in, out);
+            if (repeat.equals("1")) {
                 isRepeat = true;
             }
-
         } while (isRepeat);
         System.exit(0);
     }
 
-    interface Processor {
-        boolean isValid();
-        String getMessage();
-        default void read(String s) {}
-    }
-
     static class DirectoryProcessor implements Processor {
         private final String message;
-        private String select;
 
         public DirectoryProcessor(String message) {
             this.message = message;
@@ -73,24 +64,14 @@ public class TUI {
             return message;
         }
 
-        public String getSelect() {
-            return select;
-        }
-
         @Override
-        public void read(String s) {
-            this.select = s;
-        }
-
-        @Override
-        public boolean isValid() {
+        public boolean isValid(String select) {
             return Files.isDirectory(Paths.get(select).normalize());
         }
     }
 
     static class OptionProcessor implements Processor {
         private final String message;
-        private String select;
 
         public OptionProcessor(String message) {
             this.message = message;
@@ -100,33 +81,25 @@ public class TUI {
             return message;
         }
 
-        public String getSelect() {
-            return select;
-        }
-
         @Override
-        public void read(String s) {
-            this.select = s;
-        }
-
-        @Override
-        public boolean isValid() {
+        public boolean isValid(String select) {
             return select.equals("0") || select.equals("1");
         }
     }
 
-    //only for test!
-    public void publicInput(InputStream is, Processor processor) {
-        input(is, processor);
-    }
-
-    private void input(InputStream is, Processor processor) {
+    public static String input(Processor processor, InputStream is, PrintStream out) {
         Scanner scanner = new Scanner(is);
         out.println(processor.getMessage());
+        String select;
         do {
-            String s = scanner.nextLine();
-            processor.read(s);
-        } while (!processor.isValid());
+            select = scanner.nextLine();
+        } while (!processor.isValid(select));
+        return select;
+    }
+
+    //only for test!
+    public void publicOutput(List<Doubles> doubles) throws IOException {
+        printAllDoubles(doubles);
     }
 
     private void printAllDoubles(List<Doubles> doublesList) throws IOException {
