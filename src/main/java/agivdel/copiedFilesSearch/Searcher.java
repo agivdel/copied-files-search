@@ -39,29 +39,10 @@ public class Searcher {
     private Stream<Doubles> splitByChecksum(Doubles doubles) {
         return doubles.getDoubles()
                 .stream()
-                .collect(groupingBy(this::getCRC32))
+                .collect(groupingBy(Checksum::getCRC32))
                 .values()
                 .stream()
                 .filter(l -> l.size() > 1)
                 .map(Doubles::new);
-    }
-
-    private Long getCRC32(File file) {
-        CRC32 check = new CRC32();
-        byte[] buf = new byte[8192];//для чтения блоками по 8 КБ
-        try (FileInputStream fis = new FileInputStream(file)) {
-            while (true) {
-                int length = fis.read(buf);
-                if (length < 0) {
-                    break;
-                }
-                check.update(buf, 0, length);
-            }
-        } catch (FileNotFoundException e) {
-            System.err.println("File not found");
-        } catch (IOException e) {
-            System.err.println("IO error");
-        }
-        return check.getValue();
     }
 }
