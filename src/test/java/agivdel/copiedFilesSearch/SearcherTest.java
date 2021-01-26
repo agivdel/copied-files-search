@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SearcherTest {
@@ -32,6 +33,25 @@ public class SearcherTest {
     public void doublesList_forMultipleOriginalFiles_Test() {
         List<Doubles> doubles = getDoublesFrom("src/test/resources");
         Assert.assertEquals(6, doubles.size());
+    }
+
+    @Test
+    public void doublesList_forMultipleOriginalFiles_Test2() throws InterruptedException {
+        PseudoFile pf1 = new PseudoFile("1", 10);
+        Thread.sleep(1300);
+        PseudoFile pf2 = new PseudoFile("2", 20);
+        Thread.sleep(1000);
+        PseudoFile pf3 = new PseudoFile("3", 30);
+        Thread.sleep(1400);
+        PseudoFile pf1_copy1 = PseudoFile.copy(pf1);
+        Thread.sleep(1000);
+        PseudoFile pf1_copy2 = PseudoFile.copy(pf1);
+        Thread.sleep(1000);
+        PseudoFile pf1_copy3 = PseudoFile.copy(pf1_copy2);
+        List<File> files = List.of(pf1, pf2, pf3, pf1_copy1, pf1_copy2, pf1_copy3);
+        files.forEach(System.out::println);
+        List<Doubles> doubles = searcher.getDoublesByTimeFirst(files);
+        Assert.assertEquals(1, doubles.size());
     }
 
     /**

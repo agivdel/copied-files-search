@@ -9,13 +9,15 @@ import java.time.ZoneId;
 public class PseudoFile extends File {
     private final String name;
     private final long size;
+    private final long createTime;
     private long lastModifiedTime;
 
     public PseudoFile(String name, long size) {
         super(name);
         this.name = name;
         this.size = size;
-        this.setLastModifiedTime(LocalDateTime.of(LocalDate.now(), LocalTime.now()));
+        this.createTime = setCreateTime(LocalDateTime.of(LocalDate.now(), LocalTime.now()));
+        this.lastModifiedTime = this.createTime;
     }
 
     public String getName() {
@@ -26,24 +28,28 @@ public class PseudoFile extends File {
         return size;
     }
 
-    private void setLastModifiedTime(LocalDateTime now) {
-        LocalDateTime time = LocalDateTime.of(LocalDate.now(), LocalTime.now());
-        ZoneId zoneId = ZoneId.systemDefault();
-        this.lastModifiedTime = time.atZone(zoneId).toEpochSecond();
-    }
-
-    private void setLastModifiedTime(long time) {
-        this.lastModifiedTime = time;
-    }
-
+    @Override
     public long lastModified() {
         return lastModifiedTime;
     }
 
+    private long setCreateTime(LocalDateTime now) {
+        LocalDateTime time = LocalDateTime.of(LocalDate.now(), LocalTime.now());
+        ZoneId zoneId = ZoneId.systemDefault();
+        return this.lastModifiedTime = time.atZone(zoneId).toEpochSecond();
+    }
+
+    @Override
+    public boolean setLastModified(long time) {
+        this.lastModifiedTime = time;
+        return true;
+    }
+
     public static PseudoFile copy(PseudoFile oldFile) {
         PseudoFile newFile = new PseudoFile(oldFile.getName() + " - копия", oldFile.getSize());
-        long time = newFile.lastModified();
+        long time = oldFile.lastModified() == oldFile.createTime ? oldFile.createTime : oldFile.lastModifiedTime;
         oldFile.setLastModified(time);
+        newFile.setLastModified(time);
         return newFile;
     }
 
@@ -52,6 +58,7 @@ public class PseudoFile extends File {
         return "PseudoFile{" +
                 "name='" + name + '\'' +
                 ", size=" + size +
+                ", createTime=" + createTime +
                 ", lastModifiedTime=" + lastModifiedTime +
                 '}';
     }
