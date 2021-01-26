@@ -38,10 +38,14 @@ public class Searcher {
     private Stream<Doubles> splitByChecksum(Doubles doubles) {
         return doubles.getDoubles()
                 .stream()
-                .collect(groupingBy(Checksum::getCRC32))
+                .collect(groupingBy(this::getCRC32))
                 .values()
                 .stream()
                 .filter(l -> l.size() > 1)
                 .map(Doubles::new);
+    }
+
+    private long getCRC32(File file) {
+        return new ChecksumCRC32().get(file);
     }
 }
