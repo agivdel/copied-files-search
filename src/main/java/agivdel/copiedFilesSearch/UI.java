@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 import static java.lang.System.*;
 
-public class TUI {
+public class UI {
     Searcher searcher = new Searcher();
     Walker walker = new Walker();
 
@@ -43,7 +43,7 @@ public class TUI {
             } else {
                 doubles = searcher.getDoublesByChecksumFirst(files);
             }
-            printAllDoubles(doubles);
+            printAllDoubles(doubles, out);
 
             String repeat = input(next, in, out);
             if (repeat.equals("1")) {
@@ -97,12 +97,12 @@ public class TUI {
         return select;
     }
 
-    private void printAllDoubles(List<Doubles> doublesList) throws IOException {
+    public static void printAllDoubles(List<Doubles> doublesList, PrintStream out) throws IOException {
         out.println("displaying...");
         for (Doubles doubles : doublesList) {
             out.println("==================");
             out.println("Last modified time: " + Files.getLastModifiedTime(doubles.getDoubles().get(0).toPath()));
-            doubles.getDoubles().forEach(System.out::println);
+            doubles.getDoubles().forEach(out::println);
         }
         out.println("__________________");
         out.println("The total number of original files with copies: " + doublesList.size());
