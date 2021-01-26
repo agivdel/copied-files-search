@@ -12,30 +12,29 @@ public class UI {
     Searcher searcher = new Searcher();
     Walker walker = new Walker();
 
-    public static final String whatAddress = "To search for copied files, enter the address of the search directory:";
-    public static final String whatMinSize = "Do you need to search among files with zero size? 'yes' - 0, 'no' - 1.";
-    public static final String whatOrder = "To group files first by checksum (slower) or last modified time (faster) when copies searching? 'checksum' - 0, 'time' - 1.";
-    public static final String whatNext = "To search for copies of files in another directory or exit the program? 'exit' - 0, 'search' - 1.";
-
-    public static final Processor address = new DirectoryProcessor(whatAddress);
-    public static final OptionProcessor minSize = new OptionProcessor(whatMinSize);
-    public static final OptionProcessor order = new OptionProcessor(whatOrder);
-    public static final OptionProcessor next = new OptionProcessor(whatNext);
+    public static final Processor whatAddress = new DirectoryProcessor(
+            "To search for copied files, enter the address of the search directory:");
+    public static final Processor whatMinSize = new OptionProcessor(
+            "Do you need to search among files with zero size? 'yes' - 0, 'no' - 1.");
+    public static final Processor whatOrder = new OptionProcessor(
+            "To group files first by checksum (slower) or last modified time (faster) when copies searching? 'checksum' - 0, 'time' - 1.");
+    public static final Processor whatNext = new OptionProcessor(
+            "To search for copies of files in another directory or exit the program? 'exit' - 0, 'search' - 1.");
 
     public void run() throws IOException {
         boolean isRepeat;
         do {
             isRepeat = false;
 
-            String selectedDirectory = input(address, in, out);
+            String selectedDirectory = input(whatAddress, in, out);
             List<File> files = walker.iterationFilesFrom(selectedDirectory);
 
-            String zeroSize = input(minSize, in, out);
+            String zeroSize = input(whatMinSize, in, out);
             if (zeroSize.equals("1")) {
                 files = walker.removeZeroSize(files);
             }
 
-            String grouper = input(order, in, out);
+            String grouper = input(whatOrder, in, out);
             out.println("looking for duplicates...");
             List<Doubles> doubles;
             if (grouper.equals("1")) {
@@ -45,7 +44,7 @@ public class UI {
             }
             printAllDoubles(doubles, out);
 
-            String repeat = input(next, in, out);
+            String repeat = input(whatNext, in, out);
             if (repeat.equals("1")) {
                 isRepeat = true;
             }

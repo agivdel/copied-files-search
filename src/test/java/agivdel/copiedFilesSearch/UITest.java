@@ -7,9 +7,11 @@ import org.junit.rules.ExpectedException;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
-public class TUITest {
-    TUI tui = new TUI();
+import static java.lang.System.*;
+
+public class UITest {
 
     @Rule
     public ExpectedException expectedEx = ExpectedException.none();
@@ -19,11 +21,11 @@ public class TUITest {
      */
     @Test
     public void inputCorrectDirectoryAddress_Test() {
-        TUI.DirectoryProcessor address = new TUI.DirectoryProcessor("Enter the address of the search directory:");
+        UI.DirectoryProcessor address = new UI.DirectoryProcessor("enter the address of the search directory:");
         String input = "src/test/resources";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
-        tui.publicInput(address, is);
-        Assert.assertEquals(input, address.getSelect());
+        String output = UI.input(address, is, out);
+        Assert.assertEquals(input, output);
     }
 
     /**
@@ -33,10 +35,10 @@ public class TUITest {
     public void inputNotDirectoryAddress_Test() {
         expectedEx.expect(java.util.NoSuchElementException.class);
         expectedEx.expectMessage("No line found");
-        TUI.DirectoryProcessor address = new TUI.DirectoryProcessor("Enter the address of the search directory:");
+        UI.DirectoryProcessor address = new UI.DirectoryProcessor("enter the address of the search directory:");
         String input = "src/test/resources/doc1.txt";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
-        tui.publicInput(address, is);
+        UI.input(address, is, out);
     }
 
     /**
@@ -46,10 +48,10 @@ public class TUITest {
     public void inputNonexistentDirectoryAddress_Test() {
         expectedEx.expect(java.util.NoSuchElementException.class);
         expectedEx.expectMessage("No line found");
-        TUI.DirectoryProcessor address = new TUI.DirectoryProcessor("Enter the address of the search directory:");
+        UI.DirectoryProcessor address = new UI.DirectoryProcessor("enter the address of the search directory:");
         String input = "src/test/resources/doc";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
-        tui.publicInput(address, is);
+        UI.input(address, is, out);
     }
 
     /**
@@ -57,20 +59,20 @@ public class TUITest {
      */
     @Test
     public void inputValidNumber0_Test() {
-        TUI.OptionProcessor minSize = new TUI.OptionProcessor("Enter 0 or 1.");
+        UI.OptionProcessor minSize = new UI.OptionProcessor("enter 0 or 1.");
         String input = "0";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
-        tui.publicInput(minSize, is);
-        Assert.assertEquals(input, minSize.getSelect());
+        String output = UI.input(minSize, is, out);
+        Assert.assertEquals(input, output);
     }
 
     @Test
     public void inputValidNumber1_Test() {
-        TUI.OptionProcessor minSize = new TUI.OptionProcessor("Enter 0 or 1.");
+        UI.OptionProcessor minSize = new UI.OptionProcessor("enter 0 or 1.");
         String input = "1";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
-        tui.publicInput(minSize, is);
-        Assert.assertEquals(input, minSize.getSelect());
+        String output = UI.input(minSize, is, out);
+        Assert.assertEquals(input, output);
     }
 
     /**
@@ -80,46 +82,43 @@ public class TUITest {
     public void inputInvalidNumber_Test() {
         expectedEx.expect(java.util.NoSuchElementException.class);
         expectedEx.expectMessage("No line found");
-        TUI.OptionProcessor order = new TUI.OptionProcessor("Enter 0 or 1.");
+        UI.OptionProcessor order = new UI.OptionProcessor("enter 0 or 1.");
         String input = "2";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
-        tui.publicInput(order, is);
+        UI.input(order, is, out);
     }
 
     @Test
     public void inputLetterInsteadOfNumber_Test() {
         expectedEx.expect(java.util.NoSuchElementException.class);
         expectedEx.expectMessage("No line found");
-        TUI.OptionProcessor order = new TUI.OptionProcessor("Enter 0 or 1.");
+        UI.OptionProcessor order = new UI.OptionProcessor("enter 0 or 1.");
         String input = "fgg";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
-        tui.publicInput(order, is);
+        UI.input(order, is, out);
     }
 
     @Test
     public void correctPrintDoubles_Test() throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PrintStream out = System.out;
-
-        System.setOut(new PrintStream(baos));// After this all System.out.println() statements will come to baos stream
-
-        System.out.print("two");
-        Assert.assertEquals("two", baos.toString());
-
+        PrintStream newOut = new PrintStream(baos);
+        System.setOut(newOut);// After this all System.out.println() statements will come to baos stream
+        List<File> files = new Walker().iterationFilesFrom("src/test/resources/data/photo/people");
+        List<Doubles> doubles = new Searcher().getDoublesByTimeFirst(files);;
+        UI.printAllDoubles(doubles, newOut);
+        String input = """
+                counting files...
+                displaying...
+                ==================
+                Last modified time: 2019-01-08T17:03:49.576Z
+                src\\test\\resources\\data\\photo\\people\\woman-3 — копия — копия.bmp
+                src\\test\\resources\\data\\photo\\people\\woman-3 — копия.jpg
+                src\\test\\resources\\data\\photo\\people\\woman-3.jpg
+                __________________
+                The total number of original files with copies: 1
+                """;
+        String output = baos.toString();
+        Assert.assertEquals(input, output);
         System.setOut(out);//Restore stream
-
-//        List<File> files = new Walker().iterationFilesFrom("src/test/resources/data/photo/people");
-//        List<Doubles> doubles = new Searcher().getDoublesByTimeFirst(files);;
-//        tui.publicOutput(doubles);
-//        String expectedOutput = """
-//                displaying...
-//                ==================
-//                Last modified time: 2019-01-08T17:03:49.576Z\s
-//                C:\\Users\\agivd\\JavaProjects\\copiedFilesSearch\\src\\test\\resources\\data\\photo\\people\\woman-3 — копия — копия.bmp
-//                C:\\Users\\agivd\\JavaProjects\\copiedFilesSearch\\src\\test\\resources\\data\\photo\\people\\woman-3 — копия.jpg
-//                C:\\Users\\agivd\\JavaProjects\\copiedFilesSearch\\src\\test\\resources\\data\\photo\\people\\woman-3.jpg
-//                __________________
-//                The total number of original files with copies: 1\s""";
-//        Assert.assertEquals(expectedOutput, baos.toString());
     }
 }
