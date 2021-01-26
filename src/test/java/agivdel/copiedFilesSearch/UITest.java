@@ -104,8 +104,7 @@ public class UITest {
         PrintStream newOut = new PrintStream(baos);
         System.setOut(newOut);// After this all System.out.println() statements will come to baos stream
         List<File> files = new Walker().iterationFilesFrom("src/test/resources/data/photo/people");
-        List<Doubles> doubles = new Searcher().getDoublesByTimeFirst(files);;
-        UI.printAllDoubles(doubles, newOut);
+        List<Doubles> doubles = new Searcher().getDoublesByTimeFirst(files);
         String input = """
                 counting files...
                 displaying...
@@ -117,6 +116,7 @@ public class UITest {
                 __________________
                 The total number of original files with copies: 1
                 """;
+        UI.printAllDoubles(doubles, newOut);
         String output = baos.toString();
         Assert.assertEquals(input, output);
         System.setOut(out);//Restore stream
