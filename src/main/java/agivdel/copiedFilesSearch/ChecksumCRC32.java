@@ -7,8 +7,15 @@ import java.io.IOException;
 import java.util.zip.CRC32;
 
 public class ChecksumCRC32 implements Checksum {
-    @Override
+    private File file;
+
     public long get(File file) {
+        this.file = file;
+        return this.get();
+    }
+
+    @Override
+    public long get() {
         CRC32 check = new CRC32();
         byte[] buf = new byte[8192];//для чтения блоками по 8 КБ
         try (FileInputStream fis = new FileInputStream(file)) {
