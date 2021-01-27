@@ -1,6 +1,5 @@
 package agivdel.copiedFilesSearch;
 
-import java.io.File;
 import java.util.List;
 
 /**
@@ -8,13 +7,13 @@ import java.util.List;
  */
 
 public class Doubles {
-    private final List<File> doubles;
+    private final List<Forms> doubles;
 
-    public Doubles(List<File> files) {
+    public Doubles(List<Forms> files) {
         this.doubles = files;
     }
 
-    public List<File> getDoubles() {
+    public List<Forms> getDoubles() {
         return doubles;
     }
 }
