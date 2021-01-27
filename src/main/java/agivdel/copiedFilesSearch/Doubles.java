@@ -3,7 +3,7 @@ package agivdel.copiedFilesSearch;
 import java.util.List;
 
 /**
- * Объект класса Double хранит список файлов
+ * Объект класса Doubles хранит список файлов
  */
 
 public class Doubles {
