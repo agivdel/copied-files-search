@@ -51,6 +51,11 @@ public class TestForm implements Forms {
         return new TestForm(oldForm.name + " - копия", oldForm.size(), oldForm.lastModifiedTime);
     }
 
+    public static TestForm copy(Forms forms, String newName) {
+        TestForm oldForm = (TestForm) forms;
+        return new TestForm(newName, oldForm.size(), oldForm.lastModifiedTime);
+    }
+
     public long createTime() {
         return this.createTime;
     }
