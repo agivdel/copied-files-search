@@ -10,7 +10,7 @@ public class TestForm implements Forms {
     private final String name;
     private final long size;
     private final long createTime;
-    private long lastModifiedTime;
+    private final long lastModifiedTime;
 
     public TestForm(String name, long size) {
         this.name = name;
