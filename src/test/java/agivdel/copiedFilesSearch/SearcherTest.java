@@ -37,7 +37,7 @@ public class SearcherTest {
      */
     @Test
     public void sizeOfListInDoubles_equalsNumbersOfCopiesIncludingOriginal() throws InterruptedException {
-        List<Forms> forms = getCopiesFromOneOriginal();
+        List<TestForm> forms = getCopiesFromOneOriginal();
         List<Doubles> doubles = searcher.getDoublesByTimeFirst(forms);
 
         Assert.assertEquals(4, doubles.get(0).getDoubles().size());
@@ -49,7 +49,7 @@ public class SearcherTest {
      */
     @Test
     public void sameLastModifiedTimeInDoubles() throws InterruptedException {
-        List<Forms> forms = getCopiesFromOneOriginal();
+        List<TestForm> forms = getCopiesFromOneOriginal();
         List<Doubles> doubles = searcher.getDoublesByTimeFirst(forms);
 
         long original = doubles.get(0).getDoubles().get(0).lastModified();
@@ -67,17 +67,13 @@ public class SearcherTest {
      */
     @Test
     public void searchAmongDifferentCreateTimes() throws InterruptedException {
-        List<Forms> forms = getCopiesFromOneOriginal();
+        List<TestForm> forms = getCopiesFromOneOriginal();
         List<Doubles> doubles = searcher.getDoublesByTimeFirst(forms);
 
-        TestForm originalForm = (TestForm) doubles.get(0).getDoubles().get(0);
-        long original = originalForm.createTime();
-        TestForm copy1Form = (TestForm) doubles.get(0).getDoubles().get(1);
-        long copy1 = copy1Form.createTime();
-        TestForm copy2Form = (TestForm) doubles.get(0).getDoubles().get(2);
-        long copy2 = copy2Form.createTime();
-        TestForm copy3Form = (TestForm) doubles.get(0).getDoubles().get(3);
-        long copy3 = copy3Form.createTime();
+        long original = ((TestForm) doubles.get(0).getDoubles().get(0)).createTime();
+        long copy1 = ((TestForm) doubles.get(0).getDoubles().get(1)).createTime();
+        long copy2 = ((TestForm) doubles.get(0).getDoubles().get(2)).createTime();
+        long copy3 = ((TestForm) doubles.get(0).getDoubles().get(3)).createTime();
 
         Assert.assertNotEquals(original, copy1);
         Assert.assertNotEquals(original, copy2);
@@ -120,16 +116,16 @@ public class SearcherTest {
         return List.of(form1, form1_copy1, form2, form2_copy1, form2_copy2);
     }
 
-    private List<Forms> getCopiesFromOneOriginal() throws InterruptedException {
-        Forms form1 = new TestForm("1", 10);
+    private List<TestForm> getCopiesFromOneOriginal() throws InterruptedException {
+        TestForm form1 = new TestForm("1", 10);
         Thread.sleep(1000);
-        Forms form2 = new TestForm("2", 20);
+        TestForm form2 = new TestForm("2", 20);
         Thread.sleep(1000);
-        Forms form2_copy1 = TestForm.copy(form2);
+        TestForm form2_copy1 = TestForm.copy(form2);
         Thread.sleep(1000);
-        Forms form2_copy2 = TestForm.copy(form2_copy1);
+        TestForm form2_copy2 = TestForm.copy(form2_copy1);
         Thread.sleep(1000);
-        Forms form2_copy3 = TestForm.copy(form2_copy2);
+        TestForm form2_copy3 = TestForm.copy(form2_copy2);
         return List.of(form1, form2, form2_copy1, form2_copy2, form2_copy3);
     }
 }
