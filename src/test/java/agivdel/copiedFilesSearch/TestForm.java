@@ -2,6 +2,7 @@ package agivdel.copiedFilesSearch;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
@@ -67,8 +68,8 @@ public class TestForm implements Forms {
         return "TestForm{" +
                 "name='" + name + '\'' +
                 ", size=" + size +
-                ", createTime=" + createTime +
-                ", lastModifiedTime=" + lastModifiedTime +
+                ", createTime=" + FileTime.fromMillis(createTime * 1000) +
+                ", lastModifiedTime=" + FileTime.fromMillis(lastModifiedTime * 1000) +
                 "}";
     }
 }

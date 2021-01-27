@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 import java.util.zip.CRC32;
 
 public class WorkForm implements Forms{
@@ -54,10 +55,10 @@ public class WorkForm implements Forms{
 
     @Override
     public String toString() {
-        return "WorkForm{" +
+        return  "WorkForm{" +
                 "path=" + path +
                 ", size=" + size +
-                ", lastModifiedTime=" + lastModifiedTime +
-                '}';
+                ", lastModifiedTime=" + FileTime.fromMillis(lastModifiedTime * 1000) +
+                "}";
     }
 }

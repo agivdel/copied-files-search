@@ -3,6 +3,7 @@ package agivdel.copiedFilesSearch;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
 import java.util.List;
 import java.util.Scanner;
 
@@ -100,8 +101,9 @@ public class UI {
         out.println("displaying...");
         for (Doubles doubles : doublesList) {
             out.println("==================");
-            out.println("Last modified time: " + doubles.getDoubles().get(0).size());
-            doubles.getDoubles().forEach(out::println);
+            Forms file = doubles.getDoubles().get(0);
+            out.println("Last modified time: " + FileTime.fromMillis(file.lastModified() * 1000));
+            doubles.getDoubles().stream().map(Forms::toPath).forEach(out::println);
         }
         out.println("__________________");
         out.println("The total number of original files with copies: " + doublesList.size());
