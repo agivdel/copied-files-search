@@ -11,14 +11,12 @@ import static java.util.stream.Collectors.toList;
 import static java.lang.System.*;
 
 public class Walker {
-
-    //static?
-    public List<Forms> iterationFilesFrom(String selectedDirectory) {
+    public static List<Forms> allFilesFrom(String selectedDirectory) {
         out.println("counting files...");
         try (Stream<Path> pathStream = Files.walk(Paths.get(selectedDirectory))) {
             return pathStream
                     .filter(Files::isRegularFile)
-                    .map(this::toForm)
+                    .map(Walker::toForm)
                     .collect(toList());
         } catch (IOException e) {
             //TODO дописать обработку исключения
@@ -26,8 +24,7 @@ public class Walker {
         }
     }
 
-    //static?
-    private Forms toForm(Path path) {
+    private static Forms toForm(Path path) {
         long size = 0;
         long time = 0;
         try {
@@ -39,8 +36,7 @@ public class Walker {
         return new WorkForm(path, size, time);
     }
 
-    //static?
-    public List<Forms> removeZeroSizeForm(List<Forms> files) {
+    public static List<Forms> removeZeroSizeForm(List<Forms> files) {
         out.println("deleting files with zero size...");
         return files.stream()
                 .filter(f -> f.size() != 0)
