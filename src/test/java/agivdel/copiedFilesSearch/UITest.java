@@ -103,7 +103,7 @@ public class UITest {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream newOut = new PrintStream(baos);
         System.setOut(newOut);// After this all System.out.println() statements will come to baos stream
-        List<Forms> files = new Walker().iterationFilesFrom("src/test/resources/data/photo/people");
+        List<Forms> files = Walker.allFilesFrom("src/test/resources/data/photo/people");
         List<Doubles> doubles = new Searcher().getDoublesByTimeFirst(files);
         String input = """
                 counting files...

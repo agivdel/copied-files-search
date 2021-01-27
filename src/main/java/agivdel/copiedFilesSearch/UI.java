@@ -11,7 +11,6 @@ import static java.lang.System.*;
 
 public class UI {
     Searcher searcher = new Searcher();
-    Walker walker = new Walker();
 
     public static final Processor whatAddress = new DirectoryProcessor(
             "To search for copied files, enter the address of the search directory:");
@@ -28,11 +27,11 @@ public class UI {
             isRepeat = false;
 
             String selectedDirectory = input(whatAddress, in, out);
-            List<Forms> files = walker.iterationFilesFrom(selectedDirectory);
+            List<Forms> files = Walker.allFilesFrom(selectedDirectory);
 
             String zeroSize = input(whatMinSize, in, out);
             if (zeroSize.equals("1")) {
-                files = walker.removeZeroSizeForm(files);
+                files = Walker.removeZeroSizeForm(files);
             }
 
             String grouper = input(whatOrder, in, out);
