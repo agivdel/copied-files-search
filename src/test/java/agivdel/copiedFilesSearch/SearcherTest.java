@@ -14,7 +14,7 @@ public class SearcherTest {
      */
     @Test
     public void doublesByTime_forMultipleOriginalFiles() throws InterruptedException {
-        List<Forms> forms = getOriginalAndCopies();
+        List<Forms> forms = getCopiesFromTwoOriginals();
         List<Doubles> doublesByTime = searcher.getDoublesByTimeFirst(forms);
 
         Assert.assertEquals(2, doublesByTime.size());
@@ -26,7 +26,7 @@ public class SearcherTest {
      */
     @Test
     public void doublesByChecksum_forMultipleOriginalFiles() throws InterruptedException {
-        List<Forms> forms = getOriginalAndCopies();
+        List<Forms> forms = getCopiesFromTwoOriginals();
         List<Doubles> doublesByChecksum = searcher.getDoublesByChecksumFirst(forms);
 
         Assert.assertEquals(2, doublesByChecksum.size());
@@ -37,11 +37,10 @@ public class SearcherTest {
      */
     @Test
     public void sizeOfListInDoubles_equalsNumbersOfCopiesIncludingOriginal() throws InterruptedException {
-        List<Forms> forms = getOriginalAndCopies();
+        List<Forms> forms = getCopiesFromOneOriginal();
         List<Doubles> doubles = searcher.getDoublesByTimeFirst(forms);
 
-        Assert.assertEquals(2, doubles.get(0).getDoubles().size());
-        Assert.assertEquals(3, doubles.get(1).getDoubles().size());
+        Assert.assertEquals(4, doubles.get(0).getDoubles().size());
     }
 
     /**
@@ -50,26 +49,25 @@ public class SearcherTest {
      */
     @Test
     public void sameLastModifiedTimeInDoubles() throws InterruptedException {
-        List<Forms> forms = getOriginalAndCopies();
+        List<Forms> forms = getCopiesFromOneOriginal();
         List<Doubles> doubles = searcher.getDoublesByTimeFirst(forms);
 
-        long original1 = doubles.get(0).getDoubles().get(0).lastModified();
-        long copy1_1 = doubles.get(0).getDoubles().get(1).lastModified();
-        long original2 = doubles.get(1).getDoubles().get(0).lastModified();
-        long copy2_1 = doubles.get(1).getDoubles().get(1).lastModified();
-        long copy2_2 = doubles.get(1).getDoubles().get(2).lastModified();
+        long original = doubles.get(0).getDoubles().get(0).lastModified();
+        long copy1 = doubles.get(0).getDoubles().get(1).lastModified();
+        long copy2 = doubles.get(0).getDoubles().get(2).lastModified();
+        long copy3 = doubles.get(0).getDoubles().get(3).lastModified();
 
-        Assert.assertEquals(original1, copy1_1);
-        Assert.assertEquals(original2, copy2_1);
-        Assert.assertEquals(original2, copy2_2);
+        Assert.assertEquals(original, copy1);
+        Assert.assertEquals(original, copy2);
+        Assert.assertEquals(original, copy3);
     }
 
     /**
      * На поиск файлов-копий не оказывает влияние время создания файла.
      */
     @Test
-    public void sortedByCreateTime_Test() throws InterruptedException {
-        List<Forms> forms = getOriginalAndCopies();
+    public void searchAmongDifferentCreateTimes() throws InterruptedException {
+        List<Forms> forms = getCopiesFromOneOriginal();
         List<Doubles> doubles = searcher.getDoublesByTimeFirst(forms);
 
         TestForm originalForm = (TestForm) doubles.get(0).getDoubles().get(0);
@@ -82,15 +80,15 @@ public class SearcherTest {
         long copy3 = copy3Form.createTime();
 
         Assert.assertNotEquals(original, copy1);
-        Assert.assertNotEquals(copy1, copy2);
-        Assert.assertNotEquals(copy2, copy3);
+        Assert.assertNotEquals(original, copy2);
+        Assert.assertNotEquals(original, copy3);
     }
 
     /**
      * На поиск файлов-копий не оказывают влияние имя и расширение файлов
      */
     @Test
-    public void searchAmongDifferentNamesAndExtensions_Test() throws InterruptedException {
+    public void searchAmongDifferentNamesAndExtensions() throws InterruptedException {
         Forms forms1 = new TestForm("1.txt", 10);
         Thread.sleep(1000);
         Forms forms1_copy1 = TestForm.copy(forms1, "1.jpeg");
@@ -109,16 +107,29 @@ public class SearcherTest {
         Assert.assertNotEquals(name0, name2);
     }
 
-    private List<Forms> getOriginalAndCopies() throws InterruptedException {
+    private List<Forms> getCopiesFromTwoOriginals() throws InterruptedException {
+        Forms form1 = new TestForm("1", 10);
+        Thread.sleep(1000);
+        Forms form1_copy1 = TestForm.copy(form1);
+        Thread.sleep(1000);
+        Forms form2 = new TestForm("2", 20);
+        Thread.sleep(1000);
+        Forms form2_copy1 = TestForm.copy(form2);
+        Thread.sleep(1000);
+        Forms form2_copy2 = TestForm.copy(form2_copy1);
+        return List.of(form1, form1_copy1, form2, form2_copy1, form2_copy2);
+    }
+
+    private List<Forms> getCopiesFromOneOriginal() throws InterruptedException {
         Forms form1 = new TestForm("1", 10);
         Thread.sleep(1000);
         Forms form2 = new TestForm("2", 20);
         Thread.sleep(1000);
         Forms form2_copy1 = TestForm.copy(form2);
         Thread.sleep(1000);
-        Forms form2_copy2 = TestForm.copy(form2);
+        Forms form2_copy2 = TestForm.copy(form2_copy1);
         Thread.sleep(1000);
-        Forms form2_copy3 = TestForm.copy(form2_copy1);
+        Forms form2_copy3 = TestForm.copy(form2_copy2);
         return List.of(form1, form2, form2_copy1, form2_copy2, form2_copy3);
     }
 }
