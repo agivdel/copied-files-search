@@ -21,19 +21,17 @@ public class UI {
     public static final Processor whatNext = new OptionProcessor(
             "To search for copies of files in another directory or exit the program? 'exit' - 0, 'search' - 1.");
 
-    public void run() throws IOException {
+    public void run() {
         boolean isRepeat;
         do {
             isRepeat = false;
 
             String selectedDirectory = input(whatAddress, in, out);
-            List<File> files = walker.iterationFilesFrom(selectedDirectory);
-            List<Form> forms = walker.getFormsFrom(selectedDirectory);
+            List<Forms> files = walker.iterationFilesFrom(selectedDirectory);
 
             String zeroSize = input(whatMinSize, in, out);
             if (zeroSize.equals("1")) {
-                files = walker.removeZeroSize(files);
-                forms = walker.removeZeroSizeForm(forms);
+                files = walker.removeZeroSizeForm(files);
             }
 
             String grouper = input(whatOrder, in, out);
@@ -98,11 +96,11 @@ public class UI {
         return select;
     }
 
-    public static void printAllDoubles(List<Doubles> doublesList, PrintStream out) throws IOException {
+    public static void printAllDoubles(List<Doubles> doublesList, PrintStream out) {
         out.println("displaying...");
         for (Doubles doubles : doublesList) {
             out.println("==================");
-            out.println("Last modified time: " + Files.getLastModifiedTime(doubles.getDoubles().get(0).toPath()));
+            out.println("Last modified time: " + doubles.getDoubles().get(0).size());
             doubles.getDoubles().forEach(out::println);
         }
         out.println("__________________");
