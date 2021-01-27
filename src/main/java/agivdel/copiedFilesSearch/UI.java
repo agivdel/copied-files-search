@@ -26,26 +26,27 @@ public class UI {
         do {
             isRepeat = false;
 
-            String selectedDirectory = input(whatAddress, in, out);
-            List<Forms> files = Walker.allFilesFrom(selectedDirectory);
+            String address = input(whatAddress, in, out);
+            List<Forms> files = Walker.allFilesFrom(address);
 
-            String zeroSize = input(whatMinSize, in, out);
-            if (zeroSize.equals("1")) {
+            String minSize = input(whatMinSize, in, out);
+            if (minSize.equals("1")) {
                 files = Walker.removeZeroSizeForm(files);
             }
 
-            String grouper = input(whatOrder, in, out);
+            String order = input(whatOrder, in, out);
             out.println("looking for duplicates...");
             List<Doubles> doubles;
-            if (grouper.equals("1")) {
+            if (order.equals("1")) {
                 doubles = searcher.getDoublesByTimeFirst(files);
             } else {
                 doubles = searcher.getDoublesByChecksumFirst(files);
             }
+
             printAllDoubles(doubles, out);
 
-            String repeat = input(whatNext, in, out);
-            if (repeat.equals("1")) {
+            String nextAction = input(whatNext, in, out);
+            if (nextAction.equals("1")) {
                 isRepeat = true;
             }
         } while (isRepeat);
