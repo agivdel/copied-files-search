@@ -28,10 +28,12 @@ public class UI {
 
             String selectedDirectory = input(whatAddress, in, out);
             List<File> files = walker.iterationFilesFrom(selectedDirectory);
+            List<Form> forms = walker.getFormsFrom(selectedDirectory);
 
             String zeroSize = input(whatMinSize, in, out);
             if (zeroSize.equals("1")) {
                 files = walker.removeZeroSize(files);
+                forms = walker.removeZeroSizeForm(forms);
             }
 
             String grouper = input(whatOrder, in, out);

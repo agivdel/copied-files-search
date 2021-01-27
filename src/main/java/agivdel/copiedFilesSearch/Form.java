@@ -18,7 +18,7 @@ public class Form {
         return path;
     }
 
-    public long getSize() {
+    public long size() {
         return size;
     }
 

@@ -15,15 +15,13 @@ import static java.lang.System.*;
 
 public class Walker {
 
-    //метод должен возвращать список псевдофайлов ("формы")
-    public List<Form> getFormsFrom(String selectedDirectory) throws IOException {
+    public List<Form> getFormsFrom(String selectedDirectory) {
         List<File> files = iterationFilesFrom(selectedDirectory);
         List<Form> forms = new ArrayList<>();
         files.forEach(this::getFormFromFile);
         return forms;
     }
 
-    //метод конвертации файлов в псевдофайлы
     private Form getFormFromFile(File file) {
         Path path = file.toPath();
         long size = 0;
@@ -37,7 +35,6 @@ public class Walker {
         return new Form(path, size, time);
     }
 
-    //метод поиска файлов в директории
     public List<File> iterationFilesFrom(String selectedDirectory) {
         out.println("counting files...");
         try (Stream<Path> pathStream = Files.walk(Paths.get(selectedDirectory))) {
@@ -49,6 +46,13 @@ public class Walker {
             //TODO дописать обработку исключения
             throw new RuntimeException(e);
         }
+    }
+
+    public List<Form> removeZeroSizeForm(List<Form> forms) {
+        out.println("deleting files with zero size...");
+        return forms.stream()
+                .filter(f -> f.size() != 0)
+                .collect(toList());
     }
 
     public List<File> removeZeroSize(List<File> fileList) {
