@@ -2,136 +2,123 @@ package agivdel.copiedFilesSearch;
 
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
-import java.util.ArrayList;
 import java.util.List;
 
 public class SearcherTest {
     Searcher searcher = new Searcher();
-    Walker walker = new Walker();
 
-    private List<Doubles> getDoublesFrom(String dir) {
-        List<File> files = walker.iterationFilesFrom(dir);
-        return searcher.getDoublesByTimeFirst(files);
-    }
+    /**
+     * Метод getDoublesByTimeFrom() возвращает список объектов Doubles.
+     * Размер списка Doubles равен числу оригинальных файлов, подвергнутых копированию.
+     */
+    @Test
+    public void doublesByTime_forMultipleOriginalFiles() throws InterruptedException {
+        List<Forms> forms = getOriginalAndCopies();
+        List<Doubles> doublesByTime = searcher.getDoublesByTimeFirst(forms);
 
-    private List<File> getFilesOfFirstDoubleFrom(String dir) {
-        return getDoublesFrom(dir).get(0).getDoubles();
+        Assert.assertEquals(2, doublesByTime.size());
     }
 
     /**
-     * Метод getDoublesList() возвращает список объектов Doubles,
-     * внутри каждого из которых - список копий файла, включая оригинал
+     * Метод getDoublesByChecksumFrom() возвращает список объектов Doubles.
+     * Размер списка Doubles равен числу оригинальных файлов, подвергнутых копированию.
      */
     @Test
-    public void doublesList_forMultipleOriginalFiles_Test() {
-        List<Doubles> doubles = getDoublesFrom("src/test/resources");
-        Assert.assertEquals(6, doubles.size());
+    public void doublesByChecksum_forMultipleOriginalFiles() throws InterruptedException {
+        List<Forms> forms = getOriginalAndCopies();
+        List<Doubles> doublesByChecksum = searcher.getDoublesByChecksumFirst(forms);
+
+        Assert.assertEquals(2, doublesByChecksum.size());
     }
 
+    /**
+     * Размер списка внутри объекта Doubles равен числу копий файла, включая оригинал.
+     */
     @Test
-    public void doublesList_forMultipleOriginalFiles_Test2() throws InterruptedException {
-        PseudoFile pf1 = new PseudoFile("1", 10);
-        Thread.sleep(1300);
-        PseudoFile pf2 = new PseudoFile("2", 20);
+    public void sizeOfListInDoubles_equalsNumbersOfCopiesIncludingOriginal() throws InterruptedException {
+        List<Forms> forms = getOriginalAndCopies();
+        List<Doubles> doubles = searcher.getDoublesByTimeFirst(forms);
+
+        Assert.assertEquals(2, doubles.get(0).getDoubles().size());
+        Assert.assertEquals(3, doubles.get(1).getDoubles().size());
+    }
+
+    /**
+     * В списке внутри каждого объекта Doubles файл-оригинал и все его копии
+     * имеют одинаковое время последнего редактирования.
+     */
+    @Test
+    public void sameLastModifiedTimeInDoubles() throws InterruptedException {
+        List<Forms> forms = getOriginalAndCopies();
+        List<Doubles> doubles = searcher.getDoublesByTimeFirst(forms);
+
+        long original1 = doubles.get(0).getDoubles().get(0).lastModified();
+        long copy1_1 = doubles.get(0).getDoubles().get(1).lastModified();
+        long original2 = doubles.get(1).getDoubles().get(0).lastModified();
+        long copy2_1 = doubles.get(1).getDoubles().get(1).lastModified();
+        long copy2_2 = doubles.get(1).getDoubles().get(2).lastModified();
+
+        Assert.assertEquals(original1, copy1_1);
+        Assert.assertEquals(original2, copy2_1);
+        Assert.assertEquals(original2, copy2_2);
+    }
+
+    /**
+     * На поиск файлов-копий не оказывает влияние время создания файла.
+     */
+    @Test
+    public void sortedByCreateTime_Test() throws InterruptedException {
+        List<Forms> forms = getOriginalAndCopies();
+        List<Doubles> doubles = searcher.getDoublesByTimeFirst(forms);
+
+        TestForm originalForm = (TestForm) doubles.get(0).getDoubles().get(0);
+        long original = originalForm.createTime();
+        TestForm copy1Form = (TestForm) doubles.get(0).getDoubles().get(1);
+        long copy1 = copy1Form.createTime();
+        TestForm copy2Form = (TestForm) doubles.get(0).getDoubles().get(2);
+        long copy2 = copy2Form.createTime();
+        TestForm copy3Form = (TestForm) doubles.get(0).getDoubles().get(3);
+        long copy3 = copy3Form.createTime();
+
+        Assert.assertNotEquals(original, copy1);
+        Assert.assertNotEquals(copy1, copy2);
+        Assert.assertNotEquals(copy2, copy3);
+    }
+
+    /**
+     * На поиск файлов-копий не оказывают влияние имя и расширение файлов
+     */
+    @Test
+    public void searchAmongDifferentNamesAndExtensions_Test() throws InterruptedException {
+        Forms forms1 = new TestForm("1.txt", 10);
         Thread.sleep(1000);
-        PseudoFile pf3 = new PseudoFile("3", 30);
-        Thread.sleep(1400);
-        PseudoFile pf1_copy1 = PseudoFile.copy(pf1);
+        Forms forms1_copy1 = TestForm.copy(forms1, "1.jpeg");
         Thread.sleep(1000);
-        PseudoFile pf1_copy2 = PseudoFile.copy(pf1);
+        Forms forms1_copy2 = TestForm.copy(forms1, "2.txt");
+        Forms form2 = new TestForm("1.jpeg", 20);
+        Forms form3 = new TestForm("2.txt", 30);
+        List<Forms> forms = List.of(forms1, forms1_copy1, forms1_copy2, form2, form3);
+        List<Doubles> doubles = searcher.getDoublesByTimeFirst(forms);
+
+        Path name0 = doubles.get(0).getDoubles().get(0).toPath();
+        Path name1 = doubles.get(0).getDoubles().get(1).toPath();
+        Path name2 = doubles.get(0).getDoubles().get(2).toPath();
+
+        Assert.assertNotEquals(name0, name1);
+        Assert.assertNotEquals(name0, name2);
+    }
+
+    private List<Forms> getOriginalAndCopies() throws InterruptedException {
+        Forms form1 = new TestForm("1", 10);
         Thread.sleep(1000);
-        PseudoFile pf1_copy3 = PseudoFile.copy(pf1_copy2);
-        List<File> files = List.of(pf1, pf2, pf3, pf1_copy1, pf1_copy2, pf1_copy3);
-        files.forEach(System.out::println);
-        List<Doubles> doubles = searcher.getDoublesByTimeFirst(files);
-        Assert.assertEquals(1, doubles.size());
-    }
-
-    /**
-     * При наличии в папке поиска лишь одного оригинального файла с его копиями,
-     * в результирующем списке только один объект Doubles
-     */
-    @Test
-    public void doublesList_forOneOriginalFiles_Test() {
-        List<Doubles> doubles = getDoublesFrom("src/test/resources/data/photo/people");
-        Assert.assertEquals(1, doubles.size());
-    }
-
-    /**
-     * Каждый элемент списка дубликатов содержит список всех файлов-копий и файл-оригинал
-     */
-    @Test
-    public void fileList_forOneOriginalFiles_Test() {
-        List<File> fileList = getFilesOfFirstDoubleFrom("src/test/resources/data/photo/people");
-        Assert.assertEquals(3, fileList.size());
-    }
-
-    /**
-     * В списке файлов каждого объекта Doubles файл-оригинал и все его копии
-     * имеют одинаковое время последнего редактирования
-     */
-    @Test
-    public void sameLastModifiedTime_Test() throws IOException {
-        List<File> files = getFilesOfFirstDoubleFrom("src/test/resources/data/photo/landscape");
-        File original = files.get(0);
-        FileTime originalTime = Files.getLastModifiedTime(original.toPath());
-        File copy1 = files.get(1);
-        FileTime copy1Time = Files.getLastModifiedTime(copy1.toPath());
-        File copy2 = files.get(2);
-        FileTime copy2Time = Files.getLastModifiedTime(copy2.toPath());
-
-        Assert.assertEquals(originalTime, copy1Time);
-        Assert.assertEquals(originalTime, copy2Time);
-    }
-
-    /**
-     * В списке файлов каждого объекта Doubles файл-оригинал и все его копии
-     * сортируются по времени создания
-     */
-    @Test
-    public void sortedByCreateTime_Test() throws IOException {
-        List<File> files = getFilesOfFirstDoubleFrom("src/test/resources/data/photo/landscape");
-        Path original = files.get(0).toPath();
-        FileTime originalTime =Files.readAttributes(original, BasicFileAttributes.class).creationTime();
-        Path copy1 = files.get(1).toPath();
-        FileTime copy1Time = Files.readAttributes(copy1, BasicFileAttributes.class).creationTime();;
-        Path copy2 = files.get(2).toPath();
-        FileTime copy2Time = Files.readAttributes(copy2, BasicFileAttributes.class).creationTime();;
-
-        Assert.assertEquals(-1, originalTime.compareTo(copy1Time));
-        Assert.assertEquals(-1, copy1Time.compareTo(copy2Time));
-    }
-
-    /**
-     * на поиск файлов-копий не оказывают влияние имя и расширение файлов
-     */
-    @Test
-    public void searchAmongDifferentNamesAndExtensions_Test() {
-        List<File> files = getFilesOfFirstDoubleFrom("src/test/resources/data/photo/landscape");
-        String originalExtension = getExtension(files.get(0).getName());
-        String copy1Extension = getExtension(files.get(1).getName());
-        String copy2Extension = getExtension(files.get(2).getName());
-
-        Assert.assertNotEquals(files.get(0).getName(), files.get(1).getName());
-        Assert.assertNotEquals(files.get(0).getName(), files.get(2).getName());
-        Assert.assertNotEquals(files.get(1).getName(), files.get(2).getName());
-
-        Assert.assertNotEquals(originalExtension, copy1Extension);
-        Assert.assertNotEquals(copy1Extension, copy2Extension);
-    }
-
-    private String getExtension(String filename) {
-        int i = filename.lastIndexOf('.');
-        if (i > 0) {
-            return filename.substring(i + 1);
-        }
-        return "";
+        Forms form2 = new TestForm("2", 20);
+        Thread.sleep(1000);
+        Forms form2_copy1 = TestForm.copy(form2);
+        Thread.sleep(1000);
+        Forms form2_copy2 = TestForm.copy(form2);
+        Thread.sleep(1000);
+        Forms form2_copy3 = TestForm.copy(form2_copy1);
+        return List.of(form1, form2, form2_copy1, form2_copy2, form2_copy3);
     }
 }
