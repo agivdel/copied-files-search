@@ -45,7 +45,8 @@ public class TestForm implements Forms {
         return this.size() * 31 + 17;
     }
 
-    public static TestForm copy(TestForm oldForm) {
+    public static TestForm copy(Forms forms) {
+        TestForm oldForm = (TestForm) forms;
         TestForm newForm = new TestForm(oldForm.name + " - копия", oldForm.size());
         long time = oldForm.createTime == oldForm.lastModifiedTime ?
                 oldForm.createTime :
