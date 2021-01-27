@@ -35,7 +35,7 @@ public class WalkerTest {
     @Test
     public void iterationAllFiles_Test() {
         List<Forms> files = walker.iterationFilesFrom("src/test/resources");
-        Assert.assertEquals(27, files.size());
+        Assert.assertEquals(8, files.size());
     }
 
     /**
@@ -54,6 +54,6 @@ public class WalkerTest {
     public void removeZeroSizeFiles_Test() {
         List<Forms> files = walker.iterationFilesFrom("src/test/resources");
         files = walker.removeZeroSizeForm(files);
-        Assert.assertEquals(23, files.size());
+        Assert.assertEquals(7, files.size());
     }
 }
