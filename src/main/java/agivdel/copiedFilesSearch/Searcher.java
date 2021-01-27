@@ -1,6 +1,5 @@
 package agivdel.copiedFilesSearch;
 
-import java.io.*;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -12,13 +11,13 @@ import static java.util.stream.Collectors.*;
 
 public class Searcher {
 
-    public List<Doubles> getDoublesByTimeFirst(List<File> files) {
+    public List<Doubles> getDoublesByTimeFirst(List<Forms> files) {
         return splitByTime(new Doubles(files))
                 .flatMap(this::splitByChecksum)
                 .collect(toList());
     }
 
-    public List<Doubles> getDoublesByChecksumFirst(List<File> files) {
+    public List<Doubles> getDoublesByChecksumFirst(List<Forms> files) {
         return splitByChecksum(new Doubles(files))
                 .flatMap(this::splitByTime)
                 .collect(toList());
@@ -27,7 +26,7 @@ public class Searcher {
     private Stream<Doubles> splitByTime(Doubles doubles) {
         return doubles.getDoubles()
                 .stream()
-                .collect(groupingBy(File::lastModified))
+                .collect(groupingBy(Forms::lastModified))
                 .values()
                 .stream()
                 .filter(l -> l.size() > 1)
@@ -38,14 +37,10 @@ public class Searcher {
     private Stream<Doubles> splitByChecksum(Doubles doubles) {
         return doubles.getDoubles()
                 .stream()
-                .collect(groupingBy(this::getCRC32))
+                .collect(groupingBy(Forms::getCRC32))
                 .values()
                 .stream()
                 .filter(l -> l.size() > 1)
                 .map(Doubles::new);
-    }
-
-    private long getCRC32(File file) {
-        return new ChecksumCRC32().get(file);
     }
 }
