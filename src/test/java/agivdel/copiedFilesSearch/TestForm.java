@@ -55,6 +55,10 @@ public class TestForm implements Forms {
         return newForm;
     }
 
+    public long createTime() {
+        return this.createTime;
+    }
+
     private long setCreateTime() {
         return LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond();
     }
