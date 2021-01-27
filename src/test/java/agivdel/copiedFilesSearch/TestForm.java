@@ -16,6 +16,7 @@ public class TestForm implements Forms {
         this.name = name;
         this.size = size;
         this.createTime = setCreateTime();
+        this.lastModifiedTime = this.createTime;
     }
 
     public TestForm(String name, long size, long time) {
@@ -47,13 +48,7 @@ public class TestForm implements Forms {
 
     public static TestForm copy(Forms forms) {
         TestForm oldForm = (TestForm) forms;
-        TestForm newForm = new TestForm(oldForm.name + " - копия", oldForm.size());
-        long time = oldForm.createTime == oldForm.lastModifiedTime ?
-                oldForm.createTime :
-                oldForm.lastModifiedTime;
-        oldForm.setLastModified(time);
-        newForm.setLastModified(time);
-        return newForm;
+        return new TestForm(oldForm.name + " - копия", oldForm.size(), oldForm.lastModifiedTime);
     }
 
     public long createTime() {
@@ -62,10 +57,6 @@ public class TestForm implements Forms {
 
     private long setCreateTime() {
         return LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond();
-    }
-
-    private void setLastModified(long time) {
-        this.lastModifiedTime = time;
     }
 
     @Override
