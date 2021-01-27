@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.List;
 
 public class WalkerTest {
-    Walker walker = new Walker();
 
     @Test
     public void test0() throws IOException {
@@ -34,7 +33,7 @@ public class WalkerTest {
      */
     @Test
     public void iterationAllFiles_Test() {
-        List<Forms> files = walker.iterationFilesFrom("src/test/resources");
+        List<Forms> files = Walker.allFilesFrom("src/test/resources");
         Assert.assertEquals(8, files.size());
     }
 
@@ -43,7 +42,7 @@ public class WalkerTest {
      */
     @Test
     public void iterationEmptyDir_Test() {
-        List<Forms> files = walker.iterationFilesFrom("src/test/resources/data/movie");
+        List<Forms> files = Walker.allFilesFrom("src/test/resources/data/movie");
         Assert.assertTrue(files.isEmpty());
     }
 
@@ -52,8 +51,8 @@ public class WalkerTest {
      */
     @Test
     public void removeZeroSizeFiles_Test() {
-        List<Forms> files = walker.iterationFilesFrom("src/test/resources");
-        files = walker.removeZeroSizeForm(files);
+        List<Forms> files = Walker.allFilesFrom("src/test/resources");
+        files = Walker.removeZeroSizeForm(files);
         Assert.assertEquals(7, files.size());
     }
 }
