@@ -105,7 +105,8 @@ public class UI {
             out.println("Last modified time: " + FileTime.fromMillis(file.lastModified() * 1000));
             doubles.getDoubles().stream().map(Forms::toPath).forEach(out::println);
         }
-        out.println("__________________");
-        out.println("The total number of original files with copies: " + doublesList.size());
+        out.println("""
+                __________________
+                The total number of original files with copies: """ + doublesList.size());
     }
 }
