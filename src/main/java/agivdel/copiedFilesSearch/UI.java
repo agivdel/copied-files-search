@@ -100,9 +100,10 @@ public class UI {
     public static void printAllDoubles(List<Doubles> doublesList, PrintStream out) {
         out.println("displaying...");
         for (Doubles doubles : doublesList) {
-            out.println("==================");
-            Forms file = doubles.getDoubles().get(0);
-            out.println("Last modified time: " + FileTime.fromMillis(file.lastModified() * 1000));
+            long timeOfFirstFile = doubles.getDoubles().get(0).lastModified() * 1000;
+            out.println("""
+                    =================="
+                    Last modified time: """ + FileTime.fromMillis(timeOfFirstFile));
             doubles.getDoubles().stream().map(Forms::toPath).forEach(out::println);
         }
         out.println("""
