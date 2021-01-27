@@ -1,12 +1,9 @@
 package agivdel.copiedFilesSearch;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.FileTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -15,32 +12,13 @@ import static java.lang.System.*;
 
 public class Walker {
 
-    public List<Form> getFormsFrom(String selectedDirectory) {
-        List<File> files = iterationFilesFrom(selectedDirectory);
-        List<Form> forms = new ArrayList<>();
-        files.forEach(this::getFormFromFile);
-        return forms;
-    }
-
-    private Form getFormFromFile(File file) {
-        Path path = file.toPath();
-        long size = 0;
-        FileTime time = null;
-        try {
-            size = Files.size(path);
-            time = Files.getLastModifiedTime(path);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return new Form(path, size, time);
-    }
-
-    public List<File> iterationFilesFrom(String selectedDirectory) {
+    //static?
+    public List<Forms> iterationFilesFrom(String selectedDirectory) {
         out.println("counting files...");
         try (Stream<Path> pathStream = Files.walk(Paths.get(selectedDirectory))) {
             return pathStream
                     .filter(Files::isRegularFile)
-                    .map(Path::toFile)
+                    .map(this::toForm)
                     .collect(toList());
         } catch (IOException e) {
             //TODO дописать обработку исключения
@@ -48,24 +26,24 @@ public class Walker {
         }
     }
 
-    public List<Form> removeZeroSizeForm(List<Form> forms) {
-        out.println("deleting files with zero size...");
-        return forms.stream()
-                .filter(f -> f.size() != 0)
-                .collect(toList());
+    //static?
+    private Forms toForm(Path path) {
+        long size = 0;
+        long time = 0;
+        try {
+            size = Files.size(path);
+            time = Files.getLastModifiedTime(path).toMillis()/1000;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new WorkForm(path, size, time);
     }
 
-    public List<File> removeZeroSize(List<File> fileList) {
+    //static?
+    public List<Forms> removeZeroSizeForm(List<Forms> files) {
         out.println("deleting files with zero size...");
-        return fileList.stream()
-                .filter(f -> {
-                    try {
-                        return Files.size(f.toPath()) != 0;
-                    } catch (IOException e) {
-                        System.err.println("IO error");
-                    }
-                    return false;
-                })
+        return files.stream()
+                .filter(f -> f.size() != 0)
                 .collect(toList());
     }
 }
