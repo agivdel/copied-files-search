@@ -8,6 +8,7 @@ import org.junit.rules.ExpectedException;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Scanner;
 
 import static java.lang.System.*;
 
@@ -24,7 +25,7 @@ public class UITest {
         UI.DirectoryProcessor address = new UI.DirectoryProcessor("enter the address of the search directory:");
         String input = "src/test/resources";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
-        String output = UI.input(address, is, out);
+        String output = UI.input(address, new Scanner(is), out);
         Assert.assertEquals(input, output);
     }
 
@@ -38,7 +39,7 @@ public class UITest {
         UI.DirectoryProcessor address = new UI.DirectoryProcessor("enter the address of the search directory:");
         String input = "src/test/resources/doc1.txt";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
-        UI.input(address, is, out);
+        UI.input(address, new Scanner(is), out);
     }
 
     /**
@@ -51,7 +52,7 @@ public class UITest {
         UI.DirectoryProcessor address = new UI.DirectoryProcessor("enter the address of the search directory:");
         String input = "src/test/resources/doc";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
-        UI.input(address, is, out);
+        UI.input(address, new Scanner(is), out);
     }
 
     /**
@@ -62,7 +63,7 @@ public class UITest {
         UI.OptionProcessor minSize = new UI.OptionProcessor("enter 0 or 1.");
         String input = "0";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
-        String output = UI.input(minSize, is, out);
+        String output = UI.input(minSize, new Scanner(is), out);
         Assert.assertEquals(input, output);
     }
 
@@ -71,7 +72,7 @@ public class UITest {
         UI.OptionProcessor minSize = new UI.OptionProcessor("enter 0 or 1.");
         String input = "1";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
-        String output = UI.input(minSize, is, out);
+        String output = UI.input(minSize, new Scanner(is), out);
         Assert.assertEquals(input, output);
     }
 
@@ -85,7 +86,7 @@ public class UITest {
         UI.OptionProcessor order = new UI.OptionProcessor("enter 0 or 1.");
         String input = "2";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
-        UI.input(order, is, out);
+        UI.input(order, new Scanner(is), out);
     }
 
     @Test
@@ -95,7 +96,7 @@ public class UITest {
         UI.OptionProcessor order = new UI.OptionProcessor("enter 0 or 1.");
         String input = "fgg";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
-        UI.input(order, is, out);
+        UI.input(order, new Scanner(is), out);
     }
 
     @Test

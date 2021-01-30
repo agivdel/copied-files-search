@@ -1,16 +1,18 @@
 package agivdel.copiedFilesSearch;
 
-import java.io.*;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.util.List;
 import java.util.Scanner;
 
-import static java.lang.System.*;
-
 public class UI {
     Searcher searcher = new Searcher();
+    Walker.FileScanner fileScanner = Walker::allFilesFrom;
+    InputStream in = System.in;
+    PrintStream out = System.out;
 
     public static final Processor whatAddress = new DirectoryProcessor(
             "To search for copied files, enter the address of the search directory:");
@@ -26,15 +28,19 @@ public class UI {
         do {
             isRepeat = false;
 
-            String address = input(whatAddress, in, out);
-            List<Forms> files = Walker.allFilesFrom(address);
+            Scanner scanner = new Scanner(in);
 
-            String minSize = input(whatMinSize, in, out);
+            String address = input(whatAddress, scanner, out);
+            out.println("counting files...");
+            List<Forms> files = fileScanner.scan(address);
+
+            String minSize = input(whatMinSize, scanner, out);
             if (minSize.equals("1")) {
+                out.println("deleting files with zero size...");
                 files = Walker.removeZeroSizeForm(files);
             }
 
-            String order = input(whatOrder, in, out);
+            String order = input(whatOrder, scanner, out);
             out.println("looking for duplicates...");
             List<Doubles> doubles;
             if (order.equals("1")) {
@@ -45,12 +51,11 @@ public class UI {
 
             printAllDoubles(doubles, out);
 
-            String nextAction = input(whatNext, in, out);
+            String nextAction = input(whatNext, scanner, out);
             if (nextAction.equals("1")) {
                 isRepeat = true;
             }
         } while (isRepeat);
-        System.exit(0);
     }
 
     static class DirectoryProcessor implements Processor {
@@ -87,8 +92,7 @@ public class UI {
         }
     }
 
-    public static String input(Processor processor, InputStream is, PrintStream out) {
-        Scanner scanner = new Scanner(is);
+    public static String input(Processor processor, Scanner scanner, PrintStream out) {
         out.println(processor.getMessage());
         String select;
         do {
@@ -101,13 +105,11 @@ public class UI {
         out.println("displaying...");
         for (Doubles doubles : doublesList) {
             long timeOfFirstFile = doubles.getDoubles().get(0).lastModified() * 1000;
-            out.println("""
-                    =================="
-                    Last modified time: """ + FileTime.fromMillis(timeOfFirstFile));
+            out.println("==================\"");
+            out.println("Last modified time: " + FileTime.fromMillis(timeOfFirstFile));
             doubles.getDoubles().stream().map(Forms::toPath).forEach(out::println);
         }
-        out.println("""
-                __________________
-                The total number of original files with copies: """ + doublesList.size());
+        out.println("__________________");
+        out.println("The total number of original files with copies: " + doublesList.size());
     }
 }

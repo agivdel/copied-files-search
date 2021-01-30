@@ -1,5 +1,6 @@
 package agivdel.copiedFilesSearch;
 
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -8,11 +9,9 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
-import static java.lang.System.*;
 
 public class Walker {
     public static List<Forms> allFilesFrom(String selectedDirectory) {
-        out.println("counting files...");
         try (Stream<Path> pathStream = Files.walk(Paths.get(selectedDirectory))) {
             return pathStream
                     .filter(Files::isRegularFile)
@@ -24,12 +23,30 @@ public class Walker {
         }
     }
 
+    public static void main(String[] args) {
+        FileScanner allFilesFrom = Walker::allFilesFrom;
+
+        FileScanner allFilesFrom2 = name -> allFilesFrom(name);
+
+        FileScanner allFilesFrom3 = new FileScanner() {
+            @Override
+            public List<Forms> scan(String name) {
+                return allFilesFrom(name);
+            }
+        };
+    }
+
+    @FunctionalInterface
+    interface FileScanner {
+        List<Forms> scan(String name);
+    }
+
     private static Forms toForm(Path path) {
         long size = 0;
         long time = 0;
         try {
             size = Files.size(path);
-            time = Files.getLastModifiedTime(path).toMillis()/1000;
+            time = Files.getLastModifiedTime(path).toMillis() / 1000;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -37,7 +54,6 @@ public class Walker {
     }
 
     public static List<Forms> removeZeroSizeForm(List<Forms> files) {
-        out.println("deleting files with zero size...");
         return files.stream()
                 .filter(f -> f.size() != 0)
                 .collect(toList());
