@@ -1,7 +1,5 @@
 package agivdel.copiedFilesSearch;
 
-import java.io.IOException;
-
 /**
  * Некто скопировал на компьютере какое-то количество файлов,
  * изменив у копий названия и, возможно, расширения.
@@ -9,7 +7,7 @@ import java.io.IOException;
  */
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         new UI().run();
     }
 }
