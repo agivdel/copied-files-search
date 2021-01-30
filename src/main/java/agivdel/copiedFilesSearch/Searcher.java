@@ -3,7 +3,8 @@ package agivdel.copiedFilesSearch;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.groupingBy;
 
 /**
  * Группировка файлов по времени последнего редактирования, затем по контрольной сумме CRC32.
