@@ -37,7 +37,7 @@ public class SearcherTest {
      */
     @Test
     public void sizeOfListInDoubles_equalsNumbersOfCopiesIncludingOriginal() throws InterruptedException {
-        List<TestForm> forms = getCopiesFromOneOriginal();
+        List<Forms> forms = getCopiesFromOneOriginal();
         List<Doubles> doubles = searcher.getDoublesByTimeFirst(forms);
 
         Assert.assertEquals(4, doubles.get(0).getDoubles().size());
@@ -49,7 +49,7 @@ public class SearcherTest {
      */
     @Test
     public void sameLastModifiedTimeInDoubles() throws InterruptedException {
-        List<TestForm> forms = getCopiesFromOneOriginal();
+        List<Forms> forms = getCopiesFromOneOriginal();
         List<Doubles> doubles = searcher.getDoublesByTimeFirst(forms);
 
         long original = doubles.get(0).getDoubles().get(0).lastModified();
@@ -67,7 +67,7 @@ public class SearcherTest {
      */
     @Test
     public void searchAmongDifferentCreateTimes() throws InterruptedException {
-        List<TestForm> forms = getCopiesFromOneOriginal();
+        List<Forms> forms = getCopiesFromOneOriginal();
         List<Doubles> doubles = searcher.getDoublesByTimeFirst(forms);
 
         long original = ((TestForm) doubles.get(0).getDoubles().get(0)).createTime();
@@ -104,19 +104,19 @@ public class SearcherTest {
     }
 
     private List<Forms> getCopiesFromTwoOriginals() throws InterruptedException {
-        Forms form1 = new TestForm("1", 10);
+        TestForm form1 = new TestForm("1", 10);
         Thread.sleep(1000);
-        Forms form1_copy1 = TestForm.copy(form1);
+        TestForm form1_copy1 = TestForm.copy(form1);
         Thread.sleep(1000);
-        Forms form2 = new TestForm("2", 20);
+        TestForm form2 = new TestForm("2", 20);
         Thread.sleep(1000);
-        Forms form2_copy1 = TestForm.copy(form2);
+        TestForm form2_copy1 = TestForm.copy(form2);
         Thread.sleep(1000);
-        Forms form2_copy2 = TestForm.copy(form2_copy1);
+        TestForm form2_copy2 = TestForm.copy(form2_copy1);
         return List.of(form1, form1_copy1, form2, form2_copy1, form2_copy2);
     }
 
-    private List<TestForm> getCopiesFromOneOriginal() throws InterruptedException {
+    private List<Forms> getCopiesFromOneOriginal() throws InterruptedException {
         TestForm form1 = new TestForm("1", 10);
         Thread.sleep(1000);
         TestForm form2 = new TestForm("2", 20);

@@ -9,9 +9,8 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static java.lang.System.*;
-
 public class UITest {
+    PrintStream out = System.out;
 
     @Rule
     public ExpectedException expectedEx = ExpectedException.none();
@@ -103,18 +102,18 @@ public class UITest {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream newOut = new PrintStream(baos);
         System.setOut(newOut);// After this all System.out.println() statements will come to baos stream
-        List<Forms> files = Walker.allFilesFrom("src/test/resources/data/photo/people");
+        List<Forms> files = Walker.allFilesFrom("src/test/resources/data");
         List<Doubles> doubles = new Searcher().getDoublesByTimeFirst(files);
         String input = """
                 counting files...
                 displaying...
                 ==================
-                Last modified time: 2019-01-08T17:03:49Z
-                src\\test\\resources\\data\\photo\\people\\woman-3 — копия — копия.bmp
-                src\\test\\resources\\data\\photo\\people\\woman-3 — копия.jpg
-                src\\test\\resources\\data\\photo\\people\\woman-3.jpg
+                Last modified time:2019-01-08T17:03:49Z
+                src\\test\\resources\\data\\woman-3 — копия — копия.bmp
+                src\\test\\resources\\data\\woman-3 — копия.jpg
+                src\\test\\resources\\data\\woman-3.jpg
                 __________________
-                The total number of original files with copies: 1\r
+                The total number of original files with copies:1\r
                 """;
         UI.printAllDoubles(doubles, newOut);
         String output = baos.toString();

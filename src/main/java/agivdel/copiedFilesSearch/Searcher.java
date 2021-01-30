@@ -11,13 +11,13 @@ import static java.util.stream.Collectors.*;
 
 public class Searcher {
 
-    public List<Doubles> getDoublesByTimeFirst(List<? extends Forms> files) {
+    public List<Doubles> getDoublesByTimeFirst(List<Forms> files) {
         return splitByTime(new Doubles(files))
                 .flatMap(this::splitByChecksum)
                 .collect(toList());
     }
 
-    public List<Doubles> getDoublesByChecksumFirst(List<? extends Forms> files) {
+    public List<Doubles> getDoublesByChecksumFirst(List<Forms> files) {
         return splitByChecksum(new Doubles(files))
                 .flatMap(this::splitByTime)
                 .collect(toList());

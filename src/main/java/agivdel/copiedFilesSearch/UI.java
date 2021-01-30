@@ -11,6 +11,8 @@ import static java.lang.System.*;
 
 public class UI {
     Searcher searcher = new Searcher();
+    Walker walker = new Walker();
+    Walker.FileScanner fileScanner = Walker::allFilesFrom;
 
     public static final Processor whatAddress = new DirectoryProcessor(
             "To search for copied files, enter the address of the search directory:");
@@ -27,11 +29,14 @@ public class UI {
             isRepeat = false;
 
             String address = input(whatAddress, in, out);
-            List<Forms> files = Walker.allFilesFrom(address);
+            out.println("counting files...");
+//            List<Forms> files = walker.allFilesFrom(address);
+            List<Forms> files = fileScanner.scan(address);
 
             String minSize = input(whatMinSize, in, out);
             if (minSize.equals("1")) {
-                files = Walker.removeZeroSizeForm(files);
+                out.println("deleting files with zero size...");
+                files = walker.removeZeroSizeForm(files);
             }
 
             String order = input(whatOrder, in, out);
@@ -102,7 +107,7 @@ public class UI {
         for (Doubles doubles : doublesList) {
             long timeOfFirstFile = doubles.getDoubles().get(0).lastModified() * 1000;
             out.println("""
-                    =================="
+                    ==================
                     Last modified time: """ + FileTime.fromMillis(timeOfFirstFile));
             doubles.getDoubles().stream().map(Forms::toPath).forEach(out::println);
         }

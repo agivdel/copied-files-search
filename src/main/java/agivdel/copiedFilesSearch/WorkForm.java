@@ -46,8 +46,10 @@ public class WorkForm implements Forms{
                 check.update(buf, 0, length);
             }
         } catch (FileNotFoundException e) {
+            //TODO дописать обработку исключения
             System.err.println("File not found");
         } catch (IOException e) {
+            //TODO дописать обработку исключения
             System.err.println("IO error");
         }
         return check.getValue();

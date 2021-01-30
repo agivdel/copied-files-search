@@ -8,11 +8,13 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
-import static java.lang.System.*;
 
 public class Walker {
+    interface FileScanner {
+        List<Forms> scan (String name);
+    }
+
     public static List<Forms> allFilesFrom(String selectedDirectory) {
-        out.println("counting files...");
         try (Stream<Path> pathStream = Files.walk(Paths.get(selectedDirectory))) {
             return pathStream
                     .filter(Files::isRegularFile)
@@ -29,15 +31,15 @@ public class Walker {
         long time = 0;
         try {
             size = Files.size(path);
-            time = Files.getLastModifiedTime(path).toMillis()/1000;
+            time = Files.getLastModifiedTime(path).toMillis() / 1000;
         } catch (IOException e) {
+            //TODO дописать обработку исключения
             e.printStackTrace();
         }
         return new WorkForm(path, size, time);
     }
 
-    public static List<Forms> removeZeroSizeForm(List<Forms> files) {
-        out.println("deleting files with zero size...");
+    public List<Forms> removeZeroSizeForm(List<Forms> files) {
         return files.stream()
                 .filter(f -> f.size() != 0)
                 .collect(toList());
