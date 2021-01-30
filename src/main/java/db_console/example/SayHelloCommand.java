@@ -1,8 +1,8 @@
-package console.example;
+package db_console.example;
 
-import console.framework.Argument;
-import console.framework.ArgumentAccessor;
-import console.framework.Command;
+import db_console.framework.Argument;
+import db_console.framework.ArgumentAccessor;
+import db_console.framework.Command;
 
 import java.io.PrintStream;
 import java.util.List;

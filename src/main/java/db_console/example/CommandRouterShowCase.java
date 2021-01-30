@@ -1,7 +1,7 @@
-package console.example;
+package db_console.example;
 
-import console.framework.CommandHandlerImpl;
-import console.framework.CommandRouter;
+import db_console.framework.CommandHandlerImpl;
+import db_console.framework.CommandRouter;
 
 import java.util.List;
 import java.util.Scanner;

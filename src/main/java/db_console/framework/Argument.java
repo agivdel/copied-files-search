@@ -1,4 +1,4 @@
-package console.framework;
+package db_console.framework;
 
 import java.util.Scanner;
 

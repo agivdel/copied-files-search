@@ -1,4 +1,4 @@
-package console;
+package db_console;
 
 import java.io.PrintStream;
 import java.nio.file.Files;

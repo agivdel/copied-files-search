@@ -1,10 +1,10 @@
-package console.example;
+package db_console.example;
 
-import console.framework.Argument;
-import console.framework.ArgumentAccessor;
-import console.framework.ArgumentCaptureException;
-import console.framework.ArgumentCollector;
-import console.framework.Command;
+import db_console.framework.Argument;
+import db_console.framework.ArgumentAccessor;
+import db_console.framework.ArgumentCaptureException;
+import db_console.framework.ArgumentCollector;
+import db_console.framework.Command;
 
 import java.io.PrintStream;
 import java.nio.file.Files;
