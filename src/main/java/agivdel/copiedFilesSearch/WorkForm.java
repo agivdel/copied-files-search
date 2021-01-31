@@ -38,7 +38,7 @@ public class WorkForm implements Forms{
     }
 
     @Override
-    public long getCRC32() {
+    public long getChecksum() {
         return crc32supplier.get();
     }
 

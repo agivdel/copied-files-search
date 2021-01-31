@@ -6,5 +6,5 @@ public interface Forms {
     Path toPath();
     long size();
     long lastModified();
-    long getCRC32();
+    long getChecksum();
 }

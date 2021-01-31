@@ -42,7 +42,7 @@ public class TestForm implements Forms {
     }
 
     @Override
-    public long getCRC32() {
+    public long getChecksum() {
         return this.size() * 31 + 17;
     }
 

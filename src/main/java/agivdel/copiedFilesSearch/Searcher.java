@@ -38,7 +38,7 @@ public class Searcher {
     private Stream<Doubles> splitByChecksum(Doubles doubles) {
         return doubles.getDoubles()
                 .stream()
-                .collect(groupingBy(Forms::getCRC32))
+                .collect(groupingBy(Forms::getChecksum))
                 .values()
                 .stream()
                 .filter(l -> l.size() > 1)
