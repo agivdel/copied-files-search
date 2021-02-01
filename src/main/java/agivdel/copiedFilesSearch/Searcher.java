@@ -33,7 +33,7 @@ public class Searcher {
                 .map(Doubles::new);
     }
 
-    //каждый doubles - своя контрольная сумма (по CRC32); равна для файлов (не копий) одного (в том числе нулевого) размера
+    //каждый doubles - своя контрольная сумма; равна для файлов (не копий) одного (в том числе нулевого) размера
     private Stream<Doubles> splitByChecksum(Doubles doubles) {
         return doubles.getDoubles()
                 .stream()
