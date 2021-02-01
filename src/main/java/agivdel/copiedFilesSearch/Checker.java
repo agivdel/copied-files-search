@@ -7,16 +7,16 @@ import java.util.zip.Checksum;
 
 public class Checker {
     private static Checksum check;
-    private static Class<? extends Checksum> checksumImpl;
+    private static Class<? extends Checksum> checksumImplClass;
 
     public static void setCheck(Checksum check) {
         Checker.check = check;
-        checksumImpl = check.getClass();
+        checksumImplClass = check.getClass();
     }
 
     public static long getChecksum(Forms form) {
         try {
-            check = (Checksum) checksumImpl.newInstance();
+            check = checksumImplClass.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
             //TODO дописать обработку исключения
