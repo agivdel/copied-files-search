@@ -17,7 +17,6 @@ public class Checker {
     public static long getChecksum(Forms form) {
         try {
             check = (Checksum) checksumImpl.newInstance();
-            System.out.println("check: " + check.getClass().getCanonicalName());
         } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
             //TODO дописать обработку исключения

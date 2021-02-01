@@ -35,7 +35,7 @@ public class WorkForm implements Forms{
 
     @Override
     public long getChecksum() {
-        return checksumSupplier.get();
+        return Suppliers.memoize(this::getChecksumPrivate).get();
     }
 
     private long getChecksumPrivate() {
