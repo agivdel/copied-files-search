@@ -15,6 +15,7 @@ public class UI {
     Searcher searcher = new Searcher();
     Walker walker = new Walker();
     Walker.FileScanner fileScanner = Walker::allFilesFrom;
+    Walker.ZeroRemover zeroRemover = Walker::removeZeroSizeForm;
 
     public static final Processor whatAddress = new DirectoryProcessor(
             "To search for copied files, enter the address of the search directory:");
@@ -40,7 +41,8 @@ public class UI {
             String minSize = input(whatMinSize, in, out);
             if (minSize.equals("1")) {
                 out.println("deleting files with zero size...");
-                files = walker.removeZeroSizeForm(files);
+//                files = walker.removeZeroSizeForm(files);
+                files = zeroRemover.remove(files);
             }
 
             String checksumAlg = input(whatChecksumAlg, in, out);

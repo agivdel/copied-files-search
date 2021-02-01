@@ -39,7 +39,11 @@ public class Walker {
         return new WorkForm(path, size, time);
     }
 
-    public List<Forms> removeZeroSizeForm(List<Forms> files) {
+    interface ZeroRemover {
+        List<Forms> remove(List<Forms> files);
+    }
+
+    public static List<Forms> removeZeroSizeForm(List<Forms> files) {
         return files.stream()
                 .filter(f -> f.size() != 0)
                 .collect(toList());
