@@ -10,7 +10,7 @@ public class WorkForm implements Forms{
     private final Path path;
     private final long size;
     private final long lastModifiedTime;
-    private final Supplier<Long> checksumSupplier = Suppliers.memoize(this::getCRC32private)::get;
+    private final Supplier<Long> checksumSupplier = Suppliers.memoize(this::getChecksumPrivate)::get;
 
     public WorkForm(Path path, long size, long lastModifiedTime) {
         this.path = path;
@@ -38,7 +38,7 @@ public class WorkForm implements Forms{
         return checksumSupplier.get();
     }
 
-    private long getCRC32private() {
+    private long getChecksumPrivate() {
         return Checker.getChecksum(this);
     }
 
