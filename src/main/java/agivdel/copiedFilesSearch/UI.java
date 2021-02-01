@@ -4,6 +4,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.zip.Adler32;
@@ -28,23 +29,26 @@ public class UI {
     public static final Processor whatNext = new OptionProcessor(
             "To search for copies of files in another directory or exit the program? 'exit' - 0, 'search' - 1.");
 
-    public void run() {
+    public void run(List<Instruction> instructionList) {
         boolean isRepeat;
+        for (Instruction instruction : instructionList) {
+            instruction.instruct();
+        }
         do {
             isRepeat = false;
 
-            //interface Command:
+            //interface Instruction:
             //1. String resultFromInput; may be null;
             //2. Processor processor; may be null;
-            //3. Implementation of method "DoIt()" (the conditional name);
+            //3. Implementation of method instruct();
 
-            //element 0 of List<Command> list
+            //element 0 of List<Instruction> list
             String address = input(whatAddress, in, out);
             out.println("counting files...");
 //            List<Forms> files = walker.allFilesFrom(address);
             List<Forms> files = fileScanner.scan(address);
 
-            //element 1 of List<Command> list
+            //element 1 of List<Instruction> list
             String minSize = input(whatMinSize, in, out);
             if (minSize.equals("1")) {
                 out.println("deleting files with zero size...");
@@ -52,71 +56,37 @@ public class UI {
                 files = zeroRemover.remove(files);
             }
 
-            //element 2 of List<Command> list
+            //element 2 of List<Instruction> list
             String checksumAlg = input(whatChecksumAlg, in, out);
-            if (checksumAlg.equals("1")) {//start of DoIt();
+            if (checksumAlg.equals("1")) {//start of instruct();
                 Checker.setCheck(new Adler32());
             } else {
                 Checker.setCheck(new CRC32());
-            }//end of DoIt();
+            }//end of instruct();
 
-            //element 3 of List<Command> list
+            //element 3 of List<Instruction> list
             String order = input(whatOrder, in, out);
-            out.println("looking for duplicates...");//start of DoIt();
+            out.println("looking for duplicates...");//start of instruct();
             List<Doubles> doubles;
             if (order.equals("1")) {
                 doubles = searcher.getDoublesByTimeFirst(files);
             } else {
                 doubles = searcher.getDoublesByChecksumFirst(files);
-            }//end of DoIt();
+            }//end of instruct();
 
-            //element 4 of List<Command> list
+            //element 4 of List<Instruction> list
             //1. resultOfInput = null;
             //2. Processor = null;
-            //3. start of DoIt();
+            //3. start of instruct();
             printAllDoubles(doubles, out);
-            //end of DoIt();
+            //end of instruct();
 
-            //element 5 of List<Command> list
+            //element 5 of List<Instruction> list
             String nextAction = input(whatNext, in, out);
-            if (nextAction.equals("1")) {//start of DoIt();
+            if (nextAction.equals("1")) {//start of instruct();
                 isRepeat = true;
-            }//end of DoIt();
+            }//end of instruct();
         } while (isRepeat);
-    }
-
-    static class DirectoryProcessor implements Processor {
-        private final String message;
-
-        public DirectoryProcessor(String message) {
-            this.message = message;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        @Override
-        public boolean isValid(String select) {
-            return Files.isDirectory(Paths.get(select).normalize());
-        }
-    }
-
-    static class OptionProcessor implements Processor {
-        private final String message;
-
-        public OptionProcessor(String message) {
-            this.message = message;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        @Override
-        public boolean isValid(String select) {
-            return select.equals("0") || select.equals("1");
-        }
     }
 
     public static String input(Processor processor, InputStream is, PrintStream out) {

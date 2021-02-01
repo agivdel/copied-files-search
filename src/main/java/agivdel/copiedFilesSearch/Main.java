@@ -1,5 +1,8 @@
 package agivdel.copiedFilesSearch;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Некто скопировал на компьютере какое-то количество файлов,
  * изменив у копий названия и, возможно, расширения.
@@ -8,6 +11,7 @@ package agivdel.copiedFilesSearch;
 
 public class Main {
     public static void main(String[] args) {
-        new UI().run();
+        List<Instruction> instructionList = new ArrayList<>();
+        new UI().run(instructionList);
     }
 }

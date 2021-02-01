@@ -20,7 +20,7 @@ public class UITest {
      */
     @Test
     public void inputCorrectDirectoryAddress_Test() {
-        UI.DirectoryProcessor address = new UI.DirectoryProcessor("enter the address of the search directory:");
+        Processor address = new DirectoryProcessor("enter the address of the search directory:");
         String input = "src/test/resources";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
         String output = UI.input(address, is, out);
@@ -34,7 +34,7 @@ public class UITest {
     public void inputNotDirectoryAddress_Test() {
         expectedEx.expect(java.util.NoSuchElementException.class);
         expectedEx.expectMessage("No line found");
-        UI.DirectoryProcessor address = new UI.DirectoryProcessor("enter the address of the search directory:");
+        Processor address = new DirectoryProcessor("enter the address of the search directory:");
         String input = "src/test/resources/doc1.txt";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
         UI.input(address, is, out);
@@ -47,7 +47,7 @@ public class UITest {
     public void inputNonexistentDirectoryAddress_Test() {
         expectedEx.expect(java.util.NoSuchElementException.class);
         expectedEx.expectMessage("No line found");
-        UI.DirectoryProcessor address = new UI.DirectoryProcessor("enter the address of the search directory:");
+        Processor address = new DirectoryProcessor("enter the address of the search directory:");
         String input = "src/test/resources/doc";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
         UI.input(address, is, out);
@@ -58,7 +58,7 @@ public class UITest {
      */
     @Test
     public void inputValidNumber0_Test() {
-        UI.OptionProcessor minSize = new UI.OptionProcessor("enter 0 or 1.");
+        Processor minSize = new OptionProcessor("enter 0 or 1.");
         String input = "0";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
         String output = UI.input(minSize, is, out);
@@ -67,7 +67,7 @@ public class UITest {
 
     @Test
     public void inputValidNumber1_Test() {
-        UI.OptionProcessor minSize = new UI.OptionProcessor("enter 0 or 1.");
+        Processor minSize = new OptionProcessor("enter 0 or 1.");
         String input = "1";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
         String output = UI.input(minSize, is, out);
@@ -81,7 +81,7 @@ public class UITest {
     public void inputInvalidNumber_Test() {
         expectedEx.expect(java.util.NoSuchElementException.class);
         expectedEx.expectMessage("No line found");
-        UI.OptionProcessor order = new UI.OptionProcessor("enter 0 or 1.");
+        Processor order = new OptionProcessor("enter 0 or 1.");
         String input = "2";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
         UI.input(order, is, out);
@@ -91,7 +91,7 @@ public class UITest {
     public void inputLetterInsteadOfNumber_Test() {
         expectedEx.expect(java.util.NoSuchElementException.class);
         expectedEx.expectMessage("No line found");
-        UI.OptionProcessor order = new UI.OptionProcessor("enter 0 or 1.");
+        Processor order = new OptionProcessor("enter 0 or 1.");
         String input = "fgg";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
         UI.input(order, is, out);
