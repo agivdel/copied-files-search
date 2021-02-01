@@ -45,9 +45,9 @@ public class UI {
 
             String checksumAlg = input(whatChecksumAlg, in, out);
             if (checksumAlg.equals("1")) {
-                Searcher.setCheck(new Adler32());
+                Checker.setCheck(new Adler32());
             } else {
-                Searcher.setCheck(new CRC32());
+                Checker.setCheck(new CRC32());
             }
 
             String order = input(whatOrder, in, out);

@@ -2,19 +2,15 @@ package agivdel.copiedFilesSearch;
 
 import com.google.common.base.Suppliers;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.util.function.Supplier;
-import java.util.zip.CRC32;
 
 public class WorkForm implements Forms{
     private final Path path;
     private final long size;
     private final long lastModifiedTime;
-    private final Supplier<Long> crc32supplier = Suppliers.memoize(this::getCRC32private)::get;
+    private final Supplier<Long> checksumSupplier = Suppliers.memoize(this::getCRC32private)::get;
 
     public WorkForm(Path path, long size, long lastModifiedTime) {
         this.path = path;
@@ -39,28 +35,11 @@ public class WorkForm implements Forms{
 
     @Override
     public long getChecksum() {
-        return crc32supplier.get();
+        return checksumSupplier.get();
     }
 
     private long getCRC32private() {
-        CRC32 check = new CRC32();//TODO передавать объект интерфейса Checksum для изменения алгоритма расчета суммы
-        byte[] buf = new byte[8192];
-        try (FileInputStream fis = new FileInputStream(this.toPath().toFile())) {
-            while (true) {
-                int length = fis.read(buf);
-                if (length < 0) {
-                    break;
-                }
-                check.update(buf, 0, length);
-            }
-        } catch (FileNotFoundException e) {
-            //TODO дописать обработку исключения
-            System.err.println("File not found");
-        } catch (IOException e) {
-            //TODO дописать обработку исключения
-            System.err.println("IO error");
-        }
-        return check.getValue();
+        return Checker.getChecksum(this);
     }
 
     @Override
