@@ -13,8 +13,6 @@ import java.util.zip.CRC32;
 import static java.lang.System.*;
 
 public class UI {
-    Searcher searcher = new Searcher();
-    Walker walker = new Walker();
     Walker.FileScanner fileScanner = Walker::allFilesFrom;
     Walker.ZeroRemover zeroRemover = Walker::removeZeroSizeForm;
 
@@ -58,16 +56,18 @@ public class UI {
 
             //element 2 of List<Instruction> list
             String checksumAlg = input(whatChecksumAlg, in, out);
+            ChecksumCalculator calculator = null;
             if (checksumAlg.equals("1")) {//start of instruct();
-                Checker.setCheck(new Adler32());
+                calculator = Checker::getAdler32;
             } else {
-                Checker.setCheck(new CRC32());
+                calculator = Checker::getCRC32;
             }//end of instruct();
 
             //element 3 of List<Instruction> list
             String order = input(whatOrder, in, out);
             out.println("looking for duplicates...");//start of instruct();
             List<Doubles> doubles;
+            Searcher searcher = new Searcher(calculator);
             if (order.equals("1")) {
                 doubles = searcher.getDoublesByTimeFirst(files);
             } else {

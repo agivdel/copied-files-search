@@ -11,6 +11,12 @@ import static java.util.stream.Collectors.groupingBy;
  */
 
 public class Searcher {
+    private final ChecksumCalculator calculator;
+
+    public Searcher(ChecksumCalculator calculator) {
+        this.calculator = calculator;
+    }
+
     public List<Doubles> getDoublesByTimeFirst(List<Forms> files) {
         return splitByTime(new Doubles(files))
                 .flatMap(this::splitByChecksum)
@@ -37,7 +43,7 @@ public class Searcher {
     private Stream<Doubles> splitByChecksum(Doubles doubles) {
         return doubles.getDoubles()
                 .stream()
-                .collect(groupingBy(Forms::getChecksum))
+                .collect(groupingBy(calculator::calculateChecksum))
                 .values()
                 .stream()
                 .filter(l -> l.size() > 1)

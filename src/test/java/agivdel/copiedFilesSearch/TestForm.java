@@ -41,11 +41,6 @@ public class TestForm implements Forms {
         return this.lastModifiedTime;
     }
 
-    @Override
-    public long getChecksum() {
-        return this.size() * 31 + 17;
-    }
-
     public static TestForm copy(Forms forms) {
         TestForm oldForm = (TestForm) forms;
         return new TestForm(oldForm.name + " - копия", oldForm.size(), oldForm.lastModifiedTime);

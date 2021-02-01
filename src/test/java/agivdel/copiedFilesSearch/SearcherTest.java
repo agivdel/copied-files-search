@@ -6,7 +6,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 public class SearcherTest {
-    Searcher searcher = new Searcher();
+    Searcher searcher = new Searcher(Forms::size);
 
     /**
      * Метод getDoublesByTimeFrom() возвращает список объектов Doubles.
@@ -104,6 +104,7 @@ public class SearcherTest {
     }
 
     private List<Forms> getCopiesFromTwoOriginals() throws InterruptedException {
+        //TODO задавать время самостоятельно, sleep() удалить
         TestForm form1 = new TestForm("1", 10);
         Thread.sleep(1000);
         TestForm form1_copy1 = TestForm.copy(form1);

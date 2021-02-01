@@ -103,15 +103,14 @@ public class UITest {
         PrintStream newOut = new PrintStream(baos);
         System.setOut(newOut);// After this all System.out.println() statements will come to baos stream
         List<Forms> files = Walker.allFilesFrom("src/test/resources/data");
-        List<Doubles> doubles = new Searcher().getDoublesByTimeFirst(files);
+        List<Doubles> doubles = new Searcher(Forms::size).getDoublesByTimeFirst(files);
         String input = """
-                counting files...
                 displaying...
                 ==================
-                Last modified time:2019-01-08T17:03:49Z
-                src\\test\\resources\\data\\woman-3 — копия — копия.bmp
-                src\\test\\resources\\data\\woman-3 — копия.jpg
-                src\\test\\resources\\data\\woman-3.jpg
+                Last modified time:2021-02-01T17:30:18Z
+                src\\test\\resources\\data\\men-3 — копия.bmp
+                src\\test\\resources\\data\\men-3 — копия.jpg
+                src\\test\\resources\\data\\men-3.jpeg
                 __________________
                 The total number of original files with copies:1\r
                 """;

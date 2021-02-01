@@ -3,24 +3,22 @@ package agivdel.copiedFilesSearch;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.zip.Adler32;
+import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 
 public class Checker {
-    private static Checksum check;
-    private static Class<? extends Checksum> checksumImplClass;
-
-    public static void setCheck(Checksum check) {
-        Checker.check = check;
-        checksumImplClass = check.getClass();
+    public static long getAdler32(Forms form) {
+        Checksum check = new Adler32();
+        return getChecksum(form, check);
     }
 
-    public static long getChecksum(Forms form) {
-        try {
-            check = checksumImplClass.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
-            //TODO дописать обработку исключения
-        }
+    public static long getCRC32(Forms form) {
+        Checksum check = new CRC32();
+        return getChecksum(form, check);
+    }
+
+    public static long getChecksum(Forms form, Checksum check) {
         byte[] buf = new byte[8192];
         try (FileInputStream fis = new FileInputStream(form.toPath().toFile())) {
             while (true) {
