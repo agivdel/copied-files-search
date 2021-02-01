@@ -1,6 +1,5 @@
 package agivdel.copiedFilesSearch;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,7 +10,7 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        List<Instruction> instructionList = new ArrayList<>();
-        new UI().run(instructionList);
+        List<Instructions> instructionsList = new InstructionsMaker().getInstructions();
+        new UI().run(instructionsList);
     }
 }
