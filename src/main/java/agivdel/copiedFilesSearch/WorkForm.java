@@ -43,7 +43,7 @@ public class WorkForm implements Forms{
     }
 
     private long getCRC32private() {
-        CRC32 check = new CRC32();
+        CRC32 check = new CRC32();//TODO передавать объект интерфейса Checksum для изменения алгоритма расчета суммы
         byte[] buf = new byte[8192];
         try (FileInputStream fis = new FileInputStream(this.toPath().toFile())) {
             while (true) {

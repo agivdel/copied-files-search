@@ -6,6 +6,8 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.util.List;
 import java.util.Scanner;
+import java.util.zip.Adler32;
+import java.util.zip.CRC32;
 
 import static java.lang.System.*;
 
@@ -18,6 +20,8 @@ public class UI {
             "To search for copied files, enter the address of the search directory:");
     public static final Processor whatMinSize = new OptionProcessor(
             "Do you need to search among files with zero size? 'yes' - 0, 'no' - 1.");
+    public static final Processor whatChecksumAlg = new OptionProcessor(
+            "What algorithm should be used to calculate the checksum of files? 'CRC32' - 0, 'Adler32' - 1.");
     public static final Processor whatOrder = new OptionProcessor(
             "To group files first by checksum (slower) or last modified time (faster) when copies searching? 'checksum' - 0, 'time' - 1.");
     public static final Processor whatNext = new OptionProcessor(
@@ -37,6 +41,13 @@ public class UI {
             if (minSize.equals("1")) {
                 out.println("deleting files with zero size...");
                 files = walker.removeZeroSizeForm(files);
+            }
+
+            String checksumAlg = input(whatChecksumAlg, in, out);
+            if (checksumAlg.equals("1")) {
+                Searcher.setCheck(new Adler32());
+            } else {
+                Searcher.setCheck(new CRC32());
             }
 
             String order = input(whatOrder, in, out);
