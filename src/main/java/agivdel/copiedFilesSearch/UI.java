@@ -33,11 +33,18 @@ public class UI {
         do {
             isRepeat = false;
 
+            //interface Command:
+            //1. String resultFromInput; may be null;
+            //2. Processor processor; may be null;
+            //3. Implementation of method "DoIt()" (the conditional name);
+
+            //element 0 of List<Command> list
             String address = input(whatAddress, in, out);
             out.println("counting files...");
 //            List<Forms> files = walker.allFilesFrom(address);
             List<Forms> files = fileScanner.scan(address);
 
+            //element 1 of List<Command> list
             String minSize = input(whatMinSize, in, out);
             if (minSize.equals("1")) {
                 out.println("deleting files with zero size...");
@@ -45,30 +52,37 @@ public class UI {
                 files = zeroRemover.remove(files);
             }
 
+            //element 2 of List<Command> list
             String checksumAlg = input(whatChecksumAlg, in, out);
-            if (checksumAlg.equals("1")) {
+            if (checksumAlg.equals("1")) {//start of DoIt();
                 Checker.setCheck(new Adler32());
             } else {
                 Checker.setCheck(new CRC32());
-            }
+            }//end of DoIt();
 
+            //element 3 of List<Command> list
             String order = input(whatOrder, in, out);
-            out.println("looking for duplicates...");
+            out.println("looking for duplicates...");//start of DoIt();
             List<Doubles> doubles;
             if (order.equals("1")) {
                 doubles = searcher.getDoublesByTimeFirst(files);
             } else {
                 doubles = searcher.getDoublesByChecksumFirst(files);
-            }
+            }//end of DoIt();
 
+            //element 4 of List<Command> list
+            //1. resultOfInput = null;
+            //2. Processor = null;
+            //3. start of DoIt();
             printAllDoubles(doubles, out);
+            //end of DoIt();
 
+            //element 5 of List<Command> list
             String nextAction = input(whatNext, in, out);
-            if (nextAction.equals("1")) {
+            if (nextAction.equals("1")) {//start of DoIt();
                 isRepeat = true;
-            }
+            }//end of DoIt();
         } while (isRepeat);
-        System.exit(0);
     }
 
     static class DirectoryProcessor implements Processor {
