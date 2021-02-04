@@ -8,6 +8,7 @@ import org.junit.rules.ExpectedException;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.function.Function;
 
 public class UITest {
     PrintStream out = System.out;
@@ -118,5 +119,63 @@ public class UITest {
         String output = baos.toString();
         Assert.assertEquals(input, output);
         System.setOut(out);//Restore stream
+    }
+
+    @Test
+    public void functionTest() {
+        Function<String, String> functionAB = new Function<String, String>() {
+            @Override
+            public String apply(String s) {
+                return s + " КАЗЁЛ!";
+            }
+        };
+        Function<Object, String> functionBC = new Function<Object, String>() {
+
+            @Override
+            public String apply(Object o) {
+                return o + " ХУЙ!";
+            }
+        };
+        Function<Object, String> compose = functionAB.compose(functionBC);
+        String вася = compose.apply("Вася");
+        System.out.println(вася);
+    }
+
+    @Test
+    public void function2Test() {
+        Function<String, String> functionAB = new Function<String, String>() {
+            @Override
+            public String apply(String s) {
+                return s + " КАЗЁЛ!";
+            }
+        };
+        Function<String, String> functionBC = new Function<String, String>() {
+            @Override
+            public String apply(String s) {
+                return s + " ХУЙ!";
+            }
+        };
+        Function<String, String> functionAC = functionAB.andThen(functionBC);
+        String вася = functionAC.apply("Вася");
+        System.out.println(вася);
+    }
+
+    @Test
+    public void function3Test() {
+        Function<String, String> functionAB = new Function<String, String>() {
+            @Override
+            public String apply(String s) {
+                return s + " КАЗЁЛ!";
+            }
+        };
+        Function<String, List<String>> functionBC = new Function<String, List<String>>() {
+            @Override
+            public List<String> apply(String s) {
+                return List.of(s + " ХУЙ!");
+            }
+        };
+        Function<String, List<String>> functionAC = functionAB.andThen(functionBC);
+        List<String> вася = functionAC.apply("Вася");
+        System.out.println(вася);
     }
 }

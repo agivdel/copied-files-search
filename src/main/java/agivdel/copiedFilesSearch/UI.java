@@ -6,21 +6,10 @@ import java.util.List;
 import java.util.Scanner;
 
 public class UI {
-    Walker.FileScanner fileScanner = Walker::allFilesFrom;
-    Walker.ZeroRemover zeroRemover = Walker::removeZeroSizeForm;
-    boolean isRepeat;
-    List<Forms> files;
-    List<Doubles> doubles;
-    ChecksumCalculator calculator;
-
-    public void run(List<Instructions> instructionsList) {
+    public void run(Instructions firstInstruction, Object o) {
         do {
-            isRepeat = false;
-            for (Instructions instructions : instructionsList) {
-                instructions.instruct(this);
-            }
-        }
-        while (isRepeat);
+            firstInstruction.instruct(o);
+        } while (true);
     }
 
     public static String input(Processor processor, InputStream is, PrintStream out) {
@@ -33,7 +22,7 @@ public class UI {
         return select;
     }
 
-    //пока используется тлько в тестах
+    //пока используется только в тестах
     public static void printAllDoubles(List<Doubles> doublesList, PrintStream out) {
         out.println("displaying...");
         for (Doubles doubles : doublesList) {
