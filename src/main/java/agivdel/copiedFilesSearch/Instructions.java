@@ -8,9 +8,9 @@ public interface Instructions<IN, OUT> {
         return new Instructions<IN, OUT2>() {
             @Override
             public OUT2 instruct(IN in) {
-                OUT out = Instructions.this.instruct(in);
-                OUT2 instruct = next.instruct(out);
-                return instruct;
+                OUT out1 = Instructions.this.instruct(in);
+                OUT2 out2 = next.instruct(out1);
+                return out2;
             }
         };
     }
