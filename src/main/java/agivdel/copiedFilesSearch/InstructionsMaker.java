@@ -8,6 +8,14 @@ import static java.lang.System.out;
 
 public class InstructionsMaker {
 
+    public Instructions<Void, Boolean> getNew() {
+        return selectDirectory.linkWith(removeZeroSizeOrNot)
+                .linkWith(selectChecksumAlgorithm)
+                .linkWith(searchCopies)
+                .linkWith(printDoubles)
+                .linkWith(toRepeatOrNot);
+    }
+
     static class FormsDTO {
         List<Forms> files;
 
@@ -34,15 +42,7 @@ public class InstructionsMaker {
         }
     }
 
-    public Instructions<Void, Boolean> getNew() {
-        return instruction0.linkWith(instruction1)
-                .linkWith(instruction2)
-                .linkWith(instruction3)
-                .linkWith(instruction4)
-                .linkWith(instruction5);
-    }
-
-    Instructions<Void, FormsDTO> instruction0 = new Instructions<>() {
+    Instructions<Void, FormsDTO> selectDirectory = new Instructions<>() {
         final Walker.FileScanner fileScanner = Walker::allFilesFrom;
         public final Processor whatAddress = new DirectoryProcessor(
                 "To search for copied files, enter the address of the search directory:");
@@ -54,7 +54,7 @@ public class InstructionsMaker {
         }
     };
 
-    Instructions<FormsDTO, FormsDTO> instruction1 = new Instructions<>() {
+    Instructions<FormsDTO, FormsDTO> removeZeroSizeOrNot = new Instructions<>() {
         final Walker.ZeroRemover zeroRemover = Walker::removeZeroSizeForm;
         public final Processor whatMinSize = new OptionProcessor(
                 "Do you need to search among files with zero size? 'yes' - 0, 'no' - 1.");
@@ -70,7 +70,7 @@ public class InstructionsMaker {
         }
     };
 
-    Instructions<FormsDTO, FormsCalcDTO> instruction2 = new Instructions<>() {
+    Instructions<FormsDTO, FormsCalcDTO> selectChecksumAlgorithm = new Instructions<>() {
         public final Processor whatChecksumAlg = new OptionProcessor(
                 "What algorithm should be used to calculate the checksum of files? 'CRC32' - 0, 'Adler32' - 1.");
         @Override
@@ -86,7 +86,7 @@ public class InstructionsMaker {
         }
     };
 
-    Instructions<FormsCalcDTO, DoublesDTO> instruction3 = new Instructions<>() {
+    Instructions<FormsCalcDTO, DoublesDTO> searchCopies = new Instructions<>() {
         public final Processor whatOrder = new OptionProcessor(
                 "To group files first by checksum (slower) or last modified time (faster) when copies searching? 'checksum' - 0, 'time' - 1.");
         @Override
@@ -104,7 +104,7 @@ public class InstructionsMaker {
         }
     };
 
-    Instructions<DoublesDTO, Void> instruction4 = new Instructions<>() {
+    Instructions<DoublesDTO, Void> printDoubles = new Instructions<>() {
         @Override
         public Void instruct(DoublesDTO doublesDTO) {
             List<Doubles> doubles = doublesDTO.doubles;
@@ -123,13 +123,13 @@ public class InstructionsMaker {
         }
     };
 
-    Instructions<Void, Boolean> instruction5 = new Instructions<>() {
+    Instructions<Void, Boolean> toRepeatOrNot = new Instructions<>() {
         public final Processor whatNext = new OptionProcessor(
                 "To search for copies of files in another directory or exit the program? 'exit' - 0, 'search' - 1.");
         @Override
         public Boolean instruct(Void voi) {
             String nextAction = UI.input(whatNext, in, out);
-            return !nextAction.equals("0");
+            return nextAction.equals("1");
         }
     };
 }
