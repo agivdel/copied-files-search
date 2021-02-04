@@ -6,7 +6,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 public class SearcherTest {
-    Searcher searcher = new Searcher(Forms::size);
+    Searcher searcher = new Searcher(Form::size);
 
     /**
      * Метод getDoublesByTimeFrom() возвращает список объектов Doubles.
@@ -14,7 +14,7 @@ public class SearcherTest {
      */
     @Test
     public void doublesByTime_forMultipleOriginalFiles() throws InterruptedException {
-        List<Forms> forms = getCopiesFromTwoOriginals();
+        List<Form> forms = getCopiesFromTwoOriginals();
         List<Doubles> doublesByTime = searcher.getDoublesByTimeFirst(forms);
 
         Assert.assertEquals(2, doublesByTime.size());
@@ -26,7 +26,7 @@ public class SearcherTest {
      */
     @Test
     public void doublesByChecksum_forMultipleOriginalFiles() throws InterruptedException {
-        List<Forms> forms = getCopiesFromTwoOriginals();
+        List<Form> forms = getCopiesFromTwoOriginals();
         List<Doubles> doublesByChecksum = searcher.getDoublesByChecksumFirst(forms);
 
         Assert.assertEquals(2, doublesByChecksum.size());
@@ -37,7 +37,7 @@ public class SearcherTest {
      */
     @Test
     public void sizeOfListInDoubles_equalsNumbersOfCopiesIncludingOriginal() throws InterruptedException {
-        List<Forms> forms = getCopiesFromOneOriginal();
+        List<Form> forms = getCopiesFromOneOriginal();
         List<Doubles> doubles = searcher.getDoublesByTimeFirst(forms);
 
         Assert.assertEquals(4, doubles.get(0).getDoubles().size());
@@ -49,7 +49,7 @@ public class SearcherTest {
      */
     @Test
     public void sameLastModifiedTimeInDoubles() throws InterruptedException {
-        List<Forms> forms = getCopiesFromOneOriginal();
+        List<Form> forms = getCopiesFromOneOriginal();
         List<Doubles> doubles = searcher.getDoublesByTimeFirst(forms);
 
         long original = doubles.get(0).getDoubles().get(0).lastModified();
@@ -67,7 +67,7 @@ public class SearcherTest {
      */
     @Test
     public void searchAmongDifferentCreateTimes() throws InterruptedException {
-        List<Forms> forms = getCopiesFromOneOriginal();
+        List<Form> forms = getCopiesFromOneOriginal();
         List<Doubles> doubles = searcher.getDoublesByTimeFirst(forms);
 
         long original = ((TestForm) doubles.get(0).getDoubles().get(0)).createTime();
@@ -85,14 +85,14 @@ public class SearcherTest {
      */
     @Test
     public void searchAmongDifferentNamesAndExtensions() throws InterruptedException {
-        Forms forms1 = new TestForm("1.txt", 10);
+        Form form1 = new TestForm("1.txt", 10);
         Thread.sleep(1000);
-        Forms forms1_copy1 = TestForm.copy(forms1, "1.jpeg");
+        Form form1_copy1 = TestForm.copy(form1, "1.jpeg");
         Thread.sleep(1000);
-        Forms forms1_copy2 = TestForm.copy(forms1, "2.txt");
-        Forms form2 = new TestForm("1.jpeg", 20);
-        Forms form3 = new TestForm("2.txt", 30);
-        List<Forms> forms = List.of(forms1, forms1_copy1, forms1_copy2, form2, form3);
+        Form form1_copy2 = TestForm.copy(form1, "2.txt");
+        Form form2 = new TestForm("1.jpeg", 20);
+        Form form3 = new TestForm("2.txt", 30);
+        List<Form> forms = List.of(form1, form1_copy1, form1_copy2, form2, form3);
         List<Doubles> doubles = searcher.getDoublesByTimeFirst(forms);
 
         Path name0 = doubles.get(0).getDoubles().get(0).toPath();
@@ -103,7 +103,7 @@ public class SearcherTest {
         Assert.assertNotEquals(name0, name2);
     }
 
-    private List<Forms> getCopiesFromTwoOriginals() throws InterruptedException {
+    private List<Form> getCopiesFromTwoOriginals() throws InterruptedException {
         //TODO задавать время самостоятельно, sleep() удалить
         TestForm form1 = new TestForm("1", 10);
         Thread.sleep(1000);
@@ -117,7 +117,7 @@ public class SearcherTest {
         return List.of(form1, form1_copy1, form2, form2_copy1, form2_copy2);
     }
 
-    private List<Forms> getCopiesFromOneOriginal() throws InterruptedException {
+    private List<Form> getCopiesFromOneOriginal() throws InterruptedException {
         TestForm form1 = new TestForm("1", 10);
         Thread.sleep(1000);
         TestForm form2 = new TestForm("2", 20);

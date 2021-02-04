@@ -1,12 +1,9 @@
 package agivdel.copiedFilesSearch;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
-public class DirectoryProcessor implements Processor{
+public class OptionHandler implements Handler {
     private final String message;
 
-    public DirectoryProcessor(String message) {
+    public OptionHandler(String message) {
         this.message = message;
     }
 
@@ -16,6 +13,6 @@ public class DirectoryProcessor implements Processor{
 
     @Override
     public boolean isValid(String select) {
-        return Files.isDirectory(Paths.get(select).normalize());
+        return select.equals("0") || select.equals("1");
     }
 }

@@ -6,7 +6,7 @@ import java.nio.file.attribute.FileTime;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
-public class TestForm implements Forms {
+public class TestForm implements Form {
     private final String name;
     private final long size;
     private final long createTime;
@@ -41,13 +41,13 @@ public class TestForm implements Forms {
         return this.lastModifiedTime;
     }
 
-    public static TestForm copy(Forms forms) {
-        TestForm oldForm = (TestForm) forms;
+    public static TestForm copy(Form form) {
+        TestForm oldForm = (TestForm) form;
         return new TestForm(oldForm.name + " - копия", oldForm.size(), oldForm.lastModifiedTime);
     }
 
-    public static TestForm copy(Forms forms, String newName) {
-        TestForm oldForm = (TestForm) forms;
+    public static TestForm copy(Form form, String newName) {
+        TestForm oldForm = (TestForm) form;
         return new TestForm(newName, oldForm.size(), oldForm.lastModifiedTime);
     }
 

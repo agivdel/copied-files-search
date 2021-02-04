@@ -1,6 +1,6 @@
 package agivdel.copiedFilesSearch;
 
-interface Processor {
+interface Handler {
     boolean isValid(String s);
     String getMessage();
 }

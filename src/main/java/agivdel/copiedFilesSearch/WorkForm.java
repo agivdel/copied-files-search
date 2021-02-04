@@ -3,7 +3,7 @@ package agivdel.copiedFilesSearch;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 
-public class WorkForm implements Forms{
+public class WorkForm implements Form {
     private final Path path;
     private final long size;
     private final long lastModifiedTime;

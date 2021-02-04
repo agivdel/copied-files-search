@@ -8,17 +8,17 @@ import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 
 public class Checker {
-    public static long getAdler32(Forms form) {
+    public static long getAdler32(Form form) {
         Checksum check = new Adler32();
         return getChecksum(form, check);
     }
 
-    public static long getCRC32(Forms form) {
+    public static long getCRC32(Form form) {
         Checksum check = new CRC32();
         return getChecksum(form, check);
     }
 
-    public static long getChecksum(Forms form, Checksum check) {
+    public static long getChecksum(Form form, Checksum check) {
         byte[] buf = new byte[8192];
         try (FileInputStream fis = new FileInputStream(form.toPath().toFile())) {
             while (true) {

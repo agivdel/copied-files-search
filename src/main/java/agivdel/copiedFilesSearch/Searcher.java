@@ -17,13 +17,13 @@ public class Searcher {
         this.calculator = calculator;
     }
 
-    public List<Doubles> getDoublesByTimeFirst(List<Forms> files) {
+    public List<Doubles> getDoublesByTimeFirst(List<Form> files) {
         return splitByTime(new Doubles(files))
                 .flatMap(this::splitByChecksum)
                 .collect(toList());
     }
 
-    public List<Doubles> getDoublesByChecksumFirst(List<Forms> files) {
+    public List<Doubles> getDoublesByChecksumFirst(List<Form> files) {
         return splitByChecksum(new Doubles(files))
                 .flatMap(this::splitByTime)
                 .collect(toList());
@@ -32,7 +32,7 @@ public class Searcher {
     private Stream<Doubles> splitByTime(Doubles doubles) {
         return doubles.getDoubles()
                 .stream()
-                .collect(groupingBy(Forms::lastModified))
+                .collect(groupingBy(Form::lastModified))
                 .values()
                 .stream()
                 .filter(l -> l.size() > 1)

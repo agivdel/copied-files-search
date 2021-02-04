@@ -40,7 +40,7 @@ public class WalkerTest {
      */
     @Test
     public void iterationAllFiles_Test() {
-        List<Forms> files = walker.allFilesFrom("src/test/resources");
+        List<Form> files = walker.allFilesFrom("src/test/resources");
         Assert.assertEquals(7, files.size());
     }
 
@@ -49,7 +49,7 @@ public class WalkerTest {
      */
     @Test
     public void iterationEmptyDir_Test() {
-        List<Forms> files = walker.allFilesFrom("src/test/resources/data/movie");
+        List<Form> files = walker.allFilesFrom("src/test/resources/data/movie");
         Assert.assertTrue(files.isEmpty());
     }
 
@@ -58,7 +58,7 @@ public class WalkerTest {
      */
     @Test
     public void removeZeroSizeFiles_Test() {
-        List<Forms> files = walker.allFilesFrom("src/test/resources");
+        List<Form> files = walker.allFilesFrom("src/test/resources");
         files = walker.removeZeroSizeForm(files);
         Assert.assertEquals(7, files.size());
     }

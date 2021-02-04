@@ -7,13 +7,13 @@ import java.util.List;
  */
 
 public class Doubles {
-    private final List<Forms> doubles;
+    private final List<Form> doubles;
 
-    public Doubles(List<Forms> files) {
+    public Doubles(List<Form> files) {
         this.doubles = files;
     }
 
-    public List<Forms> getDoubles() {
+    public List<Form> getDoubles() {
         return doubles;
     }
 }

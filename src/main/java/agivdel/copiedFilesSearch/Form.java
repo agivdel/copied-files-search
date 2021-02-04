@@ -2,7 +2,7 @@ package agivdel.copiedFilesSearch;
 
 import java.nio.file.Path;
 
-public interface Forms {
+public interface Form {
     Path toPath();
     long size();
     long lastModified();

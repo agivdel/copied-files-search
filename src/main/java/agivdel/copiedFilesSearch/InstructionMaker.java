@@ -6,9 +6,9 @@ import java.util.List;
 import static java.lang.System.in;
 import static java.lang.System.out;
 
-public class InstructionsMaker {
+public class InstructionMaker {
 
-    public Instructions<Void, Boolean> getNew() {
+    public Instruction<Void, Boolean> getNew() {
         return selectDirectory.then(removeZeroSizeOrNot)
                 .then(selectChecksumAlgorithm)
                 .then(searchCopies)
@@ -17,18 +17,18 @@ public class InstructionsMaker {
     }
 
     static class FormsDTO {
-        List<Forms> files;
+        List<Form> files;
 
-        public FormsDTO(List<Forms> files) {
+        public FormsDTO(List<Form> files) {
             this.files = files;
         }
     }
 
     static class FormsCalcDTO {
-        List<Forms> files;
+        List<Form> files;
         ChecksumCalculator calculator;
 
-        public FormsCalcDTO(List<Forms> files, ChecksumCalculator calculator) {
+        public FormsCalcDTO(List<Form> files, ChecksumCalculator calculator) {
             this.files = files;
             this.calculator = calculator;
         }
@@ -42,9 +42,9 @@ public class InstructionsMaker {
         }
     }
 
-    Instructions<Void, FormsDTO> selectDirectory = new Instructions<>() {
+    Instruction<Void, FormsDTO> selectDirectory = new Instruction<>() {
         final Walker.FileScanner fileScanner = Walker::allFilesFrom;
-        public final Processor whatAddress = new DirectoryProcessor(
+        public final Handler whatAddress = new Handlers.Directory(
                 "To search for copied files, enter the address of the search directory:");
         @Override
         public FormsDTO instruct(Void voi) {
@@ -54,14 +54,14 @@ public class InstructionsMaker {
         }
     };
 
-    Instructions<FormsDTO, FormsDTO> removeZeroSizeOrNot = new Instructions<>() {
+    Instruction<FormsDTO, FormsDTO> removeZeroSizeOrNot = new Instruction<>() {
         final Walker.ZeroRemover zeroRemover = Walker::removeZeroSizeForm;
-        public final Processor whatMinSize = new OptionProcessor(
+        public final Handler whatMinSize = new Handlers.Option(
                 "Do you need to search among files with zero size? 'yes' - 0, 'no' - 1.");
         @Override
         public FormsDTO instruct(FormsDTO formsDTO) {
             String minSize = UI.input(whatMinSize, in, out);
-            final List<Forms> files = formsDTO.files;
+            final List<Form> files = formsDTO.files;
             if (minSize.equals("1")) {
                 out.println("deleting files with zero size...");
                 return new FormsDTO(zeroRemover.remove(files));
@@ -70,8 +70,8 @@ public class InstructionsMaker {
         }
     };
 
-    Instructions<FormsDTO, FormsCalcDTO> selectChecksumAlgorithm = new Instructions<>() {
-        public final Processor whatChecksumAlg = new OptionProcessor(
+    Instruction<FormsDTO, FormsCalcDTO> selectChecksumAlgorithm = new Instruction<>() {
+        public final Handler whatChecksumAlg = new Handlers.Option(
                 "What algorithm should be used to calculate the checksum of files? 'CRC32' - 0, 'Adler32' - 1.");
         @Override
         public FormsCalcDTO instruct(FormsDTO formsDTO) {
@@ -86,8 +86,8 @@ public class InstructionsMaker {
         }
     };
 
-    Instructions<FormsCalcDTO, DoublesDTO> searchCopies = new Instructions<>() {
-        public final Processor whatOrder = new OptionProcessor(
+    Instruction<FormsCalcDTO, DoublesDTO> searchCopies = new Instruction<>() {
+        public final Handler whatOrder = new Handlers.Option(
                 "To group files first by checksum (slower) or last modified time (faster) when copies searching? 'checksum' - 0, 'time' - 1.");
         @Override
         public DoublesDTO instruct(FormsCalcDTO formsCalcDTO) {
@@ -104,7 +104,7 @@ public class InstructionsMaker {
         }
     };
 
-    Instructions<DoublesDTO, Void> printDoubles = new Instructions<>() {
+    Instruction<DoublesDTO, Void> printDoubles = new Instruction<>() {
         @Override
         public Void instruct(DoublesDTO doublesDTO) {
             List<Doubles> doubles = doublesDTO.doubles;
@@ -114,7 +114,7 @@ public class InstructionsMaker {
                 out.println("""
                     ==================
                     Last modified time: """ + FileTime.fromMillis(timeOfFirstFile));
-                aDouble.getDoubles().stream().map(Forms::toPath).forEach(out::println);
+                aDouble.getDoubles().stream().map(Form::toPath).forEach(out::println);
             }
             out.println("""
                 __________________
@@ -123,8 +123,8 @@ public class InstructionsMaker {
         }
     };
 
-    Instructions<Void, Boolean> toRepeatOrNot = new Instructions<>() {
-        public final Processor whatNext = new OptionProcessor(
+    Instruction<Void, Boolean> toRepeatOrNot = new Instruction<>() {
+        public final Handler whatNext = new Handlers.Option(
                 "To search for copies of files in another directory or exit the program? 'exit' - 0, 'search' - 1.");
         @Override
         public Boolean instruct(Void voi) {

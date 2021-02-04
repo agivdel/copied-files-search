@@ -21,7 +21,7 @@ public class UITest {
      */
     @Test
     public void inputCorrectDirectoryAddress_Test() {
-        Processor address = new DirectoryProcessor("enter the address of the search directory:");
+        Handler address = new DirectoryHandler("enter the address of the search directory:");
         String input = "src/test/resources";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
         String output = UI.input(address, is, out);
@@ -35,7 +35,7 @@ public class UITest {
     public void inputNotDirectoryAddress_Test() {
         expectedEx.expect(java.util.NoSuchElementException.class);
         expectedEx.expectMessage("No line found");
-        Processor address = new DirectoryProcessor("enter the address of the search directory:");
+        Handler address = new DirectoryHandler("enter the address of the search directory:");
         String input = "src/test/resources/doc1.txt";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
         UI.input(address, is, out);
@@ -48,7 +48,7 @@ public class UITest {
     public void inputNonexistentDirectoryAddress_Test() {
         expectedEx.expect(java.util.NoSuchElementException.class);
         expectedEx.expectMessage("No line found");
-        Processor address = new DirectoryProcessor("enter the address of the search directory:");
+        Handler address = new DirectoryHandler("enter the address of the search directory:");
         String input = "src/test/resources/doc";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
         UI.input(address, is, out);
@@ -59,7 +59,7 @@ public class UITest {
      */
     @Test
     public void inputValidNumber0_Test() {
-        Processor minSize = new OptionProcessor("enter 0 or 1.");
+        Handler minSize = new OptionHandler("enter 0 or 1.");
         String input = "0";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
         String output = UI.input(minSize, is, out);
@@ -68,7 +68,7 @@ public class UITest {
 
     @Test
     public void inputValidNumber1_Test() {
-        Processor minSize = new OptionProcessor("enter 0 or 1.");
+        Handler minSize = new OptionHandler("enter 0 or 1.");
         String input = "1";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
         String output = UI.input(minSize, is, out);
@@ -82,7 +82,7 @@ public class UITest {
     public void inputInvalidNumber_Test() {
         expectedEx.expect(java.util.NoSuchElementException.class);
         expectedEx.expectMessage("No line found");
-        Processor order = new OptionProcessor("enter 0 or 1.");
+        Handler order = new OptionHandler("enter 0 or 1.");
         String input = "2";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
         UI.input(order, is, out);
@@ -92,7 +92,7 @@ public class UITest {
     public void inputLetterInsteadOfNumber_Test() {
         expectedEx.expect(java.util.NoSuchElementException.class);
         expectedEx.expectMessage("No line found");
-        Processor order = new OptionProcessor("enter 0 or 1.");
+        Handler order = new OptionHandler("enter 0 or 1.");
         String input = "fgg";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
         UI.input(order, is, out);
@@ -103,8 +103,8 @@ public class UITest {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream newOut = new PrintStream(baos);
         System.setOut(newOut);// After this all System.out.println() statements will come to baos stream
-        List<Forms> files = Walker.allFilesFrom("src/test/resources/data");
-        List<Doubles> doubles = new Searcher(Forms::size).getDoublesByTimeFirst(files);
+        List<Form> files = Walker.allFilesFrom("src/test/resources/data");
+        List<Doubles> doubles = new Searcher(Form::size).getDoublesByTimeFirst(files);
         String input = """
                 displaying...
                 ==================

@@ -7,13 +7,13 @@ import java.util.Scanner;
 
 public class UI {
 
-    public static String input(Processor processor, InputStream is, PrintStream out) {
+    public static String input(Handler handler, InputStream is, PrintStream out) {
         Scanner scanner = new Scanner(is);
-        out.println(processor.getMessage());
+        out.println(handler.getMessage());
         String select;
         do {
             select = scanner.nextLine();
-        } while (!processor.isValid(select));
+        } while (!handler.isValid(select));
         return select;
     }
 
@@ -25,7 +25,7 @@ public class UI {
             out.println("""
                     ==================
                     Last modified time: """ + FileTime.fromMillis(timeOfFirstFile));
-            doubles.getDoubles().stream().map(Forms::toPath).forEach(out::println);
+            doubles.getDoubles().stream().map(Form::toPath).forEach(out::println);
         }
         out.println("""
                 __________________

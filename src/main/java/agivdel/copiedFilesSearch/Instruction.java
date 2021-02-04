@@ -2,13 +2,13 @@ package agivdel.copiedFilesSearch;
 
 import java.util.Objects;
 
-public interface Instructions<IN, OUT> {
-    default <OUT2> Instructions<IN, OUT2> then(Instructions<OUT, OUT2> next) {
+public interface Instruction<IN, OUT> {
+    default <OUT2> Instruction<IN, OUT2> then(Instruction<OUT, OUT2> next) {
         Objects.requireNonNull(next);
-        return new Instructions<IN, OUT2>() {
+        return new Instruction<IN, OUT2>() {
             @Override
             public OUT2 instruct(IN in) {
-                OUT out1 = Instructions.this.instruct(in);
+                OUT out1 = Instruction.this.instruct(in);
                 OUT2 out2 = next.instruct(out1);
                 return out2;
             }
