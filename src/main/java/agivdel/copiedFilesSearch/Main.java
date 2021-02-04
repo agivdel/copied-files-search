@@ -8,6 +8,9 @@ package agivdel.copiedFilesSearch;
 
 public class Main {
     public static void main(String[] args) {
-        while (new InstructionsMaker().getNew().instruct(null)) {}
+        while (new InstructionsMaker()
+                .getNew()
+                .instruct(null)
+        ) {}
     }
 }

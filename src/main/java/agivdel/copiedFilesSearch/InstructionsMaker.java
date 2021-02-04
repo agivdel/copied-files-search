@@ -9,11 +9,11 @@ import static java.lang.System.out;
 public class InstructionsMaker {
 
     public Instructions<Void, Boolean> getNew() {
-        return selectDirectory.linkWith(removeZeroSizeOrNot)
-                .linkWith(selectChecksumAlgorithm)
-                .linkWith(searchCopies)
-                .linkWith(printDoubles)
-                .linkWith(toRepeatOrNot);
+        return selectDirectory.then(removeZeroSizeOrNot)
+                .then(selectChecksumAlgorithm)
+                .then(searchCopies)
+                .then(printDoubles)
+                .then(toRepeatOrNot);
     }
 
     static class FormsDTO {
