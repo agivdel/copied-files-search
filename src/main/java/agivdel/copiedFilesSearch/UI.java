@@ -6,11 +6,6 @@ import java.util.List;
 import java.util.Scanner;
 
 public class UI {
-    public void run(Instructions firstInstruction, Object o) {
-        do {
-            firstInstruction.instruct(o);
-        } while (true);
-    }
 
     public static String input(Processor processor, InputStream is, PrintStream out) {
         Scanner scanner = new Scanner(is);
