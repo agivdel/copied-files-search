@@ -50,7 +50,7 @@ public class InstructionsTest {
     @Test
     public void no_copies_searchCopies() {
         Instructions ins = getInstructionsAndEnterString("1");
-        List<Form> files = TestFormsMaker.getList5FormsNoCopies();
+        List<Form> files = TestFormsMaker.get5FormsNoCopies();
         FormsCalcDTO precursor = new FormsCalcDTO(files, Form::size);
         DoublesDTO result = ins.searchCopies.instruct(precursor);
         Assert.assertEquals(0, result.doubles.size());
@@ -59,7 +59,7 @@ public class InstructionsTest {
     @Test
     public void some_copies_searchCopies() {
         Instructions ins = getInstructionsAndEnterString("1");
-        List<Form> files = TestFormsMaker.getList5FormsWith3CopiesSecondForm();
+        List<Form> files = TestFormsMaker.get5FormsWith3CopiesSecondForm();
         FormsCalcDTO precursor = new FormsCalcDTO(files, Form::size);
         DoublesDTO result = ins.searchCopies.instruct(precursor);
         Assert.assertEquals(1, result.doubles.size());

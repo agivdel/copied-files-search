@@ -3,7 +3,7 @@ package agivdel.copiedFilesSearch;
 import java.util.List;
 
 public class TestFormsMaker {
-    public static List<Form> getList5FormsWith1CopyFirstFormAnd3CopiesSecondForm() {
+    public static List<Form> get5FormsWith1CopyFirstFormAnd3CopiesSecondForm() {
         TestForm form1 = new TestForm("1", 10, 50800, 100500);
         TestForm form1_copy1 = TestForm.copy(form1);
         TestForm form2 = new TestForm("2", 20, 10600, 300400);
@@ -12,7 +12,7 @@ public class TestFormsMaker {
         return List.of(form1, form1_copy1, form2, form2_copy1, form2_copy2);
     }
 
-    public static List<Form> getList5FormsWith3CopiesSecondForm() {
+    public static List<Form> get5FormsWith3CopiesSecondForm() {
         TestForm form1 = new TestForm("1", 10, 50800, 100500);
         TestForm form2 = new TestForm("2", 20, 10600, 300400);
         TestForm form2_copy1 = TestForm.copy(form2);
@@ -21,7 +21,7 @@ public class TestFormsMaker {
         return List.of(form1, form2, form2_copy1, form2_copy2, form2_copy3);
     }
 
-    public static List<Form> getList5FormsNoCopies() {
+    public static List<Form> get5FormsNoCopies() {
         return List.of(
                 new TestForm("1", 10, 50800, 100500),
                 new TestForm("2", 20, 10600, 300400),

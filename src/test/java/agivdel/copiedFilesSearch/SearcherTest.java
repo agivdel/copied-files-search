@@ -14,7 +14,7 @@ public class SearcherTest {
      */
     @Test
     public void doublesByTime_forMultipleOriginalFiles() {
-        List<Form> forms = TestFormsMaker.getList5FormsWith1CopyFirstFormAnd3CopiesSecondForm();
+        List<Form> forms = TestFormsMaker.get5FormsWith1CopyFirstFormAnd3CopiesSecondForm();
         List<Doubles> doublesByTime = searcher.getDoublesByTimeFirst(forms);
 
         Assert.assertEquals(2, doublesByTime.size());
@@ -26,7 +26,7 @@ public class SearcherTest {
      */
     @Test
     public void doublesByChecksum_forMultipleOriginalFiles() {
-        List<Form> forms = TestFormsMaker.getList5FormsWith1CopyFirstFormAnd3CopiesSecondForm();
+        List<Form> forms = TestFormsMaker.get5FormsWith1CopyFirstFormAnd3CopiesSecondForm();
         List<Doubles> doublesByChecksum = searcher.getDoublesByChecksumFirst(forms);
 
         Assert.assertEquals(2, doublesByChecksum.size());
@@ -37,7 +37,7 @@ public class SearcherTest {
      */
     @Test
     public void sizeOfListInDoubles_equalsNumbersOfCopiesIncludingOriginal() {
-        List<Form> forms = TestFormsMaker.getList5FormsWith3CopiesSecondForm();
+        List<Form> forms = TestFormsMaker.get5FormsWith3CopiesSecondForm();
         List<Doubles> doubles = searcher.getDoublesByTimeFirst(forms);
 
         Assert.assertEquals(4, doubles.get(0).getDoubles().size());
@@ -49,7 +49,7 @@ public class SearcherTest {
      */
     @Test
     public void sameLastModifiedTimeInDoubles() {
-        List<Form> forms = TestFormsMaker.getList5FormsWith3CopiesSecondForm();
+        List<Form> forms = TestFormsMaker.get5FormsWith3CopiesSecondForm();
         List<Doubles> doubles = searcher.getDoublesByTimeFirst(forms);
 
         long original = doubles.get(0).getDoubles().get(0).lastModified();
@@ -67,7 +67,7 @@ public class SearcherTest {
      */
     @Test
     public void searchAmongDifferentCreateTimes() {
-        List<Form> forms = TestFormsMaker.getList5FormsWith3CopiesSecondForm();
+        List<Form> forms = TestFormsMaker.get5FormsWith3CopiesSecondForm();
         List<Doubles> doubles = searcher.getDoublesByTimeFirst(forms);
 
         long original = ((TestForm) doubles.get(0).getDoubles().get(0)).createTime();
@@ -84,11 +84,9 @@ public class SearcherTest {
      * На поиск файлов-копий не оказывают влияние имя и расширение файлов
      */
     @Test
-    public void searchAmongDifferentNamesAndExtensions() throws InterruptedException {
+    public void searchAmongDifferentNamesAndExtensions() {
         Form form1 = new TestForm("1.txt", 10);
-        Thread.sleep(1000);
         Form form1_copy1 = TestForm.copy(form1, "1.jpeg");
-        Thread.sleep(1000);
         Form form1_copy2 = TestForm.copy(form1, "2.txt");
         Form form2 = new TestForm("1.jpeg", 20);
         Form form3 = new TestForm("2.txt", 30);
