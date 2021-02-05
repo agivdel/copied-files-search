@@ -18,7 +18,7 @@ public class Checker {
         return getChecksum(form, check);
     }
 
-    public static long getChecksum(Form form, Checksum check) {
+    private static long getChecksum(Form form, Checksum check) {
         byte[] buf = new byte[8192];
         try (FileInputStream fis = new FileInputStream(form.toPath().toFile())) {
             while (true) {

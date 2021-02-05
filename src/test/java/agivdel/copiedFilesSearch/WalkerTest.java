@@ -40,7 +40,7 @@ public class WalkerTest {
     @Test
     public void iterationAllFiles_Test() {
         List<Form> files = Walker.allFilesFrom("src/test/resources");
-        Assert.assertEquals(7, files.size());
+        Assert.assertEquals(8, files.size());
     }
 
     /**
