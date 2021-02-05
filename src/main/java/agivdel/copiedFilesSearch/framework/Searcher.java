@@ -43,7 +43,7 @@ public class Searcher {
     private Stream<Doubles> splitByChecksum(Doubles doubles) {
         return doubles.getDoubles()
                 .stream()
-                .collect(groupingBy(calculator::calculateChecksum))
+                .collect(groupingBy(calculator::getChecksum))
                 .values()
                 .stream()
                 .filter(l -> l.size() > 1)
