@@ -8,6 +8,14 @@ import java.util.List;
 
 import static java.lang.System.out;
 
+/**
+ * Для работы программы необходимо создать:
+ * анонимные классы инструкции, реализующих интерфейс Instruction,
+ * статические классы DTO,
+ * классы обработчиков введенных с консоли данных, реализующих интерфейс Handler,
+ * а также указать последовательность выполнения инструкций в методе getNew().
+ */
+
 public class Instructions {
     InputStream in = System.in;
 
