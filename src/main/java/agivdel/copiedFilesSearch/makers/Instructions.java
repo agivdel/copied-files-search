@@ -32,7 +32,7 @@ public class Instructions {
                 .andThen(repeatOrNot);
     }
 
-    public static class FormsDTO {
+    static class FormsDTO {
         public List<Form> files;
 
         public FormsDTO(List<Form> files) {
@@ -40,7 +40,7 @@ public class Instructions {
         }
     }
 
-    public static class FormsCalcDTO {
+    static class FormsCalcDTO {
         public List<Form> files;
         public ChecksumCalculator calculator;
 
@@ -50,7 +50,7 @@ public class Instructions {
         }
     }
 
-    public static class DoublesDTO {
+    static class DoublesDTO {
         public List<Doubles> doubles;
 
         public DoublesDTO(List<Doubles> doubles) {
