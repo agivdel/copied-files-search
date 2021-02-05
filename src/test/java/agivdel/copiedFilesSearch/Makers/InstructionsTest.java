@@ -28,7 +28,11 @@ public class InstructionsTest {
     @Test
     public void delete_zero_size_files_removeZeroSizeOrNot() {
         Instructions ins = getInstructionsAndEnterString("1");
-        List<Form> files = TestFormsMaker.getList5FormsWith1CopyFirstFormAnd3CopiesSecondForm();
+        List<Form> files = List.of(
+                new TestForm("1", 10),
+                new TestForm("2", 20),
+                new TestForm("3", 0)
+        );
         FormsDTO inputDTO = new FormsDTO(files);
         FormsDTO result = ins.removeZeroSizeOrNot.instruct(inputDTO);
         Assert.assertEquals(2, result.files.size());
