@@ -1,6 +1,6 @@
-package agivdel.copiedFilesSearch;
+package agivdel.copiedFilesSearch.Makers;
 
-public class OptionHandler implements Handler {
+public class OptionHandler implements Handler {//TODO delete after test fixing
     private final String message;
 
     public OptionHandler(String message) {

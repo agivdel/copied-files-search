@@ -1,17 +1,18 @@
-package agivdel.copiedFilesSearch;
+package agivdel.copiedFilesSearch.Makers;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class Handlers {
 
-    static class Directory implements Handler {
+    public static class Directory implements Handler {
         private final String message;
 
         public Directory(String message) {
             this.message = message;
         }
 
+        @Override
         public String getMessage() {
             return message;
         }
@@ -22,13 +23,14 @@ public class Handlers {
         }
     }
 
-    static class Option implements Handler {
+    public static class Option implements Handler {
         private final String message;
 
         public Option(String message) {
             this.message = message;
         }
 
+        @Override
         public String getMessage() {
             return message;
         }

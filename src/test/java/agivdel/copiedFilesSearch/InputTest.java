@@ -1,5 +1,8 @@
 package agivdel.copiedFilesSearch;
 
+import agivdel.copiedFilesSearch.Makers.DirectoryHandler;
+import agivdel.copiedFilesSearch.Makers.Handler;
+import agivdel.copiedFilesSearch.Makers.OptionHandler;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -10,7 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.function.Function;
 
-public class UITest {
+public class InputTest {
     PrintStream out = System.out;
 
     @Rule
@@ -24,7 +27,7 @@ public class UITest {
         Handler address = new DirectoryHandler("enter the address of the search directory:");
         String input = "src/test/resources";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
-        String output = UI.input(address, is, out);
+        String output = Input.input(address, is, out);
         Assert.assertEquals(input, output);
     }
 
@@ -38,7 +41,7 @@ public class UITest {
         Handler address = new DirectoryHandler("enter the address of the search directory:");
         String input = "src/test/resources/doc1.txt";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
-        UI.input(address, is, out);
+        Input.input(address, is, out);
     }
 
     /**
@@ -51,7 +54,7 @@ public class UITest {
         Handler address = new DirectoryHandler("enter the address of the search directory:");
         String input = "src/test/resources/doc";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
-        UI.input(address, is, out);
+        Input.input(address, is, out);
     }
 
     /**
@@ -62,7 +65,7 @@ public class UITest {
         Handler minSize = new OptionHandler("enter 0 or 1.");
         String input = "0";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
-        String output = UI.input(minSize, is, out);
+        String output = Input.input(minSize, is, out);
         Assert.assertEquals(input, output);
     }
 
@@ -71,7 +74,7 @@ public class UITest {
         Handler minSize = new OptionHandler("enter 0 or 1.");
         String input = "1";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
-        String output = UI.input(minSize, is, out);
+        String output = Input.input(minSize, is, out);
         Assert.assertEquals(input, output);
     }
 
@@ -85,7 +88,7 @@ public class UITest {
         Handler order = new OptionHandler("enter 0 or 1.");
         String input = "2";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
-        UI.input(order, is, out);
+        Input.input(order, is, out);
     }
 
     @Test
@@ -95,7 +98,7 @@ public class UITest {
         Handler order = new OptionHandler("enter 0 or 1.");
         String input = "fgg";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
-        UI.input(order, is, out);
+        Input.input(order, is, out);
     }
 
     @Test
@@ -115,7 +118,7 @@ public class UITest {
                 __________________
                 The total number of original files with copies:1\r
                 """;
-        UI.printAllDoubles(doubles, newOut);
+        Input.printAllDoubles(doubles, newOut);
         String output = baos.toString();
         Assert.assertEquals(input, output);
         System.setOut(out);//Restore stream

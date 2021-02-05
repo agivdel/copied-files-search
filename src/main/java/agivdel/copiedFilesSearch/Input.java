@@ -1,11 +1,13 @@
 package agivdel.copiedFilesSearch;
 
+import agivdel.copiedFilesSearch.Makers.Handler;
+
 import java.io.*;
 import java.nio.file.attribute.FileTime;
 import java.util.List;
 import java.util.Scanner;
 
-public class UI {
+public class Input {
 
     public static String input(Handler handler, InputStream is, PrintStream out) {
         Scanner scanner = new Scanner(is);

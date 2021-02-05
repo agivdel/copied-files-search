@@ -1,9 +1,9 @@
-package agivdel.copiedFilesSearch;
+package agivdel.copiedFilesSearch.Makers;
 
 import java.util.Objects;
 
 public interface Instruction<IN, OUT> {
-    default <OUT2> Instruction<IN, OUT2> then(Instruction<OUT, OUT2> next) {
+    default <OUT2> Instruction<IN, OUT2> andThen(Instruction<OUT, OUT2> next) {
         Objects.requireNonNull(next);
         return new Instruction<IN, OUT2>() {
             @Override

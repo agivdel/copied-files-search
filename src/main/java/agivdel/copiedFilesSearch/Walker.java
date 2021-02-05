@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toList;
 
 public class Walker {
-    interface FileScanner {
+    public interface FileScanner {
         List<Form> scan (String name);
     }
 
@@ -39,7 +39,7 @@ public class Walker {
         return new WorkForm(path, size, time);
     }
 
-    interface ZeroRemover {
+    public interface ZeroRemover {
         List<Form> remove(List<Form> files);
     }
 

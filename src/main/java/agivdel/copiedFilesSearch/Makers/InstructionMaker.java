@@ -1,4 +1,6 @@
-package agivdel.copiedFilesSearch;
+package agivdel.copiedFilesSearch.Makers;
+
+import agivdel.copiedFilesSearch.*;
 
 import java.nio.file.attribute.FileTime;
 import java.util.List;
@@ -9,11 +11,11 @@ import static java.lang.System.out;
 public class InstructionMaker {
 
     public Instruction<Void, Boolean> getNew() {
-        return selectDirectory.then(removeZeroSizeOrNot)
-                .then(selectChecksumAlgorithm)
-                .then(searchCopies)
-                .then(printDoubles)
-                .then(toRepeatOrNot);
+        return selectDirectory.andThen(removeZeroSizeOrNot)
+                .andThen(selectChecksumAlgorithm)
+                .andThen(searchCopies)
+                .andThen(printDoubles)
+                .andThen(toRepeatOrNot);
     }
 
     static class FormsDTO {
@@ -48,7 +50,7 @@ public class InstructionMaker {
                 "To search for copied files, enter the address of the search directory:");
         @Override
         public FormsDTO instruct(Void voi) {
-            String address = UI.input(whatAddress, in, out);
+            String address = Input.input(whatAddress, in, out);
             out.println("counting files...");
             return new FormsDTO(fileScanner.scan(address));
         }
@@ -60,7 +62,7 @@ public class InstructionMaker {
                 "Do you need to search among files with zero size? 'yes' - 0, 'no' - 1.");
         @Override
         public FormsDTO instruct(FormsDTO formsDTO) {
-            String minSize = UI.input(whatMinSize, in, out);
+            String minSize = Input.input(whatMinSize, in, out);
             final List<Form> files = formsDTO.files;
             if (minSize.equals("1")) {
                 out.println("deleting files with zero size...");
@@ -75,7 +77,7 @@ public class InstructionMaker {
                 "What algorithm should be used to calculate the checksum of files? 'CRC32' - 0, 'Adler32' - 1.");
         @Override
         public FormsCalcDTO instruct(FormsDTO formsDTO) {
-            String checksumAlg = UI.input(whatChecksumAlg, in, out);
+            String checksumAlg = Input.input(whatChecksumAlg, in, out);
             ChecksumCalculator calculator;
             if (checksumAlg.equals("1")) {
                 calculator = Checker::getAdler32;
@@ -91,7 +93,7 @@ public class InstructionMaker {
                 "To group files first by checksum (slower) or last modified time (faster) when copies searching? 'checksum' - 0, 'time' - 1.");
         @Override
         public DoublesDTO instruct(FormsCalcDTO formsCalcDTO) {
-            String order = UI.input(whatOrder, in, out);
+            String order = Input.input(whatOrder, in, out);
             out.println("looking for duplicates...");
             Searcher searcher = new Searcher(formsCalcDTO.calculator);
             List<Doubles> doubles;
@@ -128,7 +130,7 @@ public class InstructionMaker {
                 "To search for copies of files in another directory or exit the program? 'exit' - 0, 'search' - 1.");
         @Override
         public Boolean instruct(Void voi) {
-            String nextAction = UI.input(whatNext, in, out);
+            String nextAction = Input.input(whatNext, in, out);
             return nextAction.equals("1");
         }
     };
