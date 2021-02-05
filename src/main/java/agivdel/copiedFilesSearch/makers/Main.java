@@ -1,6 +1,4 @@
-package agivdel.copiedFilesSearch;
-
-import agivdel.copiedFilesSearch.Makers.Instructions;
+package agivdel.copiedFilesSearch.makers;
 
 /**
  * Некто скопировал на компьютере какое-то количество файлов,

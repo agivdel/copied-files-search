@@ -1,7 +1,7 @@
-package agivdel.copiedFilesSearch;
+package agivdel.copiedFilesSearch.framework;
 
-import agivdel.copiedFilesSearch.Makers.InputHandler;
-import agivdel.copiedFilesSearch.Makers.InputHandlers;
+import agivdel.copiedFilesSearch.makers.InputHandler;
+import agivdel.copiedFilesSearch.makers.InputHandlers;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;

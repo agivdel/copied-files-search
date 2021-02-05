@@ -1,4 +1,4 @@
-package agivdel.copiedFilesSearch;
+package agivdel.copiedFilesSearch.framework;
 
 import com.google.common.jimfs.Jimfs;
 import org.junit.Assert;

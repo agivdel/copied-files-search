@@ -1,11 +1,11 @@
-package agivdel.copiedFilesSearch.Makers;
+package agivdel.copiedFilesSearch.makers;
 
-import agivdel.copiedFilesSearch.*;
+import agivdel.copiedFilesSearch.framework.*;
 import org.junit.Assert;
 
-import agivdel.copiedFilesSearch.Makers.Instructions.FormsDTO;
-import agivdel.copiedFilesSearch.Makers.Instructions.FormsCalcDTO;
-import agivdel.copiedFilesSearch.Makers.Instructions.DoublesDTO;
+import agivdel.copiedFilesSearch.makers.Instructions.FormsDTO;
+import agivdel.copiedFilesSearch.makers.Instructions.FormsCalcDTO;
+import agivdel.copiedFilesSearch.makers.Instructions.DoublesDTO;
 import org.junit.Test;
 
 

@@ -1,6 +1,6 @@
-package agivdel.copiedFilesSearch.Makers;
+package agivdel.copiedFilesSearch.makers;
 
-import agivdel.copiedFilesSearch.*;
+import agivdel.copiedFilesSearch.framework.*;
 
 import java.io.InputStream;
 import java.nio.file.attribute.FileTime;
@@ -115,18 +115,17 @@ public class Instructions {
     Instruction<DoublesDTO, Void> printDoubles = new Instruction<>() {
         @Override
         public Void instruct(DoublesDTO doublesDTO) {
-            List<Doubles> doubles = doublesDTO.doubles;
             out.println("displaying...");
-            for (Doubles aDouble : doubles) {
-                long timeOfFirstFile = aDouble.getDoubles().get(0).lastModified() * 1000;
+            for (Doubles doubles : doublesDTO.doubles) {
+                long timeOfFirstFile = doubles.getDoubles().get(0).lastModified() * 1000;
                 out.println("""
                     ==================
                     Last modified time: """ + FileTime.fromMillis(timeOfFirstFile));
-                aDouble.getDoubles().stream().map(Form::toPath).forEach(out::println);
+                doubles.getDoubles().stream().map(Form::toPath).forEach(out::println);
             }
             out.println("""
                 __________________
-                The total number of original files with copies: """ + doubles.size());
+                The total number of original files with copies: """ + doublesDTO.doubles.size());
             return null;
         }
     };

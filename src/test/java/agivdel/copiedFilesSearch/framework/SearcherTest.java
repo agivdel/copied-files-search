@@ -1,4 +1,4 @@
-package agivdel.copiedFilesSearch;
+package agivdel.copiedFilesSearch.framework;
 
 import org.junit.Assert;
 import org.junit.Test;

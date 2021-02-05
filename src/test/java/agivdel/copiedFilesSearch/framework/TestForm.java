@@ -1,4 +1,4 @@
-package agivdel.copiedFilesSearch;
+package agivdel.copiedFilesSearch.framework;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

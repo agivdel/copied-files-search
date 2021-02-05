@@ -1,4 +1,4 @@
-package agivdel.copiedFilesSearch;
+package agivdel.copiedFilesSearch.framework;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

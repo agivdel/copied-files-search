@@ -1,4 +1,4 @@
-package agivdel.copiedFilesSearch.Makers;
+package agivdel.copiedFilesSearch.makers;
 
 public interface InputHandler {
     String getMessage();
