@@ -1,6 +1,6 @@
 package agivdel.copiedFilesSearch.Makers;
 
-public interface Handler {
+public interface InputHandler {
     String getMessage();
     boolean isValid(String select);
 }

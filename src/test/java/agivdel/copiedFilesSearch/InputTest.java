@@ -1,8 +1,8 @@
 package agivdel.copiedFilesSearch;
 
-import agivdel.copiedFilesSearch.Makers.DirectoryHandler;
-import agivdel.copiedFilesSearch.Makers.Handler;
-import agivdel.copiedFilesSearch.Makers.OptionHandler;
+import agivdel.copiedFilesSearch.Makers.DirectoryInputHandler;
+import agivdel.copiedFilesSearch.Makers.InputHandler;
+import agivdel.copiedFilesSearch.Makers.OptionInputHandler;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,7 +24,7 @@ public class InputTest {
      */
     @Test
     public void inputCorrectDirectoryAddress_Test() {
-        Handler address = new DirectoryHandler("enter the address of the search directory:");
+        InputHandler address = new DirectoryInputHandler("enter the address of the search directory:");
         String input = "src/test/resources";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
         String output = Input.input(address, is, out);
@@ -38,7 +38,7 @@ public class InputTest {
     public void inputNotDirectoryAddress_Test() {
         expectedEx.expect(java.util.NoSuchElementException.class);
         expectedEx.expectMessage("No line found");
-        Handler address = new DirectoryHandler("enter the address of the search directory:");
+        InputHandler address = new DirectoryInputHandler("enter the address of the search directory:");
         String input = "src/test/resources/doc1.txt";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
         Input.input(address, is, out);
@@ -51,7 +51,7 @@ public class InputTest {
     public void inputNonexistentDirectoryAddress_Test() {
         expectedEx.expect(java.util.NoSuchElementException.class);
         expectedEx.expectMessage("No line found");
-        Handler address = new DirectoryHandler("enter the address of the search directory:");
+        InputHandler address = new DirectoryInputHandler("enter the address of the search directory:");
         String input = "src/test/resources/doc";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
         Input.input(address, is, out);
@@ -62,7 +62,7 @@ public class InputTest {
      */
     @Test
     public void inputValidNumber0_Test() {
-        Handler minSize = new OptionHandler("enter 0 or 1.");
+        InputHandler minSize = new OptionInputHandler("enter 0 or 1.");
         String input = "0";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
         String output = Input.input(minSize, is, out);
@@ -71,7 +71,7 @@ public class InputTest {
 
     @Test
     public void inputValidNumber1_Test() {
-        Handler minSize = new OptionHandler("enter 0 or 1.");
+        InputHandler minSize = new OptionInputHandler("enter 0 or 1.");
         String input = "1";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
         String output = Input.input(minSize, is, out);
@@ -85,7 +85,7 @@ public class InputTest {
     public void inputInvalidNumber_Test() {
         expectedEx.expect(java.util.NoSuchElementException.class);
         expectedEx.expectMessage("No line found");
-        Handler order = new OptionHandler("enter 0 or 1.");
+        InputHandler order = new OptionInputHandler("enter 0 or 1.");
         String input = "2";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
         Input.input(order, is, out);
@@ -95,7 +95,7 @@ public class InputTest {
     public void inputLetterInsteadOfNumber_Test() {
         expectedEx.expect(java.util.NoSuchElementException.class);
         expectedEx.expectMessage("No line found");
-        Handler order = new OptionHandler("enter 0 or 1.");
+        InputHandler order = new OptionInputHandler("enter 0 or 1.");
         String input = "fgg";
         InputStream is = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
         Input.input(order, is, out);

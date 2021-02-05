@@ -3,9 +3,9 @@ package agivdel.copiedFilesSearch.Makers;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class Handlers {
+public class InputHandlers {
 
-    public static class Directory implements Handler {
+    public static class Directory implements InputHandler {
         private final String message;
 
         public Directory(String message) {
@@ -23,7 +23,7 @@ public class Handlers {
         }
     }
 
-    public static class Option implements Handler {
+    public static class Option implements InputHandler {
         private final String message;
 
         public Option(String message) {

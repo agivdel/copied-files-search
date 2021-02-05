@@ -8,7 +8,7 @@ import java.util.List;
 import static java.lang.System.in;
 import static java.lang.System.out;
 
-public class InstructionMaker {
+public class Instructions {
 
     public Instruction<Void, Boolean> getNew() {
         return selectDirectory.andThen(removeZeroSizeOrNot)
@@ -46,7 +46,7 @@ public class InstructionMaker {
 
     Instruction<Void, FormsDTO> selectDirectory = new Instruction<>() {
         final Walker.FileScanner fileScanner = Walker::allFilesFrom;
-        public final Handler whatAddress = new Handlers.Directory(
+        public final InputHandler whatAddress = new InputHandlers.Directory(
                 "To search for copied files, enter the address of the search directory:");
         @Override
         public FormsDTO instruct(Void voi) {
@@ -58,7 +58,7 @@ public class InstructionMaker {
 
     Instruction<FormsDTO, FormsDTO> removeZeroSizeOrNot = new Instruction<>() {
         final Walker.ZeroRemover zeroRemover = Walker::removeZeroSizeForm;
-        public final Handler whatMinSize = new Handlers.Option(
+        public final InputHandler whatMinSize = new InputHandlers.Option(
                 "Do you need to search among files with zero size? 'yes' - 0, 'no' - 1.");
         @Override
         public FormsDTO instruct(FormsDTO formsDTO) {
@@ -73,7 +73,7 @@ public class InstructionMaker {
     };
 
     Instruction<FormsDTO, FormsCalcDTO> selectChecksumAlgorithm = new Instruction<>() {
-        public final Handler whatChecksumAlg = new Handlers.Option(
+        public final InputHandler whatChecksumAlg = new InputHandlers.Option(
                 "What algorithm should be used to calculate the checksum of files? 'CRC32' - 0, 'Adler32' - 1.");
         @Override
         public FormsCalcDTO instruct(FormsDTO formsDTO) {
@@ -89,7 +89,7 @@ public class InstructionMaker {
     };
 
     Instruction<FormsCalcDTO, DoublesDTO> searchCopies = new Instruction<>() {
-        public final Handler whatOrder = new Handlers.Option(
+        public final InputHandler whatOrder = new InputHandlers.Option(
                 "To group files first by checksum (slower) or last modified time (faster) when copies searching? 'checksum' - 0, 'time' - 1.");
         @Override
         public DoublesDTO instruct(FormsCalcDTO formsCalcDTO) {
@@ -126,7 +126,7 @@ public class InstructionMaker {
     };
 
     Instruction<Void, Boolean> toRepeatOrNot = new Instruction<>() {
-        public final Handler whatNext = new Handlers.Option(
+        public final InputHandler whatNext = new InputHandlers.Option(
                 "To search for copies of files in another directory or exit the program? 'exit' - 0, 'search' - 1.");
         @Override
         public Boolean instruct(Void voi) {

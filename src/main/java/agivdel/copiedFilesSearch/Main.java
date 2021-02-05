@@ -1,6 +1,6 @@
 package agivdel.copiedFilesSearch;
 
-import agivdel.copiedFilesSearch.Makers.InstructionMaker;
+import agivdel.copiedFilesSearch.Makers.Instructions;
 
 /**
  * Некто скопировал на компьютере какое-то количество файлов,
@@ -10,7 +10,7 @@ import agivdel.copiedFilesSearch.Makers.InstructionMaker;
 
 public class Main {
     public static void main(String[] args) {
-        while (new InstructionMaker()
+        while (new Instructions()
                 .getNew()
                 .instruct(null)
         ) {}

@@ -1,6 +1,6 @@
 package agivdel.copiedFilesSearch;
 
-import agivdel.copiedFilesSearch.Makers.Handler;
+import agivdel.copiedFilesSearch.Makers.InputHandler;
 
 import java.io.*;
 import java.nio.file.attribute.FileTime;
@@ -9,13 +9,13 @@ import java.util.Scanner;
 
 public class Input {
 
-    public static String input(Handler handler, InputStream is, PrintStream out) {
+    public static String input(InputHandler inputHandler, InputStream is, PrintStream out) {
         Scanner scanner = new Scanner(is);
-        out.println(handler.getMessage());
+        out.println(inputHandler.getMessage());
         String select;
         do {
             select = scanner.nextLine();
-        } while (!handler.isValid(select));
+        } while (!inputHandler.isValid(select));
         return select;
     }
 

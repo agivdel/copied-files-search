@@ -3,10 +3,10 @@ package agivdel.copiedFilesSearch.Makers;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class DirectoryHandler implements Handler {//TODO delete after test fixing
+public class DirectoryInputHandler implements InputHandler {//TODO delete after test fixing
     private final String message;
 
-    public DirectoryHandler(String message) {
+    public DirectoryInputHandler(String message) {
         this.message = message;
     }
 
