@@ -13,8 +13,8 @@ public class SearcherTest {
      * Размер списка Doubles равен числу оригинальных файлов, подвергнутых копированию.
      */
     @Test
-    public void doublesByTime_forMultipleOriginalFiles() throws InterruptedException {
-        List<Form> forms = getCopiesFromTwoOriginals();
+    public void doublesByTime_forMultipleOriginalFiles() {
+        List<Form> forms = TestFormsMaker.getList5FormsWith1CopyFirstFormAnd3CopiesSecondForm();
         List<Doubles> doublesByTime = searcher.getDoublesByTimeFirst(forms);
 
         Assert.assertEquals(2, doublesByTime.size());
@@ -25,8 +25,8 @@ public class SearcherTest {
      * Размер списка Doubles равен числу оригинальных файлов, подвергнутых копированию.
      */
     @Test
-    public void doublesByChecksum_forMultipleOriginalFiles() throws InterruptedException {
-        List<Form> forms = getCopiesFromTwoOriginals();
+    public void doublesByChecksum_forMultipleOriginalFiles() {
+        List<Form> forms = TestFormsMaker.getList5FormsWith1CopyFirstFormAnd3CopiesSecondForm();
         List<Doubles> doublesByChecksum = searcher.getDoublesByChecksumFirst(forms);
 
         Assert.assertEquals(2, doublesByChecksum.size());
@@ -36,8 +36,8 @@ public class SearcherTest {
      * Размер списка внутри объекта Doubles равен числу копий файла, включая оригинал.
      */
     @Test
-    public void sizeOfListInDoubles_equalsNumbersOfCopiesIncludingOriginal() throws InterruptedException {
-        List<Form> forms = getCopiesFromOneOriginal();
+    public void sizeOfListInDoubles_equalsNumbersOfCopiesIncludingOriginal() {
+        List<Form> forms = TestFormsMaker.getList5FormsWith3CopiesSecondForm();
         List<Doubles> doubles = searcher.getDoublesByTimeFirst(forms);
 
         Assert.assertEquals(4, doubles.get(0).getDoubles().size());
@@ -48,8 +48,8 @@ public class SearcherTest {
      * имеют одинаковое время последнего редактирования.
      */
     @Test
-    public void sameLastModifiedTimeInDoubles() throws InterruptedException {
-        List<Form> forms = getCopiesFromOneOriginal();
+    public void sameLastModifiedTimeInDoubles() {
+        List<Form> forms = TestFormsMaker.getList5FormsWith3CopiesSecondForm();
         List<Doubles> doubles = searcher.getDoublesByTimeFirst(forms);
 
         long original = doubles.get(0).getDoubles().get(0).lastModified();
@@ -66,8 +66,8 @@ public class SearcherTest {
      * На поиск файлов-копий не оказывает влияние время создания файла.
      */
     @Test
-    public void searchAmongDifferentCreateTimes() throws InterruptedException {
-        List<Form> forms = getCopiesFromOneOriginal();
+    public void searchAmongDifferentCreateTimes() {
+        List<Form> forms = TestFormsMaker.getList5FormsWith3CopiesSecondForm();
         List<Doubles> doubles = searcher.getDoublesByTimeFirst(forms);
 
         long original = ((TestForm) doubles.get(0).getDoubles().get(0)).createTime();
@@ -101,32 +101,5 @@ public class SearcherTest {
 
         Assert.assertNotEquals(name0, name1);
         Assert.assertNotEquals(name0, name2);
-    }
-
-    private List<Form> getCopiesFromTwoOriginals() throws InterruptedException {
-        //TODO задавать время самостоятельно, sleep() удалить
-        TestForm form1 = new TestForm("1", 10);
-        Thread.sleep(1000);
-        TestForm form1_copy1 = TestForm.copy(form1);
-        Thread.sleep(1000);
-        TestForm form2 = new TestForm("2", 20);
-        Thread.sleep(1000);
-        TestForm form2_copy1 = TestForm.copy(form2);
-        Thread.sleep(1000);
-        TestForm form2_copy2 = TestForm.copy(form2_copy1);
-        return List.of(form1, form1_copy1, form2, form2_copy1, form2_copy2);
-    }
-
-    private List<Form> getCopiesFromOneOriginal() throws InterruptedException {
-        TestForm form1 = new TestForm("1", 10);
-        Thread.sleep(1000);
-        TestForm form2 = new TestForm("2", 20);
-        Thread.sleep(1000);
-        TestForm form2_copy1 = TestForm.copy(form2);
-        Thread.sleep(1000);
-        TestForm form2_copy2 = TestForm.copy(form2_copy1);
-        Thread.sleep(1000);
-        TestForm form2_copy3 = TestForm.copy(form2_copy2);
-        return List.of(form1, form2, form2_copy1, form2_copy2, form2_copy3);
     }
 }

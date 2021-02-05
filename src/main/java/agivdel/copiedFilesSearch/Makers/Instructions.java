@@ -2,33 +2,39 @@ package agivdel.copiedFilesSearch.Makers;
 
 import agivdel.copiedFilesSearch.*;
 
+import java.io.InputStream;
 import java.nio.file.attribute.FileTime;
 import java.util.List;
 
-import static java.lang.System.in;
 import static java.lang.System.out;
 
 public class Instructions {
+    InputStream in = System.in;
+
+    //only for test
+    void setIn(InputStream in) {
+        this.in = in;
+    }
 
     public Instruction<Void, Boolean> getNew() {
         return selectDirectory.andThen(removeZeroSizeOrNot)
                 .andThen(selectChecksumAlgorithm)
                 .andThen(searchCopies)
                 .andThen(printDoubles)
-                .andThen(toRepeatOrNot);
+                .andThen(repeatOrNot);
     }
 
-    static class FormsDTO {
-        List<Form> files;
+    public static class FormsDTO {
+        public List<Form> files;
 
         public FormsDTO(List<Form> files) {
             this.files = files;
         }
     }
 
-    static class FormsCalcDTO {
-        List<Form> files;
-        ChecksumCalculator calculator;
+    public static class FormsCalcDTO {
+        public List<Form> files;
+        public ChecksumCalculator calculator;
 
         public FormsCalcDTO(List<Form> files, ChecksumCalculator calculator) {
             this.files = files;
@@ -36,8 +42,8 @@ public class Instructions {
         }
     }
 
-    static class DoublesDTO {
-        List<Doubles> doubles;
+    public static class DoublesDTO {
+        public List<Doubles> doubles;
 
         public DoublesDTO(List<Doubles> doubles) {
             this.doubles = doubles;
@@ -125,7 +131,7 @@ public class Instructions {
         }
     };
 
-    Instruction<Void, Boolean> toRepeatOrNot = new Instruction<>() {
+    Instruction<Void, Boolean> repeatOrNot = new Instruction<>() {
         public final InputHandler whatNext = new InputHandlers.Option(
                 "To search for copies of files in another directory or exit the program? 'exit' - 0, 'search' - 1.");
         @Override

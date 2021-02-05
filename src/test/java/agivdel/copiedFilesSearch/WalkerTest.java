@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public class WalkerTest {
-    Walker walker = new Walker();
 
     @Test
     public void test0() throws IOException {
@@ -40,7 +39,7 @@ public class WalkerTest {
      */
     @Test
     public void iterationAllFiles_Test() {
-        List<Form> files = walker.allFilesFrom("src/test/resources");
+        List<Form> files = Walker.allFilesFrom("src/test/resources");
         Assert.assertEquals(7, files.size());
     }
 
@@ -49,7 +48,7 @@ public class WalkerTest {
      */
     @Test
     public void iterationEmptyDir_Test() {
-        List<Form> files = walker.allFilesFrom("src/test/resources/data/movie");
+        List<Form> files = Walker.allFilesFrom("src/test/resources/data/movie");
         Assert.assertTrue(files.isEmpty());
     }
 
@@ -58,8 +57,8 @@ public class WalkerTest {
      */
     @Test
     public void removeZeroSizeFiles_Test() {
-        List<Form> files = walker.allFilesFrom("src/test/resources");
-        files = walker.removeZeroSizeForm(files);
+        List<Form> files = Walker.allFilesFrom("src/test/resources");
+        files = Walker.removeZeroSizeForm(files);
         Assert.assertEquals(7, files.size());
     }
 }

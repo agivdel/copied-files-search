@@ -19,11 +19,18 @@ public class TestForm implements Form {
         this.lastModifiedTime = this.createTime;
     }
 
-    public TestForm(String name, long size, long time) {
+    public TestForm(String name, long size, long modifiedTime) {
         this.name = name;
         this.size = size;
         this.createTime = setCreateTime();
-        this.lastModifiedTime = time;
+        this.lastModifiedTime = modifiedTime;
+    }
+
+    public TestForm(String name, long size, long createTime, long modifiedTime) {
+        this.name = name;
+        this.size = size;
+        this.createTime = createTime;
+        this.lastModifiedTime = modifiedTime;
     }
 
     @Override
