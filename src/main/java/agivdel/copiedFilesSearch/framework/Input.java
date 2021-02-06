@@ -1,7 +1,5 @@
 package agivdel.copiedFilesSearch.framework;
 
-import agivdel.copiedFilesSearch.makers.InputHandler;
-
 import java.io.*;
 import java.util.Scanner;
 

@@ -1,6 +1,5 @@
 package agivdel.copiedFilesSearch.framework;
 
-import agivdel.copiedFilesSearch.makers.InputHandler;
 import agivdel.copiedFilesSearch.makers.InputHandlers;
 import org.junit.Assert;
 import org.junit.Rule;

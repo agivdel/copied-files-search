@@ -1,5 +1,7 @@
 package agivdel.copiedFilesSearch.makers;
 
+import agivdel.copiedFilesSearch.framework.InputHandler;
+
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
