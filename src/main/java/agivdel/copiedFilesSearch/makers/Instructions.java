@@ -121,19 +121,21 @@ public class Instructions {
     };
 
     Instruction<DoublesDTO, Void> printDoubles = new Instruction<>() {
+        final String prefix = """
+                    ==================
+                    Last modified time: """;
+        final String suffix = """
+                __________________
+                The total number of original files with copies: """;
         @Override
         public Void instruct(DoublesDTO doublesDTO) {
             out.println("displaying...");
             for (Doubles doubles : doublesDTO.doubles) {
                 long timeOfFirstFile = doubles.getDoubles().get(0).lastModified() * 1000;
-                out.println("""
-                    ==================
-                    Last modified time: """ + FileTime.fromMillis(timeOfFirstFile));
+                out.println(prefix + FileTime.fromMillis(timeOfFirstFile));
                 doubles.getDoubles().stream().map(Form::toPath).forEach(out::println);
             }
-            out.println("""
-                __________________
-                The total number of original files with copies: """ + doublesDTO.doubles.size());
+            out.println(suffix + doublesDTO.doubles.size());
             return null;
         }
     };
