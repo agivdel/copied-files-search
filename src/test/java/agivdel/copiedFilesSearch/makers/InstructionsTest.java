@@ -70,15 +70,21 @@ public class InstructionsTest {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream newOut = new PrintStream(baos);
         System.setOut(newOut);// After this all System.out.println() statements will come to baos stream
-        List<Form> files = Walker.allFilesFrom("src/test/resources/data");
-        List<Doubles> doubles = new Searcher(Form::size).getDoublesByTimeFirst(files);
+
+        TestForm form0 = new TestForm("src\\test\\resources\\data\\men-3.bmp", 10, 100500);
+        TestForm form1 = TestForm.copy(form0);
+        TestForm form2 = TestForm.copy(form1);
+        List<Form> files = List.of(form0, form1, form2);
+        Doubles aDoubles = new Doubles(files);
+        List<Doubles> doubles = List.of(aDoubles);
+
         String input = """
                 displaying...
                 ==================
-                Last modified time:2021-02-04T20:19:30Z
-                src\\test\\resources\\data\\men-3 — копия.bmp
-                src\\test\\resources\\data\\men-3 — копия.jpg
-                src\\test\\resources\\data\\men-3.jpeg
+                Last modified time:1970-01-02T03:55:00Z
+                src\\test\\resources\\data\\men-3.bmp
+                src\\test\\resources\\data\\men-3.bmp - копия
+                src\\test\\resources\\data\\men-3.bmp - копия - копия
                 __________________
                 The total number of original files with copies:1\r
                 """;
