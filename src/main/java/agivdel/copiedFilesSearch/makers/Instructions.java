@@ -5,6 +5,8 @@ import agivdel.copiedFilesSearch.framework.*;
 import java.io.InputStream;
 import java.nio.file.attribute.FileTime;
 import java.util.List;
+import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 
 import static java.lang.System.out;
 
@@ -71,7 +73,6 @@ public class Instructions {
     };
 
     Instruction<FormsDTO, FormsDTO> removeZeroSizeOrNot = new Instruction<>() {
-        final Walker.ZeroRemover zeroRemover = Walker::removeZeroSizeForm;
         public final InputHandler whatMinSize = new InputHandlers.Option(
                 "Do you need to search among files with zero size? 'yes' - 0, 'no' - 1.");
         @Override
@@ -80,7 +81,13 @@ public class Instructions {
             final List<Form> files = formsDTO.files;
             if (minSize.equals("1")) {
                 out.println("deleting files with zero size...");
-                return new FormsDTO(zeroRemover.remove(files));
+                List<Form> forms = Walker.doIt(files, new Walker.Doers<List<Form>>() {
+                    @Override
+                    public List<Form> doItNow(List<Form> files) {
+                        return files.stream().filter(f -> f.size() != 0).collect(Collectors.toList());
+                    }
+                });
+                return new FormsDTO(forms);
             }
             return formsDTO;
         }

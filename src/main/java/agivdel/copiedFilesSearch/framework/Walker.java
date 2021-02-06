@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -47,5 +49,13 @@ public class Walker {
         return files.stream()
                 .filter(f -> f.size() != 0)
                 .collect(toList());
+    }
+
+    public interface Doers<T> {
+        T doItNow(T t);
+    }
+
+    public static List<Form> doIt(List<Form> files, Doers<List<Form>> doers) {
+        return doers.doItNow(files);
     }
 }
