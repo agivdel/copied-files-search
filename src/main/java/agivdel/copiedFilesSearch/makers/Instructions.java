@@ -80,10 +80,10 @@ public class Instructions {
             final List<Form> files = formsDTO.files;
             if (minSize.equals("1")) {
                 out.println("deleting files with zero size...");
-                List<Form> forms = Walker.doIt(files,
+                List<Form> forms = Walker.doer(files,
                         form -> form.stream()
-                        .filter(f -> f.size() != 0)
-                        .collect(Collectors.toList()));
+                                .filter(f -> f.size() != 0)
+                                .collect(Collectors.toList()));
                 return new FormsDTO(forms);
             }
             return formsDTO;

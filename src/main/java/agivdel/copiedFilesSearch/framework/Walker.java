@@ -51,11 +51,7 @@ public class Walker {
                 .collect(toList());
     }
 
-    public interface Doers<T> {
-        T doItNow(T t);
-    }
-
-    public static List<Form> doIt(List<Form> files, Doers<List<Form>> doers) {
-        return doers.doItNow(files);
+    public static <T> T doer(T t, UnaryOperator<T> unaryOperator) {
+        return unaryOperator.apply(t);
     }
 }
