@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class WalkerTest {
@@ -40,7 +41,7 @@ public class WalkerTest {
     @Test
     public void iterationAllFiles_Test() {
         List<Form> files = Walker.allFilesFrom("src/test/resources");
-        Assert.assertEquals(8, files.size());
+        Assert.assertEquals(9, files.size());
     }
 
     /**
@@ -59,6 +60,20 @@ public class WalkerTest {
     public void removeZeroSizeFiles_Test() {
         List<Form> files = Walker.allFilesFrom("src/test/resources");
         files = Walker.removeZeroSizeForm(files);
+        Assert.assertEquals(7, files.size());
+    }
+
+    /**
+     * вместо метода removeZeroSizeForm() удалять файлы можно с помощью
+     * метода doer()
+     */
+    @Test
+    public void removeZeroSizeFiles_by_doer_Test() {
+        List<Form> files = Walker.allFilesFrom("src/test/resources");
+        files = Walker.doer(files,
+                form -> form.stream()
+                        .filter(f -> f.size() != 0)
+                        .collect(Collectors.toList()));;
         Assert.assertEquals(7, files.size());
     }
 }
