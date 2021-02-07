@@ -5,7 +5,6 @@ import agivdel.copiedFilesSearch.framework.*;
 import java.io.InputStream;
 import java.nio.file.attribute.FileTime;
 import java.util.List;
-import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 import static java.lang.System.out;
@@ -81,12 +80,10 @@ public class Instructions {
             final List<Form> files = formsDTO.files;
             if (minSize.equals("1")) {
                 out.println("deleting files with zero size...");
-                List<Form> forms = Walker.doIt(files, new Walker.Doers<List<Form>>() {
-                    @Override
-                    public List<Form> doItNow(List<Form> files) {
-                        return files.stream().filter(f -> f.size() != 0).collect(Collectors.toList());
-                    }
-                });
+                List<Form> forms = Walker.doIt(files,
+                        form -> form.stream()
+                        .filter(f -> f.size() != 0)
+                        .collect(Collectors.toList()));
                 return new FormsDTO(forms);
             }
             return formsDTO;
